@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: demo
+  datasource:
+    url: jdbc:mysql://localhost:3306/sisa?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: sisadb
+    password: sisa
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate: 
+      ddl-auto: update
+    show-sql: true
+    properties: 
+      hibernate:  
+        format_sql: true
+springdoc:
+  swagger-ui:
+    # 기존 코드: 없음 (기본값)
+    # 변경 이유: 새로고침 시 Authorize에 입력한 JWT 토큰이 유지되도록 하여 테스트 반복 시 피로도를 줄입니다.
+    persist-authorization: true
+    # API 목록이 접혀있지 않고 펼쳐져서 보이게 설정
+    doc-expansion: list
+mybatis:
+  # XML 파일 위치 (resources 하위 경로)
+  mapper-locations: classpath:mapper/**/*.xml
+  # 결과 객체의 패키지 경로 (XML에서 클래스명만 쓸 수 있게 함)
+  type-aliases-package: com.example.project.dto
+  configuration:
+    # DB의 snake_case를 자바의 camelCase로 자동 매핑
+    map-underscore-to-camel-case: true
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+      multiline: true # 쿼리를 줄바꿈해서 예쁘게 보여줌
+      logging: slf4j
+      tracing:
+        include-parameter-values: true # 파라미터 값 포함 여부
+logging:
+  level:
+    root: info                          # 전체 기본값은 info
+    com.project.domain.auth: debug       # 내 소스 코드는 상세히(debug)
+    org.hibernate.SQL: info             # SQL은 기본 정보만
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+

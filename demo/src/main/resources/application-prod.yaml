@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: demo
+springdoc:
+  api-docs:
+    enabled: false  # API 명세 생성 비활성화
+  swagger-ui:
+    persist-authorization: true
+    doc-expansion: list
+    enabled: false
+    
+mybatis:
+  # XML 파일 위치 (resources 하위 경로)
+  mapper-locations: classpath:mapper/**/*.xml
+  # 결과 객체의 패키지 경로 (XML에서 클래스명만 쓸 수 있게 함)
+  type-aliases-package: com.example.project.dto
+  configuration:
+    # DB의 snake_case를 자바의 camelCase로 자동 매핑
+    map-underscore-to-camel-case: true

@@ -1,0 +1,117 @@
+plugins {
+    id 'war'
+	id 'java'
+	id 'org.springframework.boot' version '3.5.11'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'eclipse' // 이클립스 플러그인 추가
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+description = 'Demo project for Spring Boot'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	
+	// ==========================================
+    // 1. Spring Boot Core & Web
+    // ==========================================
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    
+    // ==========================================
+    // 2. Security & JWT
+    // ==========================================
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // or jjwt-gson if you prefer
+	
+	// ==========================================
+    // 3. Database (JPA, Querydsl, MyBatis, DB Driver)
+    // ==========================================
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+	
+	// Querydsl 설정
+    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    
+    implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-mysql'
+	runtimeOnly 'com.h2database:h2'
+    
+    // ==========================================
+    // 4. Lombok & MapStruct (순서 매우 중요!)
+    // ==========================================
+	compileOnly 'org.projectlombok:lombok'
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	
+	// 어노테이션 프로세서는 선언 순서대로 동작할 확률이 높으므로, [Lombok -> Binding -> MapStruct] 순으로 정렬합니다.
+	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    
+    
+    // ==========================================
+    // 5. Test & Swagger (추가 권장)
+    // ==========================================
+    // JUnit 테스트와 스프링 시큐리티 테스트를 위해 반드시 필요합니다.
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+	
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	
+	providedCompile 'javax.servlet:javax.servlet-api:4.0.1'
+}
+
+// 이클립스가 QClass 폴더를 소스 폴더로 인식하게 함
+eclipse {
+    classpath {
+        file {
+            whenMerged {
+                // src/main/generated 폴더를 소스 폴더로 강제 인식시킴
+                entries.add(new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/main/generated', null))
+            }
+        }
+    }
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+war {
+    archiveFileName = 'demo.war'
+}
+
