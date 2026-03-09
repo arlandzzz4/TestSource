@@ -4,7 +4,10 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,9 +16,14 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "users")
 public class RefreshToken {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // MySQL의 auto_increment를 사용하도록 설정
+    private Long id;
+    
+    @Column(nullable = true)
     private String email;
     
     @Column(nullable = false)
@@ -28,9 +36,9 @@ public class RefreshToken {
     private LocalDateTime rotatedAt;
     
     @Column(nullable = false)
-    private String provider;
+    private String provider = "local";
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String providerId;
 
     // 토큰 값 업데이트 (로그인 시마다 갱신)

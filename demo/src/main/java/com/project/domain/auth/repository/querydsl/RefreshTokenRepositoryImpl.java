@@ -16,7 +16,7 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepositoryCustom 
     private final JPAQueryFactory queryFactory;
 
     @Override
-	public Optional<RefreshToken> findById(String email, String provider, String password) {
+	public Optional<RefreshToken> findByEmail(String email, String provider, String password) {
     	return Optional.ofNullable(
                 queryFactory
                     .selectFrom(refreshToken)

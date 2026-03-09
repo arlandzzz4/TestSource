@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.domain.auth.dto.LoginRequest;
@@ -31,6 +32,17 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
 
     private final AuthService authService;
+    
+    @GetMapping("/test2")
+    public Users test2(@RequestParam(value = "email", defaultValue = "test@example.com") String email) {
+    	log.debug(email + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    	return authService.test2(email);
+	}
+    
+    @PostMapping("/regist")
+    public void regist(@RequestBody Users users) {
+		authService.regist(users);
+	}
 
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -38,7 +50,6 @@ public class AuthController {
         TokenDto tokenDto = authService.login(loginRequest);
         
         //TODO 로그인 정보 외 필요한 정보
-        log.debug("test~~~~~~~~~~~~~~~~~~~");
         
 
         // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
@@ -104,9 +115,5 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(body);
-    }
-    @GetMapping("/me")
-    public void test() {
-    	log.debug("test~~~~~~~~~~~~~~~~~~~");
     }
 }

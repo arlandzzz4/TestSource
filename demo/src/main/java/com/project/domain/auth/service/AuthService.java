@@ -10,7 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.project.domain.auth.dto.LoginRequest;
 import com.project.domain.auth.dto.TokenDto;
 import com.project.domain.auth.entity.RefreshToken;
+import com.project.domain.auth.entity.Users;
+import com.project.domain.auth.repository.mybatis.UserMybatisMapper;
 import com.project.domain.auth.repository.querydsl.RefreshTokenRepository;
+import com.project.domain.auth.repository.querydsl.UserRepository;
+import com.project.global.error.NeedRegistrationException;
 import com.project.global.security.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,8 @@ public class AuthService {
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMybatisMapper userMybatisMapper; // MyBatis 매퍼 주입
+    private final UserRepository userRepository;
 
 
     public TokenDto reissue(String oldRefreshToken) {
@@ -35,7 +41,7 @@ public class AuthService {
         String username = tokenProvider.getAuthentication(oldRefreshToken).getName();
         
         // DB 조회 (id를 username으로 쓰고 있으므로 findById 가능)
-        var savedToken = refreshTokenRepository.findById(username)
+        var savedToken = refreshTokenRepository.findByEmail(username)
                 .orElseThrow(() -> new IllegalArgumentException("로그아웃된 사용자입니다."));
 
         // [토큰 재사용 탐지 및 Race Condition 방어]
@@ -64,7 +70,7 @@ public class AuthService {
 		String encodedPassword = passwordEncoder.encode(loginRequest.password());
 		
 		//인증 성공 시 토큰 발급
-		AtomicReference<String> email = null;
+		AtomicReference<String> email = new AtomicReference<String>();
 		if("LOCAL".equalsIgnoreCase(loginRequest.provider())) {
 			email.set(loginRequest.email());
 		} else {
@@ -75,19 +81,13 @@ public class AuthService {
 	    String refreshToken = tokenProvider.createRefreshToken(email.get());
 
 	    //DB에서 사용자 조회 및 인증 로직
-	    RefreshToken rt = refreshTokenRepository.findById(email.get(), loginRequest.provider(), encodedPassword)
+	    RefreshToken rt = refreshTokenRepository.findByEmail(email.get(), loginRequest.provider(), encodedPassword)
 	        .map(token -> {
 	            // 이미 있다면 새로운 토큰값으로 업데이트 (Dirty Checking 발생)
 	            token.updateToken(refreshToken);
 	            return token;
 	        })
-	        .orElseGet(() -> {
-	            // 없다면 새로 생성하여 저장
-	            return RefreshToken.builder()
-	                    .email(email.get())
-	                    .token(refreshToken)
-	                    .build();
-	        });
+	        .orElseThrow(() -> new NeedRegistrationException("등록된 사용자가 아닙니다. 회원가입으로 이동합니다."));
 	    refreshTokenRepository.save(rt);
 	     
 	    return new TokenDto(accessToken, refreshToken);
@@ -108,4 +108,26 @@ public class AuthService {
         // DB에서 해당 유저의 리프레시 토큰을 삭제하여 재발급을 원천 차단
         refreshTokenRepository.deleteRefreshTokenById(email, provider);
     }
+	
+	public Users test2(String email) {
+		Users user = userMybatisMapper.findByEmail(email)
+	            .orElseThrow(() -> new NeedRegistrationException("회원이 아닙니다."));
+		return user;
+	}
+
+	@Transactional
+	public void regist(Users users) {
+		// 중복 체크
+		// 1. 중복 이메일 검증. provider 체크필요
+        //if (userRepository.existsByEmail(dto.getEmail())) {
+        //    throw new RuntimeException("이미 사용 중인 이메일입니다.");
+        //}
+		//password 암호화
+		// 2. 패스워드 암호화 및 엔티티 생성
+        //passwordEncoder.encode(users.getPassword())
+		
+		//등록
+        userRepository.save(users);
+		//리턴
+	}
 }

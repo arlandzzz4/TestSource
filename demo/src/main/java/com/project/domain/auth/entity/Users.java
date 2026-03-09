@@ -2,7 +2,10 @@ package com.project.domain.auth.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,12 +13,14 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "users")
 public class Users {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String email;
     
     @Column(nullable = true)
@@ -25,7 +30,7 @@ public class Users {
     private String nickname;
     
     @Column(nullable = false)
-    private String provider;
+    private String provider = "local";
     
     @Column(nullable = false)
     private String providerId;

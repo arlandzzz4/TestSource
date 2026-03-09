@@ -23,23 +23,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) 
             throws ServletException, IOException {
-        
-        // 1. 요청 헤더에서 JWT 토큰 추출
+    	// 1. 요청 헤더에서 JWT 토큰 추출
         String token = resolveToken(request);
 
         try {
-            // 2. 토큰이 존재하고 유효성 검사를 통과하면 인증 객체 생성
-            if (StringUtils.hasText(token) && tokenProvider.validateToken(token)) {
-                Authentication auth = tokenProvider.getAuthentication(token);
-                // 3. 스프링 시큐리티 컨텍스트에 인증 정보 저장 (이후 컨트롤러에서 @AuthenticationPrincipal 사용 가능)
-                SecurityContextHolder.getContext().setAuthentication(auth);
+            // 2. 토큰이 존재할 때만 검증 로직 수행
+            if (StringUtils.hasText(token)) {
+                if (tokenProvider.validateToken(token)) {
+                    Authentication auth = tokenProvider.getAuthentication(token);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
+                // 주의: 여기서 else 처리를 해서 예외를 던지면 permitAll 구간도 401이 뜹니다.
+                // 유효하지 않은 토큰이라도 일단 통과시켜야 SecurityConfig의 permitAll()이 판단합니다.
             }
         } catch (Exception e) {
-            // [대비책] 필터 내부에서 예외가 발생해도 다음 필터는 계속 진행되거나, 여기서 401 에러를 처리할 수 있습니다.
+        	// EntryPoint에서 읽을 수 있도록 에러 정보를 request에 담아줍니다.
+            request.setAttribute("exception", "TOKEN_INVALID");
+            // 필터 내부 에러가 전체 요청을 막지 않도록 보장
             SecurityContextHolder.clearContext();
-            //log.error("Security Context에 인증 정보를 설정할 수 없습니다.", e);
         }
 
+        // 3. 반드시 다음 필터로 넘겨야 SecurityConfig의 설정(permitAll 등)을 타게 됩니다.
         filterChain.doFilter(request, response);
     }
 

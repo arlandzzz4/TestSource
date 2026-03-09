@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,12 +23,12 @@ import com.project.global.error.JwtAuthenticationEntryPoint;
 import com.project.global.security.JwtAuthenticationFilter;
 import com.project.global.security.JwtTokenProvider;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -45,30 +47,49 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             
-            // 3. 권한 정밀 설정 (중요: 순서가 중요함)
+            // 3. 권한 설정: 구체적인 것부터 넓은 범위 순으로!
             .authorizeHttpRequests(auth -> auth
-                // 로그인, 회원가입 등 공통 허용
-                .requestMatchers("/api/auth/**").permitAll()
-                // Swagger UI 및 API 문서 허용 (개발 시 필수)
+            	.requestMatchers("/error", "/favicon.ico").permitAll()
+                // Swagger 및 문서 관련 (누구나)
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
-                // 관리자 전용 API
+                
+                // TODO: 설정을 통해 정적 리소스를 보안 대상에서 제외
+                .requestMatchers("/img/**").permitAll() 
+                
+                // TODO: 인증이 필요한 API와 익명 사용자만 접근 가능한 API를 명확히 구분하여 설정
+                // 로그인, 회원가입은 '익명 사용자'만 접근 가능하게 설정
+                .requestMatchers("/api/auth/login", "/api/auth/regist").anonymous()
+                // 그 외 /api/auth/** 하위의 다른 기능(로그아웃 등)은 누구나 가능하게 두거나
+                // 필요에 따라 아래처럼 분리할 수 있습니다.
+                .requestMatchers("/api/auth/logout", "/api/auth/reissue").authenticated()
+                //.requestMatchers("/api/auth/**").permitAll() 
+                
+                // 관리자 API (권한 필요)
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                // 그 외 모든 요청은 인증 필요
-                .anyRequest().authenticated()
+                // 그 외 모든 요청은 인증 필요 (4주 프로젝트 보안상 권장)
+                //.anyRequest().authenticated() 
+                .anyRequest().permitAll()
             )
+            // 4. 불필요한 기본 로그인창 비활성화
+            .formLogin(form -> form
+                // 1. 사용자 정의 로그인 페이지 경로 설정 (기본값은 /login)
+                .loginPage("/api/auth/login")
+                // 2. 로그인 성공 시 이동할 기본 경로
+                .defaultSuccessUrl("/home", true)
+                .permitAll()
+            )
+            .httpBasic(basic -> basic.disable())
             
-            // 4. JWT 필터 위치 지정
+            // 5. 필터 순서
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), 
                             UsernamePasswordAuthenticationFilter.class)
             
-            // 5. 예외 처리 (인증 실패 및 권한 부족 시 응답 커스텀)
+            // 6. 예외 처리 (중복 제거 및 명확한 핸들러 지정)
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((request, response, authException) -> 
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "UnAuthorized"))
-                .accessDeniedHandler((request, response, accessDeniedException) -> 
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied"))
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint) // 401 핸들러 등록
-                .accessDeniedHandler(jwtAccessDeniedHandler)           // 403 핸들러 등록
+                // 인증 실패 시 (401) - 반드시 JSON 응답을 주거나 SC_UNAUTHORIZED를 리턴해야 함
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint) 
+                // 권한 부족 시 (403)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
             );
 
         return http.build();

@@ -12,26 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice // 모든 @RestController에서 발생하는 예외를 가로챕니다.
 public class GlobalExceptionHandler {
 
-    /*
-    // [기존 방식] 컨트롤러 내부에서 예외 처리
-    @PostMapping("/users")
-    public ResponseEntity<?> join(@Valid @RequestBody UserReq req, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body("입력값이 잘못되었습니다.");
-        }
-        try {
-            userService.join(req);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("서버 에러");
-        }
-        return ResponseEntity.ok().build();
-    }
-    // 변경 이유: 모든 API마다 위와 같은 try-catch와 상태 코드 반환 로직을 적으면 코드가 비대해지고 유지보수가 불가능해집니다.
-    // @RestControllerAdvice를 사용하면 컨트롤러는 '성공 로직'에만 집중할 수 있습니다.
-    */
-
     // 1. Bean Validation (400) 에러 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
@@ -61,4 +41,15 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of("SERVER_ERROR", "서버 내부에서 일시적인 오류가 발생했습니다."));
     }
+    
+    // GlobalExceptionHandler.java 내부에 추가
+    @ExceptionHandler(NeedRegistrationException.class)
+    public ResponseEntity<ErrorResponse> handleNeedRegistrationException(NeedRegistrationException e) {
+        // 1. 에러 응답 객체 생성 (기존에 만드신 ErrorResponse 형식을 따름)
+        ErrorResponse errorResponse = ErrorResponse.of("NEED_REGISTRATION", e.getMessage());
+        
+        // 2. 404 상태 코드와 함께 반환 (프론트엔드가 catch 문으로 빠지게 함)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+    
 }
