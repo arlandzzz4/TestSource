@@ -16,7 +16,7 @@ public record TokenDto(
         }
     }
 
-    // 2. [추가] AT와 RT만 전달할 때 사용하는 생성자 (기존 클래스의 생성자 역할)
+    // 2. AT와 RT만 전달할 때 사용하는 생성자 (기존 클래스의 생성자 역할)
     public TokenDto(String accessToken, String refreshToken) {
         this("Bearer", accessToken, refreshToken, null);
     }
