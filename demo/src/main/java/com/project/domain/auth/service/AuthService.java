@@ -7,7 +7,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.project.domain.auth.dto.LoginRequest;
+import com.project.domain.auth.dto.LoginRequestDto;
+import com.project.domain.auth.dto.RegistUserRequestDto;
 import com.project.domain.auth.dto.TokenDto;
 import com.project.domain.auth.entity.RefreshToken;
 import com.project.domain.auth.entity.Users;
@@ -65,7 +66,7 @@ public class AuthService {
         return new TokenDto(newAccessToken, newRefreshToken);
     }
 
-	public TokenDto login(LoginRequest loginRequest) {
+	public TokenDto login(LoginRequestDto loginRequest) {
 		//password 암호화 bcrypt로 암호화된 비밀번호와 비교해야 합니다.
 		String encodedPassword = passwordEncoder.encode(loginRequest.password());
 		
@@ -109,25 +110,36 @@ public class AuthService {
         refreshTokenRepository.deleteRefreshTokenById(email, provider);
     }
 	
+	@Transactional
+	public Users regist(RegistUserRequestDto registUserRequest) {
+		// 중복 체크
+		if("LOCAL".equalsIgnoreCase(registUserRequest.provider())) {
+	        if (userRepository.existsByEmail(registUserRequest.email())) {
+	            throw new RuntimeException("이미 사용 중인 이메일입니다.");
+	        }
+		} else {
+			if (userRepository.existsByProviderId(registUserRequest.providerId())) {
+	            throw new RuntimeException("이미 사용 중인 소셜 계정입니다.");
+	        }
+		}
+		//패스워드 암호화
+		String encodedPassword = passwordEncoder.encode(registUserRequest.password());
+		
+		//엔티티 생성
+		Users users = Users.builder()
+				.email(registUserRequest.email())
+				.password(encodedPassword)
+				.provider(registUserRequest.provider())
+				.build();
+		//등록
+		users = userRepository.save(users);
+		//리턴
+		return users;
+	}
+	
 	public Users test2(String email) {
 		Users user = userMapper.findByEmail(email)
 	            .orElseThrow(() -> new NeedRegistrationException("회원이 아닙니다."));
 		return user;
-	}
-
-	@Transactional
-	public void regist(Users users) {
-		// 중복 체크
-		// 1. 중복 이메일 검증. provider 체크필요
-        //if (userRepository.existsByEmail(dto.getEmail())) {
-        //    throw new RuntimeException("이미 사용 중인 이메일입니다.");
-        //}
-		//password 암호화
-		// 2. 패스워드 암호화 및 엔티티 생성
-        //passwordEncoder.encode(users.getPassword())
-		
-		//등록
-        userRepository.save(users);
-		//리턴
 	}
 }

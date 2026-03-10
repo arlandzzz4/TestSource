@@ -15,26 +15,38 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-	@Override
-	public boolean existsByEmail(String email, String provider, String password) {
+    @Override
+	public boolean existsByEmail(String email) {
 		QUsers user = QUsers.users;
 
         Users result = queryFactory
                 .selectFrom(user)
                 .where(
-                    emailEq(email)
+                	QUsers.users.email.eq(email)
                 )
                 .fetchOne();
-
+        
+        if(result.getId() > 0) {
+			return true;
+		} 
         return false;
 	}
-	// --- 동적 쿼리용 BooleanExpression 메서드 ---
-    private BooleanExpression emailEq(String email) {
-        return email != null ? QUsers.users.email.eq(email) : null;
-    }
 
-    private BooleanExpression roleEq(String provicer) {
-        return provicer != null ? QUsers.users.provider.eq(provicer) : null;
-    }
+	@Override
+	public boolean existsByProviderId(String providerId) {
+		QUsers user = QUsers.users;
+
+        Users result = queryFactory
+                .selectFrom(user)
+                .where(
+                	QUsers.users.providerId.eq(providerId)
+                )
+                .fetchOne();
+        
+        if(result.getId() > 0) {
+			return true;
+		} 
+        return false;
+	}
 
 }

@@ -15,16 +15,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.domain.auth.dto.LoginRequest;
+import com.project.domain.auth.dto.LoginRequestDto;
+import com.project.domain.auth.dto.RegistUserRequestDto;
 import com.project.domain.auth.dto.TokenDto;
+import com.project.domain.auth.dto.UserResponseDto;
 import com.project.domain.auth.entity.Users;
 import com.project.domain.auth.service.AuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Tag(name = "Auth API", description = "사용자 등록, 로그인, 로그아웃, 리프레시 API")
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
@@ -34,22 +41,42 @@ public class AuthController {
     private final AuthService authService;
     
     @GetMapping("/test2")
-    public Users test2(@RequestParam(value = "email", defaultValue = "test@example.com") String email) {
+    public ResponseEntity<UserResponseDto> test2(@RequestParam(value = "email", defaultValue = "test@example.com") String email) {
     	log.debug(email + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    	return authService.test2(email);
+    	Users savedUser = authService.test2(email);
+    	
+    	// 엔티티 -> DTO 변환 (비밀번호 제외)
+    	UserResponseDto response = UserResponseDto.from(savedUser);
+        
+        return ResponseEntity.ok(response); 
 	}
     
+    @Operation(summary = "회원가입", description = "새로운 유저를 등록하고 정보를 반환합니다. id가 생성되면 정상.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "회원가입 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 (이메일 중복 등)")
+    })
     @PostMapping("/regist")
-    public void regist(@RequestBody Users users) {
-		authService.regist(users);
+    public ResponseEntity<UserResponseDto> regist(@RequestBody RegistUserRequestDto registUserRequest) {
+    	Users savedUser = authService.regist(registUserRequest);
+    	
+    	// 엔티티 -> DTO 변환 (비밀번호 제외)
+    	UserResponseDto response = UserResponseDto.from(savedUser);
+        
+        return ResponseEntity.ok(response);
 	}
 
+    @Operation(summary = "로그인", description = "유저 로그인 후 Access Token과 Refresh Token을 발급합니다. Refresh Token은 HttpOnly 쿠키로 저장됩니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "로그인 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 (이메일/비밀번호 불일치 등)")
+    })
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<TokenDto> login(@RequestBody LoginRequestDto loginRequest, HttpServletResponse response) {
         // 1. 서비스에서 토큰 발급 (성공 시 TokenDto 반환)
         TokenDto tokenDto = authService.login(loginRequest);
         
-        //TODO 로그인 정보 외 필요한 정보
+        //TODO 로그인 정보 외 필요한 정보 필요시
         
 
         // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
@@ -68,7 +95,12 @@ public class AuthController {
                         .accessToken(tokenDto.refreshToken()) // 쿠키 차단 대비용 (보조)
                         .build());
     }
-
+    
+    @Operation(summary = "리프레시", description = "유저 로그인 상태 유지 위해 Access Token 재발급. Refresh Token은 쿠키 또는 Authorization 헤더에서 가져옵니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "리프레시 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 (Refresh Token 누락 등)")
+    })
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissue(
     		@CookieValue(name = "refreshToken", required = false) String cookieRefreshToken,
@@ -91,6 +123,11 @@ public class AuthController {
         return ResponseEntity.ok(tokenDto);
     }
     
+    @Operation(summary = "로그아웃", description = "유저 로그아웃 처리. DB에서 Refresh Token 무효화 및 클라이언트 쿠키 삭제를 수행합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "리프레시 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 (유저 정보 누락 등)")
+    })
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(
             @RequestBody Users users, 
