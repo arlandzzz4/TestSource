@@ -26,7 +26,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 )
                 .fetchOne();
         
-        if(result.getId() > 0) {
+        if(result == null) {
+        	log.debug("이메일 중복 체크: {}는 사용 가능한 이메일입니다.", email);
 			return true;
 		} 
         return false;
@@ -43,7 +44,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 )
                 .fetchOne();
         
-        if(result.getId() > 0) {
+        if(result == null) {
 			return true;
 		} 
         return false;

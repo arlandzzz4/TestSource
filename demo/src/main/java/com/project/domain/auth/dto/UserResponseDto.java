@@ -14,7 +14,7 @@ public record UserResponseDto(
 
     String provider,
     
-    String provider_id,
+    String providerId,
     
     String createdAt
 ) {

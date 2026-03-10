@@ -54,7 +54,7 @@ public class AuthController {
     @Operation(summary = "회원가입", description = "새로운 유저를 등록하고 정보를 반환합니다. id가 생성되면 정상.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "회원가입 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청 (이메일 중복 등)")
+        @ApiResponse(responseCode = "409", description = "이미 사용 중인 이메일입니다./이미 사용 중인 소셜 계정입니다.")
     })
     @PostMapping("/regist")
     public ResponseEntity<UserResponseDto> regist(@RequestBody RegistUserRequestDto registUserRequest) {

@@ -13,5 +13,5 @@ public record LoginRequestDto(
     @NotBlank(message = "소셜 연동 필드 값은 필수 입력 값입니다.")
     String provider,
     
-    String provider_id
+    String providerId
 ) {}

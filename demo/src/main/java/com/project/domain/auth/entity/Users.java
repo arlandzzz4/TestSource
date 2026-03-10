@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "users")
+//@Table(name = "users")
 public class Users {
 
     @Id
@@ -29,25 +29,25 @@ public class Users {
     @Column(nullable = true)
     private String password;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String nickname;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String provider = "local";
     
-    @Column(nullable = false)
+    @Column(nullable = true, name = "provider_id")
     private String providerId;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String refreshToken;
     
-    @Column(nullable = false)
+    @Column(nullable = true, name = "tokenRotated_at")
     private String tokenRotatedAt;
     
-    @Column(nullable = false)
+    @Column(nullable = true, name = "created_at")
     private String createdAt;
     
-    @Column(nullable = false)
+    @Column(nullable = true, name = "updated_at")
     private String updatedAt;
     
     @Builder

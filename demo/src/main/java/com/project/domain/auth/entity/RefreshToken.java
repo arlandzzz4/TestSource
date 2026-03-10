@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "users")
+//@Table(name = "users")
 public class RefreshToken {
 
     @Id
@@ -26,19 +26,19 @@ public class RefreshToken {
     @Column(nullable = true)
     private String email;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String token;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
     
-    @Column(nullable = false)
+    @Column(nullable = true, name = "rotated_at")
     private LocalDateTime rotatedAt;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String provider = "local";
     
-    @Column(nullable = true)
+    @Column(nullable = true, name = "provider_id")
     private String providerId;
 
     // 토큰 값 업데이트 (로그인 시마다 갱신)

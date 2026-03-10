@@ -3,9 +3,11 @@ package com.project.domain.auth.service;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.project.domain.auth.dto.LoginRequestDto;
 import com.project.domain.auth.dto.RegistUserRequestDto;
@@ -32,7 +34,7 @@ public class AuthService {
     private final UserMapper userMapper; // MyBatis 매퍼 주입
     private final UserRepository userRepository;
 
-
+    @Transactional
     public TokenDto reissue(String oldRefreshToken) {
         if (!tokenProvider.validateToken(oldRefreshToken)) {
             throw new IllegalArgumentException("유효하지 않은 Refresh Token입니다.");
@@ -66,6 +68,7 @@ public class AuthService {
         return new TokenDto(newAccessToken, newRefreshToken);
     }
 
+    @Transactional
 	public TokenDto login(LoginRequestDto loginRequest) {
 		//password 암호화 bcrypt로 암호화된 비밀번호와 비교해야 합니다.
 		String encodedPassword = passwordEncoder.encode(loginRequest.password());
@@ -75,7 +78,7 @@ public class AuthService {
 		if("LOCAL".equalsIgnoreCase(loginRequest.provider())) {
 			email.set(loginRequest.email());
 		} else {
-			email.set(loginRequest.provider_id()); // 실제로는 DB에서 조회한 사용자 이름을 사용해야 합니다.
+			email.set(loginRequest.providerId()); // 실제로는 DB에서 조회한 사용자 이름을 사용해야 합니다.
 		}
 		
 	    String accessToken = tokenProvider.createAccessToken(email.get());
@@ -105,6 +108,7 @@ public class AuthService {
         }
     }
 	
+	@Transactional
 	public void logout(String email, String provider) {
         // DB에서 해당 유저의 리프레시 토큰을 삭제하여 재발급을 원천 차단
         refreshTokenRepository.deleteRefreshTokenById(email, provider);
@@ -114,12 +118,12 @@ public class AuthService {
 	public Users regist(RegistUserRequestDto registUserRequest) {
 		// 중복 체크
 		if("LOCAL".equalsIgnoreCase(registUserRequest.provider())) {
-	        if (userRepository.existsByEmail(registUserRequest.email())) {
-	            throw new RuntimeException("이미 사용 중인 이메일입니다.");
+	        if (!userRepository.existsByEmail(registUserRequest.email())) {
+	        	throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
 	        }
 		} else {
-			if (userRepository.existsByProviderId(registUserRequest.providerId())) {
-	            throw new RuntimeException("이미 사용 중인 소셜 계정입니다.");
+			if (!userRepository.existsByProviderId(registUserRequest.providerId())) {
+				throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 소셜 계정입니다.");
 	        }
 		}
 		//패스워드 암호화

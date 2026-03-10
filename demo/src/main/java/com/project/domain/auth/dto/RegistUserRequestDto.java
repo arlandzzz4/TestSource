@@ -1,6 +1,5 @@
 package com.project.domain.auth.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -14,6 +13,5 @@ public record RegistUserRequestDto(
     @NotBlank(message = "소셜 연동 필드 값은 필수 입력 값입니다.")
     String provider,
     
-    @Column(name = "provider_id")
     String providerId
 ) {}
