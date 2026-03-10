@@ -3,7 +3,6 @@ package com.project.domain.auth.repository.querydsl;
 import com.project.domain.auth.entity.QUsers;
 import com.project.domain.auth.entity.Users;
 import com.project.domain.auth.repository.jpa.UserRepositoryCustom;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
