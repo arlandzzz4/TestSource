@@ -5,7 +5,7 @@ import com.project.domain.auth.entity.Users;
 import java.util.Optional;
 
 @Mapper
-public interface UserMapper {
+public interface UserAuthDAO {
     // 이메일로 사용자 상세 정보 조회
     Optional<Users> findByEmail(String email);
     

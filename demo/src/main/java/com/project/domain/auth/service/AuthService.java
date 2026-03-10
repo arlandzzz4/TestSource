@@ -14,7 +14,7 @@ import com.project.domain.auth.dto.RegistUserRequestDto;
 import com.project.domain.auth.dto.TokenDto;
 import com.project.domain.auth.entity.RefreshToken;
 import com.project.domain.auth.entity.Users;
-import com.project.domain.auth.repository.mybatis.UserMapper;
+import com.project.domain.auth.repository.mybatis.UserAuthDAO;
 import com.project.domain.auth.repository.querydsl.RefreshTokenRepository;
 import com.project.domain.auth.repository.querydsl.UserRepository;
 import com.project.global.error.NeedRegistrationException;
@@ -31,7 +31,7 @@ public class AuthService {
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper; // MyBatis 매퍼 주입
+    private final UserAuthDAO userAuthDAO; // MyBatis 매퍼 주입
     private final UserRepository userRepository;
 
     @Transactional
@@ -142,7 +142,7 @@ public class AuthService {
 	}
 	
 	public Users test2(String email) {
-		Users user = userMapper.findByEmail(email)
+		Users user = userAuthDAO.findByEmail(email)
 	            .orElseThrow(() -> new NeedRegistrationException("회원이 아닙니다."));
 		return user;
 	}
