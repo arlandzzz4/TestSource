@@ -16,38 +16,35 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@Table(name = "users")
+@Table(name = "users")
 public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = true)
+    @Column(length = 100, unique = true)
     private String email;
     
-    @Column(nullable = true)
     private String password;
     
-    @Column(nullable = true)
     private String nickname;
     
-    @Column(nullable = true)
     private String provider = "local";
     
-    @Column(nullable = true, name = "provider_id")
+    @Column(name = "provider_id")
     private String providerId;
     
-    @Column(nullable = true)
+    @Column(name = "refresh_token")
     private String refreshToken;
     
-    @Column(nullable = true, name = "tokenRotated_at")
+    @Column(name = "token_rotated_at")
     private String tokenRotatedAt;
     
-    @Column(nullable = true, name = "created_at")
+    @Column(name = "created_at")
     private String createdAt;
     
-    @Column(nullable = true, name = "updated_at")
+    @Column(name = "updated_at")
     private String updatedAt;
     
     @Builder
