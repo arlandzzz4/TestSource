@@ -42,7 +42,6 @@ public class AuthController {
     
     @GetMapping("/test2")
     public ResponseEntity<UserResponseDto> test2(@RequestParam(value = "email", defaultValue = "test@example.com") String email) {
-    	log.debug(email + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     	Users savedUser = authService.test2(email);
     	
     	// 엔티티 -> DTO 변환 (비밀번호 제외)
