@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,31 +82,28 @@ public class AuthService {
      */
     @Transactional
 	public TokenDto login(LoginRequestDto loginRequest) {
-		//password 암호화 bcrypt로 암호화된 비밀번호와 비교해야 합니다.
-		String encodedPassword = passwordEncoder.encode(loginRequest.password());
-		
-		//인증 성공 시 토큰 발급
-		AtomicReference<String> email = new AtomicReference<String>();
-		if("LOCAL".equalsIgnoreCase(loginRequest.provider())) {
-			email.set(loginRequest.email());
-		} else {
-			email.set(loginRequest.providerId()); // 실제로는 DB에서 조회한 사용자 이름을 사용해야 합니다.
-		}
-		
-	    String accessToken = tokenProvider.createAccessToken(email.get());
-	    String refreshToken = tokenProvider.createRefreshToken(email.get());
+    	// 1. 식별자 결정 (LOCAL인 경우 이메일, 그 외에는 소셜 ID 등)
+    	String identifier = "LOCAL".equalsIgnoreCase(loginRequest.provider()) 
+    	                    ? loginRequest.email() 
+    	                    : loginRequest.providerId();
 
-	    //DB에서 사용자 조회 및 인증 로직
-	    RefreshToken rt = refreshTokenRepository.findByEmail(email.get(), loginRequest.provider(), encodedPassword)
-	        .map(token -> {
-	            // 이미 있다면 새로운 토큰값으로 업데이트 (Dirty Checking 발생)
-	            token.updateToken(refreshToken);
-	            return token;
-	        })
-	        .orElseThrow(() -> new NeedRegistrationException("등록된 사용자가 아닙니다. 회원가입으로 이동합니다."));
-	    refreshTokenRepository.save(rt);
-	     
-	    return new TokenDto(accessToken, refreshToken);
+    	// 2. DB에서 사용자 조회 및 "인증" 먼저 수행
+    	RefreshToken rt = refreshTokenRepository.findByEmail(identifier, loginRequest.provider())
+    	    .orElseThrow(() -> new NeedRegistrationException("등록된 사용자가 아닙니다."));
+
+    	// 3. 비밀번호 검증 (검증 실패 시 여기서 바로 예외 던짐)
+    	if (!passwordEncoder.matches(loginRequest.password(), rt.getPassword())) {
+    	    throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+    	}
+
+    	// 4. 인증에 성공했으므로 이제 "토큰 발급"
+    	String accessToken = tokenProvider.createAccessToken(identifier);
+    	String refreshToken = tokenProvider.createRefreshToken(identifier);
+
+    	// 5. DB의 RefreshToken 값 업데이트 (Dirty Checking)
+    	rt.updateToken(refreshToken);
+
+    	return new TokenDto(accessToken, refreshToken);
 	}
 	
     /**
