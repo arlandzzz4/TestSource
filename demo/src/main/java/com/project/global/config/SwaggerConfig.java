@@ -1,5 +1,6 @@
 package com.project.global.config;
 
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,15 @@ public class SwaggerConfig {
                         .version("1.0.0"))
                 .addSecurityItem(securityRequirement)
                 .components(components);
+    }
+    //특정 패키지(예: 내 컨트롤러가 있는 곳)만 보여주도록 제한합니다.
+    @Bean
+    public GroupedOpenApi publicApi() {
+        return GroupedOpenApi.builder()
+                .group("project-api")
+                .pathsToMatch("/api/**") // 내가 만든 API 경로 패턴
+                .packagesToScan("com.project.domain") // 내 컨트롤러 패키지 경로
+                .build();
     }
     
     @PostConstruct
