@@ -36,6 +36,9 @@ public class AuthService {
     private final UserRepository userRepository;
     private final EntityManager em;
 
+    /**
+     * [토큰 재발급 로직]
+     */
     @Transactional
     public TokenDto reissue(String oldRefreshToken) {
         if (!tokenProvider.validateToken(oldRefreshToken)) {
@@ -70,6 +73,12 @@ public class AuthService {
         return new TokenDto(newAccessToken, newRefreshToken);
     }
 
+    /**
+     * [로그인 로직]
+	  - 소셜 로그인과 일반 로그인 모두 처리
+	   - provider가 "LOCAL"이면 email과 password로 인증
+	   - provider가 "GOOGLE", "KAKAO" 등 소셜 로그인인 경우 providerId로 인증 (실제 구현에서는 DB에서 사용자 조회 후 providerId로 인증)
+     */
     @Transactional
 	public TokenDto login(LoginRequestDto loginRequest) {
 		//password 암호화 bcrypt로 암호화된 비밀번호와 비교해야 합니다.
@@ -99,6 +108,9 @@ public class AuthService {
 	    return new TokenDto(accessToken, refreshToken);
 	}
 	
+    /**
+     * [토큰 검증 로직]
+     */
 	@Transactional(readOnly = true)
     public void validateStoredToken(String email, String requestToken) {
         // 2. [조회 로직] DB에 저장된 토큰과 요청받은 토큰이 일치하는지 검증
@@ -110,12 +122,18 @@ public class AuthService {
         }
     }
 	
+	/**
+     * [로그아웃 로직]
+     */
 	@Transactional
 	public void logout(String email, String provider) {
         // DB에서 해당 유저의 리프레시 토큰을 삭제하여 재발급을 원천 차단
         refreshTokenRepository.deleteRefreshTokenById(email, provider);
     }
 	
+	/**
+     * [회원가입 로직]
+     */
 	@Transactional
 	public AuthUser regist(RegistUserRequestDto registUserRequest) {
 		// 중복 체크
@@ -143,6 +161,9 @@ public class AuthService {
 		return authUser;
 	}
 	
+	/**
+     * [회원 정보 조회 로직]
+     */
 	@Transactional(readOnly = true)
 	public AuthUser test2(String email) {
 		AuthUser user = userAuthDAO.findByEmail(email)
