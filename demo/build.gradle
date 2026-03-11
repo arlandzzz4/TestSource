@@ -96,6 +96,8 @@ dependencies {
 	//providedCompile 'javax.servlet:javax.servlet-api:4.0.1'
 	compileOnly 'javax.inject:javax.inject:1'
 	annotationProcessor 'javax.inject:javax.inject:1'
+	
+	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 }
 
 // 이클립스가 QClass 폴더를 소스 폴더로 인식하게 함
