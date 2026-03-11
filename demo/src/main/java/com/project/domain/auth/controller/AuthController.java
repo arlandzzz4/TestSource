@@ -19,7 +19,7 @@ import com.project.domain.auth.dto.LoginRequestDto;
 import com.project.domain.auth.dto.RegistUserRequestDto;
 import com.project.domain.auth.dto.TokenDto;
 import com.project.domain.auth.dto.UserResponseDto;
-import com.project.domain.auth.entity.Users;
+import com.project.domain.auth.entity.AuthUser;
 import com.project.domain.auth.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,7 +42,7 @@ public class AuthController {
     
     @GetMapping("/test2")
     public ResponseEntity<UserResponseDto> test2(@RequestParam(value = "email", defaultValue = "test@example.com") String email) {
-    	Users savedUser = authService.test2(email);
+    	AuthUser savedUser = authService.test2(email);
     	
     	// 엔티티 -> DTO 변환 (비밀번호 제외)
     	UserResponseDto response = UserResponseDto.from(savedUser);
@@ -57,7 +57,7 @@ public class AuthController {
     })
     @PostMapping("/regist")
     public ResponseEntity<UserResponseDto> regist(@RequestBody RegistUserRequestDto registUserRequest) {
-    	Users savedUser = authService.regist(registUserRequest);
+    	AuthUser savedUser = authService.regist(registUserRequest);
     	
     	// 엔티티 -> DTO 변환 (비밀번호 제외)
     	UserResponseDto response = UserResponseDto.from(savedUser);
@@ -129,11 +129,11 @@ public class AuthController {
     })
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(
-            @RequestBody Users users, 
+            @RequestBody AuthUser authUser, 
             HttpServletResponse response) {
         
         // 1. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
-        authService.logout("local".equalsIgnoreCase(users.getProvider()) ? users.getEmail() : users.getProviderId(), users.getProvider());
+        authService.logout("local".equalsIgnoreCase(authUser.getProvider()) ? authUser.getEmail() : authUser.getProviderId(), authUser.getProvider());
 
         // 2. 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")

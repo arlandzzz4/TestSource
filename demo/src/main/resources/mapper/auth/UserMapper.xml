@@ -3,7 +3,7 @@
 
 <mapper namespace="com.project.domain.auth.repository.mybatis.UserAuthDAO">
 
-    <select id="findByEmail" parameterType="java.lang.String" resultType="com.project.domain.auth.entity.Users">
+    <select id="findByEmail" parameterType="java.lang.String" resultType="com.project.domain.auth.entity.AuthUser">
         SELECT 
             id, 
             email, 

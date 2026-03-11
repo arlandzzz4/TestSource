@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: dev
   application:
     name: demo
   datasource:
@@ -60,4 +60,8 @@ jwt:
   secret: vms6029384920384920384920384920384920384920384920384920384920384 # 256비트 이상의 충분히 긴 임의의 문자열을 입력하세요.  
   access-token-expiration: 1800000 # 액세스 토큰 만료 시간 (예: 30분 = 1800000 ms)  
   refresh-token-expiration: 604800000 # 리프레시 토큰 만료 시간 (예: 7일 = 604800000 ms)
-
+jackson:
+  date-format: yyyy-MM-dd HH:mm:ss
+  # 날짜를 배열 형태([2026,3,11,...])가 아닌 문자열로 출력하게 함
+  serialization:
+    write-dates-as-timestamps: false

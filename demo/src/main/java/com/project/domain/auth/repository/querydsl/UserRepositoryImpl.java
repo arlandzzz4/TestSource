@@ -1,7 +1,7 @@
 package com.project.domain.auth.repository.querydsl;
 
-import com.project.domain.auth.entity.QUsers;
-import com.project.domain.auth.entity.Users;
+import com.project.domain.auth.entity.AuthUser;
+import com.project.domain.auth.entity.QAuthUser;
 import com.project.domain.auth.repository.jpa.UserRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -16,12 +16,12 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
     @Override
 	public boolean existsByEmail(String email) {
-		QUsers user = QUsers.users;
+		QAuthUser user = QAuthUser.authUser;
 
-        Users result = queryFactory
+        AuthUser result = queryFactory
                 .selectFrom(user)
                 .where(
-                	QUsers.users.email.eq(email)
+                	QAuthUser.authUser.email.eq(email)
                 )
                 .fetchOne();
         
@@ -34,12 +34,12 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
 	@Override
 	public boolean existsByProviderId(String providerId) {
-		QUsers user = QUsers.users;
+		QAuthUser user = QAuthUser.authUser;
 
-        Users result = queryFactory
+		AuthUser result = queryFactory
                 .selectFrom(user)
                 .where(
-                	QUsers.users.providerId.eq(providerId)
+                	QAuthUser.authUser.providerId.eq(providerId)
                 )
                 .fetchOne();
         

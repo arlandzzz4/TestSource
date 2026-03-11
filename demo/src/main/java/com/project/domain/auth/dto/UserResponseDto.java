@@ -1,6 +1,8 @@
 package com.project.domain.auth.dto;
 
-import com.project.domain.auth.entity.Users;
+import java.time.LocalDateTime;
+
+import com.project.domain.auth.entity.AuthUser;
 
 import lombok.Builder;
 
@@ -16,16 +18,16 @@ public record UserResponseDto(
     
     String providerId,
     
-    String createdAt
+    LocalDateTime createdAt
 ) {
 	//엔티티를 DTO로 변환하는 정적 팩토리 메서드
-    public static UserResponseDto from(Users user) {
+    public static UserResponseDto from(AuthUser authUser) {
         return UserResponseDto.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .provider(user.getProvider())
-                .createdAt(user.getCreatedAt())
+                .id(authUser.getId())
+                .email(authUser.getEmail())
+                .nickname(authUser.getNickname())
+                .provider(authUser.getProvider())
+                .createdAt(authUser.getCreatedAt())
                 .build();
     }
 }

@@ -12,8 +12,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.project.domain.auth.dto.LoginRequestDto;
 import com.project.domain.auth.dto.RegistUserRequestDto;
 import com.project.domain.auth.dto.TokenDto;
+import com.project.domain.auth.entity.AuthUser;
 import com.project.domain.auth.entity.RefreshToken;
-import com.project.domain.auth.entity.Users;
 import com.project.domain.auth.repository.mybatis.UserAuthDAO;
 import com.project.domain.auth.repository.querydsl.RefreshTokenRepository;
 import com.project.domain.auth.repository.querydsl.UserRepository;
@@ -117,7 +117,7 @@ public class AuthService {
     }
 	
 	@Transactional
-	public Users regist(RegistUserRequestDto registUserRequest) {
+	public AuthUser regist(RegistUserRequestDto registUserRequest) {
 		// 중복 체크
 		if("LOCAL".equalsIgnoreCase(registUserRequest.provider())) {
 	        if (!userRepository.existsByEmail(registUserRequest.email())) {
@@ -132,20 +132,20 @@ public class AuthService {
 		String encodedPassword = passwordEncoder.encode(registUserRequest.password());
 		
 		//엔티티 생성
-		Users users = Users.builder()
+		AuthUser authUser = AuthUser.builder()
 				.email(registUserRequest.email())
 				.password(encodedPassword)
 				.provider(registUserRequest.provider())
 				.build();
 		//등록
-		users = userRepository.save(users);
+		authUser = userRepository.save(authUser);
 		//리턴
-		return users;
+		return authUser;
 	}
 	
 	@Transactional(readOnly = true)
-	public Users test2(String email) {
-		Users user = userAuthDAO.findByEmail(email)
+	public AuthUser test2(String email) {
+		AuthUser user = userAuthDAO.findByEmail(email)
 	            .orElseThrow(() -> new NeedRegistrationException("회원이 아닙니다."));
 		return user;
 	}
