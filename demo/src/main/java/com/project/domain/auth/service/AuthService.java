@@ -20,6 +20,7 @@ import com.project.domain.auth.repository.querydsl.UserRepository;
 import com.project.global.error.NeedRegistrationException;
 import com.project.global.security.JwtTokenProvider;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +34,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserAuthDAO userAuthDAO; // MyBatis 매퍼 주입
     private final UserRepository userRepository;
+    private final EntityManager em;
 
     @Transactional
     public TokenDto reissue(String oldRefreshToken) {
@@ -141,6 +143,7 @@ public class AuthService {
 		return users;
 	}
 	
+	@Transactional(readOnly = true)
 	public Users test2(String email) {
 		Users user = userAuthDAO.findByEmail(email)
 	            .orElseThrow(() -> new NeedRegistrationException("회원이 아닙니다."));

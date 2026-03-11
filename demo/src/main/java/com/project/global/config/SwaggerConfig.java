@@ -1,5 +1,6 @@
 package com.project.global.config;
 
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import jakarta.annotation.PostConstruct;
 
 
 @Configuration
@@ -33,4 +35,13 @@ public class SwaggerConfig {
                 .addSecurityItem(securityRequirement)
                 .components(components);
     }
+    
+    @PostConstruct
+    public void init() {
+        // 클래스 로딩 시점에 딱 한 번만 실행되도록 설정
+        SpringDocUtils.getConfig()
+            .replaceWithClass(org.springframework.data.domain.Pageable.class, Void.class)
+            .replaceWithClass(org.springframework.data.domain.Sort.class, Void.class);
+    }
+    
 }

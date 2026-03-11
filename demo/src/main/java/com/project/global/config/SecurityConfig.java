@@ -58,7 +58,8 @@ public class SecurityConfig {
                 
                 // TODO: 인증이 필요한 API와 익명 사용자만 접근 가능한 API를 명확히 구분하여 설정
                 // 로그인, 회원가입은 '익명 사용자'만 접근 가능하게 설정
-                .requestMatchers("/api/auth/login", "/api/auth/regist").anonymous()
+                //.requestMatchers("/api/auth/login", "/api/auth/regist").anonymous()
+                .requestMatchers("/api/auth/login", "/api/auth/regist").permitAll()
                 // 그 외 /api/auth/** 하위의 다른 기능(로그아웃 등)은 누구나 가능하게 두거나
                 // 필요에 따라 아래처럼 분리할 수 있습니다.
                 .requestMatchers("/api/auth/logout", "/api/auth/reissue").authenticated()
