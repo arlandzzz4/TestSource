@@ -68,7 +68,7 @@ public class UserController {
         @ApiResponse(responseCode = "200", description = "리프레시 성공"),
         @ApiResponse(responseCode = "400", description = "잘못된 요청 (유저 정보 누락 등)")
     })
-    @PostMapping("/Unsubscribe")
+    @PostMapping("/unsubscribe")
     public ResponseEntity<Map<String, String>> unsubscribe(
             @RequestBody User user, 
             HttpServletResponse response) {
