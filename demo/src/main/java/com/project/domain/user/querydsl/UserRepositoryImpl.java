@@ -1,8 +1,8 @@
-package com.project.domain.auth.repository.querydsl;
+package com.project.domain.user.querydsl;
 
-import com.project.domain.auth.entity.AuthUser;
-import com.project.domain.auth.entity.QAuthUser;
-import com.project.domain.auth.repository.jpa.UserRepositoryCustom;
+import com.project.domain.user.entity.QUser;
+import com.project.domain.user.entity.User;
+import com.project.domain.user.repository.jpa.UserRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -16,12 +16,12 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
     @Override
 	public boolean existsByEmail(String email) {
-		QAuthUser user = QAuthUser.authUser;
+		QUser user = QUser.user;
 
-        AuthUser result = queryFactory
+        User result = queryFactory
                 .selectFrom(user)
                 .where(
-                	QAuthUser.authUser.email.eq(email)
+                	QUser.user.email.eq(email)
                 )
                 .fetchOne();
         
@@ -34,12 +34,12 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
 	@Override
 	public boolean existsByProviderId(String providerId) {
-		QAuthUser user = QAuthUser.authUser;
+		QUser user = QUser.user;
 
-		AuthUser result = queryFactory
+		User result = queryFactory
                 .selectFrom(user)
                 .where(
-                	QAuthUser.authUser.providerId.eq(providerId)
+                	QUser.user.providerId.eq(providerId)
                 )
                 .fetchOne();
         

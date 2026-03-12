@@ -1,4 +1,4 @@
-package com.project.domain.auth.repository.jpa;
+package com.project.domain.user.repository.jpa;
 
 import org.springframework.stereotype.Repository;
 

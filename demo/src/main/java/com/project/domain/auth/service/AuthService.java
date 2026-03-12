@@ -1,23 +1,17 @@
 package com.project.domain.auth.service;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.project.domain.auth.dto.LoginRequestDto;
-import com.project.domain.auth.dto.RegistUserRequestDto;
 import com.project.domain.auth.dto.TokenDto;
-import com.project.domain.auth.entity.AuthUser;
 import com.project.domain.auth.entity.RefreshToken;
-import com.project.domain.auth.repository.mybatis.UserAuthDAO;
 import com.project.domain.auth.repository.querydsl.RefreshTokenRepository;
-import com.project.domain.auth.repository.querydsl.UserRepository;
+import com.project.domain.user.querydsl.UserRepository;
 import com.project.global.error.NeedRegistrationException;
 import com.project.global.security.JwtTokenProvider;
 
@@ -33,7 +27,6 @@ public class AuthService {
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserAuthDAO userAuthDAO; // MyBatis 매퍼 주입
     private final UserRepository userRepository;
     private final EntityManager em;
 
@@ -129,43 +122,4 @@ public class AuthService {
         refreshTokenRepository.deleteRefreshTokenById(email, provider);
     }
 	
-	/**
-     * [회원가입 로직]
-     */
-	@Transactional
-	public AuthUser regist(RegistUserRequestDto registUserRequest) {
-		// 중복 체크
-		if("LOCAL".equalsIgnoreCase(registUserRequest.provider())) {
-	        if (!userRepository.existsByEmail(registUserRequest.email())) {
-	        	throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
-	        }
-		} else {
-			if (!userRepository.existsByProviderId(registUserRequest.providerId())) {
-				throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 소셜 계정입니다.");
-	        }
-		}
-		//패스워드 암호화
-		String encodedPassword = passwordEncoder.encode(registUserRequest.password());
-		
-		//엔티티 생성
-		AuthUser authUser = AuthUser.builder()
-				.email(registUserRequest.email())
-				.password(encodedPassword)
-				.provider(registUserRequest.provider())
-				.build();
-		//등록
-		authUser = userRepository.save(authUser);
-		//리턴
-		return authUser;
-	}
-	
-	/**
-     * [회원 정보 조회 로직]
-     */
-	@Transactional(readOnly = true)
-	public AuthUser test2(String email) {
-		AuthUser user = userAuthDAO.findByEmail(email)
-	            .orElseThrow(() -> new NeedRegistrationException("회원이 아닙니다."));
-		return user;
-	}
 }

@@ -8,19 +8,15 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.domain.auth.dto.LoginRequestDto;
-import com.project.domain.auth.dto.RegistUserRequestDto;
 import com.project.domain.auth.dto.TokenDto;
-import com.project.domain.auth.dto.UserResponseDto;
-import com.project.domain.auth.entity.AuthUser;
 import com.project.domain.auth.service.AuthService;
+import com.project.domain.user.entity.User;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,31 +36,6 @@ public class AuthController {
 
     private final AuthService authService;
     
-    @GetMapping("/test2")
-    public ResponseEntity<UserResponseDto> test2(@RequestParam(value = "email", defaultValue = "test@example.com") String email) {
-    	AuthUser savedUser = authService.test2(email);
-    	
-    	// 엔티티 -> DTO 변환 (비밀번호 제외)
-    	UserResponseDto response = UserResponseDto.from(savedUser);
-        
-        return ResponseEntity.ok(response); 
-	}
-    
-    @Operation(summary = "회원가입", description = "새로운 유저를 등록하고 정보를 반환합니다. id가 생성되면 정상.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "회원가입 성공"),
-        @ApiResponse(responseCode = "409", description = "이미 사용 중인 이메일입니다./이미 사용 중인 소셜 계정입니다.")
-    })
-    @PostMapping("/regist")
-    public ResponseEntity<UserResponseDto> regist(@RequestBody RegistUserRequestDto registUserRequest) {
-    	AuthUser savedUser = authService.regist(registUserRequest);
-    	
-    	// 엔티티 -> DTO 변환 (비밀번호 제외)
-    	UserResponseDto response = UserResponseDto.from(savedUser);
-        
-        return ResponseEntity.ok(response);
-	}
-
     @Operation(summary = "로그인", description = "유저 로그인 후 Access Token과 Refresh Token을 발급합니다. Refresh Token은 HttpOnly 쿠키로 저장됩니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "로그인 성공"),
@@ -129,11 +100,11 @@ public class AuthController {
     })
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(
-            @RequestBody AuthUser authUser, 
+            @RequestBody User user, 
             HttpServletResponse response) {
         
         // 1. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
-        authService.logout("local".equalsIgnoreCase(authUser.getProvider()) ? authUser.getEmail() : authUser.getProviderId(), authUser.getProvider());
+        authService.logout("local".equalsIgnoreCase(user.getProvider()) ? user.getEmail() : user.getProviderId(), user.getProvider());
 
         // 2. 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
@@ -152,4 +123,5 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(body);
     }
+    
 }

@@ -1,9 +1,9 @@
-package com.project.domain.auth.dto;
+package com.project.domain.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record RegistUserRequestDto(
+public record UserRequestDto(
     @Email(message = "이메일 형식에 맞지 않습니다.")
     String email,
 

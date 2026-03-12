@@ -1,4 +1,4 @@
-package com.project.domain.auth.entity;
+package com.project.domain.user.entity;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
-public class AuthUser {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +50,7 @@ public class AuthUser {
     private LocalDateTime updatedAt;
     
     @Builder
-    public AuthUser(String email, String password, String nickname, String provider, String providerId) {
+    public User(String email, String password, String nickname, String provider, String providerId) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
