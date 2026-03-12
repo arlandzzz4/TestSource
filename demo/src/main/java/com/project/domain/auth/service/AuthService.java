@@ -45,10 +45,10 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("로그아웃된 사용자입니다."));
 
         // [토큰 재사용 탐지 및 Race Condition 방어]
-        if (oldRefreshToken != null && !oldRefreshToken.equals(savedToken.getToken())) {
+        if (oldRefreshToken != null && !oldRefreshToken.equals(savedToken.getRefreshToken())) {
             // 2초 이내 중복 요청 처리 (클라이언트 사이드 중복 클릭 등)
-            if (savedToken.getRotatedAt().isAfter(LocalDateTime.now().minusSeconds(2))) {
-                return new TokenDto(tokenProvider.createAccessToken(username), savedToken.getToken());
+            if (savedToken.getTokenRotatedAt().isAfter(LocalDateTime.now().minusSeconds(2))) {
+                return new TokenDto(tokenProvider.createAccessToken(username), savedToken.getRefreshToken());
             }
 
             // 보안 위협: 이미 사용된 토큰이 다시 들어옴
@@ -74,7 +74,7 @@ public class AuthService {
     @Transactional
 	public TokenDto login(LoginRequestDto loginRequest) {
     	// 1. 식별자 결정 (LOCAL인 경우 이메일, 그 외에는 소셜 ID 등)
-    	String identifier = "LOCAL".equalsIgnoreCase(loginRequest.provider()) 
+    	String identifier = "local".equalsIgnoreCase(loginRequest.provider()) 
     	                    ? loginRequest.email() 
     	                    : loginRequest.providerId();
 
@@ -106,7 +106,7 @@ public class AuthService {
         RefreshToken savedToken = refreshTokenRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("로그인 정보가 없습니다."));
 
-        if (!savedToken.getToken().equals(requestToken)) {
+        if (!savedToken.getRefreshToken().equals(requestToken)) {
             throw new RuntimeException("토큰 정보가 일치하지 않습니다. 다시 로그인해주세요.");
         }
     }

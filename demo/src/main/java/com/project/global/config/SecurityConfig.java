@@ -58,12 +58,14 @@ public class SecurityConfig {
                 
                 // TODO: 인증이 필요한 API와 익명 사용자만 접근 가능한 API를 명확히 구분하여 설정
                 // 로그인, 회원가입은 '익명 사용자'만 접근 가능하게 설정
-                .requestMatchers("/api/auth/login", "/api/auth/regist").anonymous()
+                //.requestMatchers("/api/auth/login", "/api/auth/regist").anonymous()
+                .requestMatchers("/api/auth/login", "/api/auth/regist").permitAll()
                 // 그 외 /api/auth/** 하위의 다른 기능(로그아웃 등)은 누구나 가능하게 두거나
                 // 필요에 따라 아래처럼 분리할 수 있습니다.
                 .requestMatchers("/api/auth/logout", "/api/auth/reissue").authenticated()
                 //.requestMatchers("/api/auth/**").permitAll() 
                 
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // 관리자 API (권한 필요)
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // 그 외 모든 요청은 인증 필요 (4주 프로젝트 보안상 권장)
@@ -71,13 +73,14 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
             // 4. 불필요한 기본 로그인창 비활성화
-            .formLogin(form -> form
-                // 1. 사용자 정의 로그인 페이지 경로 설정 (기본값은 /login)
-                .loginPage("/api/auth/login")
-                // 2. 로그인 성공 시 이동할 기본 경로
-                .defaultSuccessUrl("/home", true)
-                .permitAll()
-            )
+//            .formLogin(form -> form
+//                // 1. 사용자 정의 로그인 페이지 경로 설정 (기본값은 /login)
+//                .loginPage("/api/auth/login")
+//                // 2. 로그인 성공 시 이동할 기본 경로
+//                .defaultSuccessUrl("/home", true)
+//                .permitAll()
+//            )
+            .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             
             // 5. 필터 순서
@@ -109,7 +112,7 @@ public class SecurityConfig {
 
         // 1. 허용할 프론트엔드 도메인 (Vite 기본값: 5173)
         // [주의] allowCredentials(true)일 때는 와일드카드(*)를 사용할 수 없습니다.
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
 
         // 2. 허용할 HTTP 메서드
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

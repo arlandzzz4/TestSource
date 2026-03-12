@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.domain.auth.dto.LoginRequestDto;
+import com.project.domain.auth.dto.LoginResponseDto;
 import com.project.domain.auth.dto.TokenDto;
 import com.project.domain.auth.service.AuthService;
 import com.project.domain.user.entity.User;
+import com.project.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
     
     @Operation(summary = "로그인", description = "유저 로그인 후 Access Token과 Refresh Token을 발급합니다. Refresh Token은 HttpOnly 쿠키로 저장됩니다.")
     @ApiResponses(value = {
@@ -42,12 +45,12 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청 (이메일/비밀번호 불일치 등)")
     })
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginRequestDto loginRequest, HttpServletResponse response) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest, HttpServletResponse response) {
         // 1. 서비스에서 토큰 발급 (성공 시 TokenDto 반환)
         TokenDto tokenDto = authService.login(loginRequest);
         
         //TODO 로그인 정보 외 필요한 정보 필요시
-        
+        User user = userService.searchUserByEmail(loginRequest.email());
 
         // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
         ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenDto.refreshToken())
@@ -61,8 +64,9 @@ public class AuthController {
         // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(TokenDto.builder()
-                        .accessToken(tokenDto.refreshToken()) // 쿠키 차단 대비용 (보조)
+                .body(LoginResponseDto.builder()
+                        .accessToken(tokenDto.accessToken()) // ★ 수정: refreshToken 넣지 않도록 주의
+                        .user(user)
                         .build());
     }
     

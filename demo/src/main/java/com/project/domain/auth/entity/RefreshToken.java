@@ -26,14 +26,14 @@ public class RefreshToken {
     @Column(nullable = true)
     private String email;
     
-    @Column(nullable = true)
-    private String token;
+    @Column(nullable = true,name = "refresh_token")
+    private String refreshToken;
     
     @Column(nullable = true)
     private String password;
     
-    @Column(nullable = true, name = "rotated_at")
-    private LocalDateTime rotatedAt;
+    @Column(name = "token_rotated_at")
+    private LocalDateTime tokenRotatedAt;
     
     @Column(nullable = true)
     private String provider = "local";
@@ -43,15 +43,15 @@ public class RefreshToken {
 
     // 토큰 값 업데이트 (로그인 시마다 갱신)
     public void updateToken(String newToken) {
-        this.token = newToken;
-        this.rotatedAt = LocalDateTime.now();
+        this.refreshToken = newToken;
+        this.tokenRotatedAt = LocalDateTime.now();
     }
     
     @Builder
     public RefreshToken(String email, String token, String password) {
         this.email = email;
         this.password = password;
-        this.token = token;
-        this.rotatedAt = LocalDateTime.now();
+        this.refreshToken = token;
+        this.tokenRotatedAt = LocalDateTime.now();
     }
 }
