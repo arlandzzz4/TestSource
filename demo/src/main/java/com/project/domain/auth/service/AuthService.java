@@ -11,7 +11,6 @@ import com.project.domain.auth.dto.LoginRequestDto;
 import com.project.domain.auth.dto.TokenDto;
 import com.project.domain.auth.entity.RefreshToken;
 import com.project.domain.auth.repository.querydsl.RefreshTokenRepository;
-import com.project.domain.user.querydsl.UserRepository;
 import com.project.global.error.NeedRegistrationException;
 import com.project.global.security.JwtTokenProvider;
 
@@ -27,7 +26,6 @@ public class AuthService {
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
     private final EntityManager em;
 
     /**
