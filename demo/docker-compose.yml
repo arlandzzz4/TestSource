@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      - MYSQL_DATABASE=sisa
+      - MYSQL_USER=sisa
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD_RAW}
+      - MYSQL_PASSWORD=${DB_PASSWORD_RAW}
+    ports:
+      - "3307:3306" # 호스트의 3307 포트를 컨테이너의 3306 포트로 매핑
+    volumes:
+      - ./mysql_data:/var/lib/mysql # 내 컴퓨터의 mysql_data 폴더와 도커 DB 폴더를 연결
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # 이 폴더에 넣으면 첫 실행 시 자동 실행됨
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+      interval: 10s
+
+  backend:
+    build: .
+    container_name: spring-backend
+    restart: on-failure # 컨테이너가 실패할 때 자동으로 재시작하도록 설정
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      # 컨테이너로 띄우면 application-dev.yaml이 적용되도록 프로필 설정
+      - SPRING_PROFILES_ACTIVE=dev
+      # .env에서 가져온 정보들을 스프링 환경 변수로 주입
+      - SPRING_DATASOURCE_URL=${DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      # 스프링은 ENC() 형태의 암호문을 받음
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD_ENC}
+      # Jasypt 암호를 풀기 위한 마스터 키 전달
+      - JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_KEY}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true

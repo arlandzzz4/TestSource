@@ -120,3 +120,6 @@ war {
     archiveFileName = 'demo.war'
 }
 
+war {
+    enabled = false // 일반 war 생성을 비활성화하고 bootWar만 생성하게 함
+}

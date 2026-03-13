@@ -1,12 +1,12 @@
 spring:
   config:
     activate:
-      on-profile: dev
+      on-profile: local
   datasource:
-    url: jdbc:mysql://localhost:3306/sisa?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: ${SPRING_DATASOURCE_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: sisadb
-    password: ENC(NoLInuIXCZTlwYPVtu+2vA==)
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate: 
@@ -31,3 +31,7 @@ logging:
     org.hibernate.SQL: info
     org.apache.coyote: info
     org.apache.tomcat: info
+jasypt:
+  encryptor:
+    # 마스터 키도 도커에서 넘겨준 환경 변수를 사용합니다.
+    password: ${JASYPT_ENCRYPTOR_PASSWORD}

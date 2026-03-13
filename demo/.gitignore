@@ -4,6 +4,10 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+*.dblwr
+*.sdi
+*.ibt
+**/mysql_data/**
 
 ### STS ###
 .apt_generated
@@ -13,6 +17,8 @@ build/
 .settings
 .springBeans
 .sts4-cache
+.env
 bin/
+
 !**/src/main/**/bin/
 !**/src/test/**/bin/
