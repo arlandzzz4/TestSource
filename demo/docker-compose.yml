@@ -21,7 +21,9 @@ services:
       interval: 10s
 
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: spring-backend
     restart: on-failure # 컨테이너가 실패할 때 자동으로 재시작하도록 설정
     ports:
@@ -30,10 +32,10 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - .env
+      - .env.local # .env.local 파일에서 환경 변수 로드
     environment:
       # 컨테이너로 띄우면 application-dev.yaml이 적용되도록 프로필 설정
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       # .env에서 가져온 정보들을 스프링 환경 변수로 주입
       - SPRING_DATASOURCE_URL=${DB_URL}
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
@@ -43,3 +45,13 @@ services:
       - JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_KEY}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=true
+  frontend:
+    build:
+      context: ${FRONTEND_PATH} # 리액트 폴더 경로 ../app-test
+      dockerfile: Dockerfile     # 리액트용 Dockerfile인지 확인!
+    container_name: react-frontend
+    ports:
+      - "80:80"  # 외부에서 80포트로 접속
+    depends_on:
+      - backend
+    restart: always
