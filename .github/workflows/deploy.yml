@@ -22,18 +22,18 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build -x test -p ./demo
+          ./gradlew clean build -x test -p ./
 
       # 3. 도커 로그인
       - name: Docker Login
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # 4. 이미지 빌드 및 푸시 (경로를 ./demo로 지정)
+      # 4. 이미지 빌드 및 푸시 (경로를 ./로 지정)
       - name: Docker Build & Push
         run: |
-          # -f로 Dockerfile 위치를 찍고, 마지막에 컨텍스트 경로를 ./demo로 지정합니다.
-          docker build -f ./Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/spring-backend:latest ./demo
+          # -f로 Dockerfile 위치를 찍고, 마지막에 컨텍스트 경로를 ./로 지정합니다.
+          docker build -f ./Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/spring-backend:latest ./
           docker push ${{ secrets.DOCKER_USERNAME }}/spring-backend:latest
 
       # 5. EC2 접속 및 배포 실행
