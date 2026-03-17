@@ -8,7 +8,6 @@ build/
 *.sdi
 *.ibt
 /mysql_data/**
-/app-test/**
 
 ### STS ###
 .apt_generated
