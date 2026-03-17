@@ -2,22 +2,41 @@ name: Backend Deploy to EC2
 
 on:
   push:
-    branches: [ main ] # main 브랜치에 푸시될 때 실행
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: spring-backend
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4 # v4로 업데이트 권장
 
-      # 1. 도커 로그인 및 이미지 빌드/푸시
-      - name: Docker Login & Build & Push
+      # 1. Java 세팅 (컴파일을 위해 필요)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 2. Gradle 빌드 (demo 폴더 내부에서 실행)
+      - name: Build with Gradle
+        run: |
+          chmod +x ./demo/gradlew
+          ./demo/gradlew clean build -x test -p ./demo
+
+      # 3. 도커 로그인
+      - name: Docker Login
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/spring-backend:latest .
+
+      # 4. 이미지 빌드 및 푸시 (경로를 ./demo로 지정)
+      - name: Docker Build & Push
+        run: |
+          # -f로 Dockerfile 위치를 찍고, 마지막에 컨텍스트 경로를 ./demo로 지정합니다.
+          docker build -f ./demo/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/spring-backend:latest ./demo
           docker push ${{ secrets.DOCKER_USERNAME }}/spring-backend:latest
 
-      # 2. EC2 접속 및 배포 실행
+      # 5. EC2 접속 및 배포 실행
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -26,8 +45,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/app
-            # GitHub Secrets에 저장된 .env 내용을 파일로 쓰기
             echo "${{ secrets.ENV_PRODUCTION }}" > .env.prod
             docker compose pull backend
             docker compose up -d backend
-            docker image prune -f # 오래된 이미지 정리
+            docker image prune -f
