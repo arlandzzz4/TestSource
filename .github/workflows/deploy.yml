@@ -45,7 +45,17 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/app
+            # 1. 환경 변수 파일 생성 (멀티라인 대응을 위해 따옴표 권장)
             echo "${{ secrets.ENV_PRODUCTION }}" > .env.prod
-            docker compose pull backend
-            docker compose up -d backend
-            docker image prune -f
+
+            # 2. 기존 서비스 중지 (수동 실행과의 충돌 방지)
+            sudo docker compose down backend
+
+            # 3. 최신 이미지 가져오기
+            sudo docker compose pull backend
+
+            # 4. 백그라운드 실행 (환경 변수 파일 적용 확인)
+            sudo docker compose up -d backend
+
+            # 5. 안 쓰는 이미지 정리 (디스크 용량 확보 - t3.small 유지에 중요)
+            sudo docker image prune -f
