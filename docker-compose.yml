@@ -32,10 +32,10 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - .env.local # .env.local 파일에서 환경 변수 로드
+      - .env.dev # .env.local 파일에서 환경 변수 로드
     environment:
       # 컨테이너로 띄우면 application-dev.yaml이 적용되도록 프로필 설정
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - SPRING_PROFILES_ACTIVE=dev
       # .env에서 가져온 정보들을 스프링 환경 변수로 주입
       - SPRING_DATASOURCE_URL=${DB_URL}
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
