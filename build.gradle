@@ -100,24 +100,12 @@ dependencies {
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 }
 
-// 이클립스가 QClass 폴더를 소스 폴더로 인식하게 함
-eclipse {
-    classpath {
-        file {
-            whenMerged {
-                // src/main/generated 폴더를 소스 폴더로 강제 인식시킴
-                entries.add(new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/main/generated', null))
-            }
-        }
-    }
-}
-
 tasks.named('test') {
 	useJUnitPlatform()
 }
 
 // 1. QClass 생성 경로 설정
-def querydslDir = "src/main/generated"
+def querydslDir = "$buildDir/generated/querydsl"
 
 // 2. Java 컴파일 시 생성된 소스 경로 지정
 tasks.withType(JavaCompile) {
@@ -132,6 +120,18 @@ sourceSets {
 // 4. clean 작업 시 생성된 QClass 삭제 (충돌 방지)
 clean {
     delete file(querydslDir)
+}
+
+// 이클립스가 QClass 폴더를 소스 폴더로 인식하게 함
+eclipse {
+    classpath {
+        file {
+            whenMerged {
+                // src/main/generated 폴더를 소스 폴더로 강제 인식시킴
+                entries.add(new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/main/generated', null))
+            }
+        }
+    }
 }
 
 war {
