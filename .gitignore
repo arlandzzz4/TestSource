@@ -9,6 +9,9 @@ build/
 *.ibt
 /mysql_data/**
 
+**/src/main/generated
+**/src/main/generated/**
+
 ### STS ###
 .apt_generated
 .classpath
