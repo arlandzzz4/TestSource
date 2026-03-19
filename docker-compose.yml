@@ -19,7 +19,10 @@ services:
       timeout: 5s
       retries: 10
       interval: 10s
-
+    command:
+      - --performance_schema=OFF
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
   backend:
     build:
       context: .
@@ -45,6 +48,7 @@ services:
       - JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_KEY}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=true
+      - JAVA_OPTS=-Xmx800m -Xms800m
   frontend:
     build:
       context: ${FRONTEND_PATH} # 리액트 폴더 경로 ../app-test
