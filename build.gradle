@@ -105,7 +105,7 @@ tasks.named('test') {
 }
 
 // 1. QClass 생성 경로 설정
-def querydslDir = "$buildDir/generated/querydsl"
+def querydslDir = "$projectDir/src/main/generated"
 
 // 2. Java 컴파일 시 생성된 소스 경로 지정
 tasks.withType(JavaCompile) {
