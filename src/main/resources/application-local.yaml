@@ -31,3 +31,6 @@ logging:
     org.hibernate.SQL: info
     org.apache.coyote: info
     org.apache.tomcat: info
+file:
+  upload-path: ${FILE_UPLOAD_PATH:C:/temp/uploads/} # 환경 변수가 없으면 C드라이브 사용
+  resource-path: /images/**

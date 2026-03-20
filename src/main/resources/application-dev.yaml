@@ -35,3 +35,6 @@ jasypt:
   encryptor:
     # 마스터 키도 도커에서 넘겨준 환경 변수를 사용합니다.
     password: ${JASYPT_ENCRYPTOR_PASSWORD}
+file:
+  upload-dir: /opt/data/uploads/
+  resource-path: /images/**
