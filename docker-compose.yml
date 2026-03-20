@@ -19,7 +19,10 @@ services:
       timeout: 5s
       retries: 10
       interval: 10s
-
+    command:
+      - --performance_schema=OFF
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
   backend:
     build:
       context: .
@@ -43,8 +46,12 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD_ENC}
       # Jasypt 암호를 풀기 위한 마스터 키 전달
       - JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_KEY}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=true
+      - JAVA_OPTS=-Xmx800m -Xms800m
   frontend:
     build:
       context: ${FRONTEND_PATH} # 리액트 폴더 경로 ../app-test

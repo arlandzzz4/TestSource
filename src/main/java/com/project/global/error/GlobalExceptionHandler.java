@@ -1,5 +1,7 @@
 package com.project.global.error;
 
+import java.io.IOException;
+
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +83,26 @@ public class GlobalExceptionHandler {
         
         // 2. 404 상태 코드와 함께 반환 (프론트엔드가 catch 문으로 빠지게 함)
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+    
+ // S3 업로드 중 발생한 IO 예외 처리
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorResponse> handleIOException(IOException e) {
+    	// 1. 에러 응답 객체 생성 (기존에 만드신 ErrorResponse 형식을 따름)
+        ErrorResponse errorResponse = ErrorResponse.of("FILE_ERROR", "파일 업로드 중 오류가 발생했습니다.");
+        
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errorResponse);
+    }
+
+    // 파일 용량 초과 등 스프링 기본 예외도 여기서 처리 가능
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxSizeException(MaxUploadSizeExceededException e) {
+    	// 1. 에러 응답 객체 생성 (기존에 만드신 ErrorResponse 형식을 따름)
+        ErrorResponse errorResponse = ErrorResponse.of("FILE_CAPACITY_ERROR", "파일 용량이 너무 큽니다. (최대 10MB)");
+        
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(errorResponse);
     }
     
 }

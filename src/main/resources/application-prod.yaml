@@ -35,3 +35,14 @@ jasypt:
   encryptor:
     # 마스터 키도 도커에서 넘겨준 환경 변수를 사용합니다.
     password: ${JASYPT_ENCRYPTOR_PASSWORD}
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_BUCKET_NAME}
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    stack:
+      auto: false # 프로젝트 시작 시 EC2 스택 체크 방지 (속도 향상)

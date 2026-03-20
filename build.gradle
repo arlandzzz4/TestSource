@@ -25,6 +25,8 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' } // 추가해 보세요
+    maven { url 'https://repo.spring.io/snapshot' }  // 추가해 보세요
 }
 
 dependencies {
@@ -98,6 +100,17 @@ dependencies {
 	annotationProcessor 'javax.inject:javax.inject:1'
 	
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+	
+	// Spring Cloud AWS: S3, EC2, RDS 등 AWS 서비스를 스프링답게 쓰게 해줍니다.
+    //implementation 'io.awspring.cloud:spring-cloud-starter-aws-s3:3.3.0'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+}
+
+// 상단에 이 설정이 추가되어야 합니다.
+dependencyManagement {
+    imports {
+        mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:3.0.0"
+    }
 }
 
 tasks.named('test') {
