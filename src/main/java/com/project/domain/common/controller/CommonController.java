@@ -32,7 +32,7 @@ public class CommonController {
 
     private final FileService fileService;
     
-    @Operation(summary = "파일업로드", description = "유저 로그인 후 Access Token과 Refresh Token을 발급합니다. Refresh Token은 HttpOnly 쿠키로 저장됩니다.")
+    @Operation(summary = "파일업로드", description = "하나의 파일을 업로드합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "로그인 성공"),
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
@@ -46,7 +46,7 @@ public class CommonController {
                 .body(filename);
     }
     
-    @Operation(summary = "파일업로드", description = "유저 로그인 후 Access Token과 Refresh Token을 발급합니다. Refresh Token은 HttpOnly 쿠키로 저장됩니다.")
+    @Operation(summary = "파일업로드", description = "다수의 파일을 업로드합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "로그인 성공"),
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
