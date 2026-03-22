@@ -21,6 +21,7 @@ import com.project.domain.user.entity.User;
 import com.project.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,10 +40,11 @@ public class AuthController {
     private final AuthService authService;
     private final UserService userService;
     
-    @Operation(summary = "로그인", description = "유저 로그인 후 Access Token과 Refresh Token을 발급합니다. Refresh Token은 HttpOnly 쿠키로 저장됩니다.")
+    @Operation(summary = "로그인", description = "이메일과 비밀번호로 인증하며, 성공 시 Access Token과 HttpOnly Refresh Cookie를 발급합니다.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "로그인 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청 (이메일/비밀번호 불일치 등)")
+        @ApiResponse(responseCode = "200", description = "로그인 성공 (Body: AccessToken, Header: Set-Cookie 포함)"),
+        @ApiResponse(responseCode = "401", description = "인증 실패 (이메일 또는 비밀번호 불일치)"), // 400보다는 401이 적절
+        @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest, HttpServletResponse response) {
@@ -70,15 +72,17 @@ public class AuthController {
                         .build());
     }
     
-    @Operation(summary = "리프레시", description = "유저 로그인 상태 유지 위해 Access Token 재발급. Refresh Token은 쿠키 또는 Authorization 헤더에서 가져옵니다.")
+    @Operation(summary = "토큰 재발급", description = "만료된 Access Token을 교체하기 위해 사용합니다. Cookie에 담긴 Refresh Token을 자동으로 검증합니다.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "리프레시 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청 (Refresh Token 누락 등)")
+        @ApiResponse(responseCode = "200", description = "재발급 성공 (새로운 Access Token 발급)"),
+        @ApiResponse(responseCode = "401", description = "유효하지 않거나 만료된 Refresh Token"),
+        @ApiResponse(responseCode = "400", description = "쿠키에 Refresh Token이 존재하지 않음")
     })
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissue(
-    		@CookieValue(name = "refreshToken", required = false) String cookieRefreshToken,
-            HttpServletRequest request) {
+        @Parameter(hidden = true) // Swagger UI에서 수동 입력을 막고 쿠키 전송임을 명시
+        @CookieValue(name = "refreshToken", required = false) String cookieRefreshToken,
+        HttpServletRequest request) {
     	// 1. 쿠키에 없으면 헤더(Authorization)에서 가져오기 시도
         String refreshToken = cookieRefreshToken;
         if (refreshToken == null || refreshToken.isBlank()) {
@@ -97,15 +101,16 @@ public class AuthController {
         return ResponseEntity.ok(tokenDto);
     }
     
-    @Operation(summary = "로그아웃", description = "유저 로그아웃 처리. DB에서 Refresh Token 무효화 및 클라이언트 쿠키 삭제를 수행합니다.")
+    @Operation(summary = "로그아웃", description = "서버 측의 Refresh Token을 무효화하고, 브라우저의 전용 쿠키를 만료(삭제) 처리합니다.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "리프레시 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청 (유저 정보 누락 등)")
+        @ApiResponse(responseCode = "200", description = "로그아웃 성공 (클라이언트 쿠키 삭제됨)"),
+        @ApiResponse(responseCode = "401", description = "이미 만료된 세션이거나 잘못된 요청")
     })
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(
-            @RequestBody User user, 
-            HttpServletResponse response) {
+        @Parameter(description = "로그아웃할 유저 정보", required = true) 
+        @RequestBody User user, 
+        HttpServletResponse response) {
         
         // 1. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
         authService.logout("local".equalsIgnoreCase(user.getProvider()) ? user.getEmail() : user.getProviderId(), user.getProvider());
