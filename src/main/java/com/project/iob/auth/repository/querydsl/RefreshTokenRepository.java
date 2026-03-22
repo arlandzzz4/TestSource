@@ -1,0 +1,12 @@
+package com.project.iob.auth.repository.querydsl;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.project.iob.auth.entity.RefreshToken;
+import com.project.iob.auth.repository.jpa.RefreshTokenRepositoryCustom;
+
+@Repository
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long>, RefreshTokenRepositoryCustom {
+    // 기존 메서드들은 삭제해도 Custom 인터페이스를 통해 동작합니다.
+}

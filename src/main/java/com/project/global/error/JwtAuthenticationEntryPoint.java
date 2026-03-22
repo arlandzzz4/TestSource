@@ -6,7 +6,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.domain.auth.controller.AuthController;
+import com.project.iob.auth.controller.AuthController;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
