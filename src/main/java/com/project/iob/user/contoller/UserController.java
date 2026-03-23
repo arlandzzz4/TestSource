@@ -6,7 +6,9 @@ import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.iob.auth.service.AuthService;
+import com.project.iob.user.dto.FcmTokenRequest;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
@@ -86,11 +89,16 @@ public class UserController {
         HttpServletResponse response) {
     	
     	//탈퇴로직
+    	// 1. DB에서 유저 정보 삭제
+    	// userService.deleteUser(user.getId());
+    	
+    	// 2. FcmToken 등 인증 관련 정보 무효화 (로그아웃 처리)
+    	// userService.updateFcmToken(user.getId(), null); // FCM 토큰 초기화 (선택적)
         
-        // 1. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
+        // 3. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
     	authService.logout("local".equalsIgnoreCase(user.getProvider()) ? user.getEmail() : user.getProviderId(), user.getProvider());
 
-        // 2. 쿠키 삭제 헤더 생성
+        // 4. 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .path("/")
                 .httpOnly(true)
@@ -99,12 +107,28 @@ public class UserController {
                 .maxAge(0) 
                 .build();
 
-        // 3. 응답 바디에 로그아웃 성공 메시지 포함 (프론트엔드 처리 유도)
+        // 5. 응답 바디에 로그아웃 성공 메시지 포함 (프론트엔드 처리 유도)
         Map<String, String> body = new HashMap<>();
         body.put("message", "Logout successful");
         
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(body);
+    }
+    
+    @Operation(summary = "FcmToken", description = "유저의 FCM 토큰을 업데이트합니다. 이 엔드포인트는 인증된 사용자만 접근할 수 있으며, 성공적으로 업데이트되면 204 No Content를 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "FCM 토큰 업데이트 성공 (응답 바디 없음)"),
+        @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자의 요청"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저 정보"),
+    })
+    @PatchMapping("/me/fcm-token")
+    public ResponseEntity<Void> updateFcmToken(
+        @RequestBody FcmTokenRequest request,
+        @AuthenticationPrincipal User user // 현재 로그인된 유저
+    ) {
+        // UserService에서 해당 유저의 fcm_token 필드만 업데이트
+        userService.updateFcmToken(user.getId(), request.fcmToken());
+        return ResponseEntity.noContent().build();
     }
 }

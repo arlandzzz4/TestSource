@@ -111,6 +111,9 @@ public class AuthController {
         @Parameter(description = "로그아웃할 유저 정보", required = true) 
         @RequestBody User user, 
         HttpServletResponse response) {
+    	
+    	// FCM 토큰 삭제 (비우기)
+        //userService.clearFcmToken(user.getId());
         
         // 1. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
         authService.logout("local".equalsIgnoreCase(user.getProvider()) ? user.getEmail() : user.getProviderId(), user.getProvider());

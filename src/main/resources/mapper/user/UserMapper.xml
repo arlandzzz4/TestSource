@@ -3,7 +3,7 @@
 
 <mapper namespace="com.project.domain.user.repository.mybatis.UserDAO">
 
-    <select id="findByEmail" parameterType="java.lang.String" resultType="com.project.domain.user.entity.User">
+    <select id="findByEmail" parameterType="java.lang.String" resultType="com.project.iob.user.entity.User">
         SELECT 
             id, 
             email, 

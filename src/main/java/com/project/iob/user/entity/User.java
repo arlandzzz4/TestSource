@@ -49,6 +49,9 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
+    @Column(name = "fcm_token")
+    private String fcmToken;
+    
     @Builder
     public User(String email, String password, String nickname, String provider, String providerId) {
         this.email = email;

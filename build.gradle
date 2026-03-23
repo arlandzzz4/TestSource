@@ -104,6 +104,9 @@ dependencies {
 	// Spring Cloud AWS: S3, EC2, RDS 등 AWS 서비스를 스프링답게 쓰게 해줍니다.
     //implementation 'io.awspring.cloud:spring-cloud-starter-aws-s3:3.3.0'
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    
+    // Firebase Admin SDK: 서버에서 Firebase 서비스를 관리할 때 필요합니다.
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
 }
 
 // 상단에 이 설정이 추가되어야 합니다.

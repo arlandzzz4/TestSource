@@ -12,6 +12,8 @@ build/
 **/src/main/generated
 **/src/main/generated/**
 
+**/src/main/resources/serviceAccountKey.json
+
 ### STS ###
 .apt_generated
 .classpath

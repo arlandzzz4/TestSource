@@ -14,6 +14,7 @@ import com.project.iob.user.repository.mybatis.UserDAO;
 import com.project.iob.user.service.UserService;
 
 import jakarta.persistence.EntityManager;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,5 +67,14 @@ public class UserServiceImpl implements UserService {
 		User user = userDAO.findByEmail(email)
 	            .orElseThrow(() -> new NeedRegistrationException("회원이 아닙니다."));
 		return user;
+	}
+
+	/**
+     * [FCM 토큰 업데이트 로직]
+     */
+	@Override
+	public void updateFcmToken(Long id, @NotBlank(message = "fcmToken은 필수 입력 값입니다.") String fcmToken) {
+		// TODO 테이블 확정되면 수정
+		
 	}
 }
