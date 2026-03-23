@@ -12,7 +12,8 @@ build/
 **/src/main/generated
 **/src/main/generated/**
 
-**/src/main/resources/serviceAccountKey.json
+config/
+config/**
 
 ### STS ###
 .apt_generated
