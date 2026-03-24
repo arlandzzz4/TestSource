@@ -113,8 +113,14 @@ public class SecurityConfig {
 
         // 1. 허용할 프론트엔드 도메인 (Vite 기본값: 5173)
         // [주의] allowCredentials(true)일 때는 와일드카드(*)를 사용할 수 없습니다.
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
-
+        config.setAllowedOrigins(List.of(
+        	    "https://infomation-of-balance.xyz",      // 운영 도메인 (필수)
+        	    "https://www.infomation-of-balance.xyz",  // www 포함 도메인 (필수)
+        	    "http://localhost:3000"                   // 로컬 개발용 (선택)
+        	));
+        
+        //인증 정보(쿠키 등)를 같이 보낸다면 아래 설정도 필수입니다.
+        config.setAllowCredentials(true);
         // 2. 허용할 HTTP 메서드
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
