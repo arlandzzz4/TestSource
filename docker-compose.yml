@@ -24,6 +24,11 @@ services:
       - --performance_schema=OFF
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
   backend:
     build:
       context: .

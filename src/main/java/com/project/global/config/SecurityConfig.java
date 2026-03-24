@@ -40,7 +40,8 @@ public class SecurityConfig {
         http
             // 1. CSRF & CORS 설정
             .csrf(csrf -> csrf.disable()) 
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            //Nginx 리버스 프록시 사용으로 Nginx에서 CORS 헤더를 추가해주므로 Spring Security에서 CORS 설정은 비활성화
+            //.cors(cors -> cors.configurationSource(corsConfigurationSource()))
             
             // 2. 세션 정책: JWT 사용으로 인한 STATELESS 설정
             .sessionManagement(session -> session
