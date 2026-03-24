@@ -3,6 +3,7 @@ package com.project.global.config;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import com.google.auth.oauth2.GoogleCredentials;
@@ -13,11 +14,14 @@ import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class FirebaseConfig {
+	@Value("${FIREBASE_CONFIG_PATH:src/main/resources/serviceAccountKey.json}")
+	private String configPath;
+	
     @PostConstruct
     public void init() {
         try {
         	if (FirebaseApp.getApps().isEmpty()) {
-	            FileInputStream serviceAccount = new FileInputStream("src/main/resources/serviceAccountKey.json");
+	            FileInputStream serviceAccount = new FileInputStream(configPath);
 	            FirebaseOptions options = FirebaseOptions.builder()
 	                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
 	                    .build();
