@@ -69,5 +69,5 @@ services:
     restart: always
     volumes:
       # main.conf 마운트가 누락되어 있었으므로 다시 추가합니다.
-      - /home/ubuntu/app/data/certbot/conf:/etc/letsencrypt:ro
+	  - /etc/letsencrypt:/etc/letsencrypt:ro
       - /home/ubuntu/app/data/certbot/www:/var/www/certbot:ro
