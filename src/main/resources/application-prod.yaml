@@ -26,6 +26,7 @@ spring:
             scope:
               - email
               - profile
+            redirect-uri: "https://information-of-balance.xyz/login/oauth2/code/google"
 decorator:
   datasource:
     p6spy:

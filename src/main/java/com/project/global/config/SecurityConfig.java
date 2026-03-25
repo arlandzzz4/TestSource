@@ -42,13 +42,6 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
     
-    // 도커 환경 변수에서 값을 직접 가져옵니다.
-    @Value("${GOOGLE_CLIENT_ID}")
-    private String googleClientId;
-
-    @Value("${GOOGLE_CLIENT_SECRET}")
-    private String googleClientSecret;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -167,10 +160,22 @@ public class SecurityConfig {
     
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
+        // [체크] 만약 환경변수 인식이 불안정하다면 System.getenv()를 직접 써보세요.
+        String clientId = System.getenv("GOOGLE_CLIENT_ID");
+        String clientSecret = System.getenv("GOOGLE_CLIENT_SECRET");
+
+        // 리더님, 여기서 로그를 찍어보면 바로 알 수 있습니다.
+        System.out.println("DEBUG: clientId is " + clientId); 
+
+        if (clientId == null || clientId.isEmpty()) {
+            throw new IllegalStateException("환경 변수 GOOGLE_CLIENT_ID가 비어있습니다!");
+        }
+
         ClientRegistration googleRegistration = CommonOAuth2Provider.GOOGLE.getBuilder("google")
-                .clientId(googleClientId)
-                .clientSecret(googleClientSecret)
-                .build();
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .build(); // 여기서 "clientId cannot be empty"가 터졌던 겁니다.
+
         return new InMemoryClientRegistrationRepository(googleRegistration);
     }
     
