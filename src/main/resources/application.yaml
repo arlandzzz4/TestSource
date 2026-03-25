@@ -35,6 +35,9 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
 
+server:
+  # Nginx가 넘겨준 X-Forwarded-Proto(https) 헤더를 스프링이 인식하게 합니다.
+  forward-headers-strategy: framework
 springdoc:
   swagger-ui:
     persist-authorization: true
