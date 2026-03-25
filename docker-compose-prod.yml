@@ -65,8 +65,9 @@ services:
       - CLOUD_AWS_CREDENTIALS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - CLOUD_AWS_CREDENTIALS_SECRET_KEY=${AWS_SECRET_KEY}
       - CLOUD_AWS_S3_BUCKET=${AWS_BUCKET_NAME}
-      - FIREBASE_CONFIG_PATH=/app/config/fcm-key.json
+      - FIREBASE_CONFIG_PATH=/home/ubuntu/app/fcm-key.json
       - CLOUD_AWS_REGION_STATIC=ap-northeast-2 #
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
   frontend:
     image: arlandzzz4/react-frontend:latest
     container_name: react-frontend
@@ -80,3 +81,7 @@ services:
       - /home/ubuntu/app/main.conf:/etc/nginx/conf.d/default.conf:ro
       - /home/ubuntu/app/data/certbot/conf:/etc/letsencrypt:ro
       - /home/ubuntu/app/data/certbot/www:/var/www/certbot:ro
+    environment:
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=https://information-of-balance.xyz/login/oauth2/code/google

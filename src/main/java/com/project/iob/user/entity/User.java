@@ -2,8 +2,12 @@ package com.project.iob.user.entity;
 
 import java.time.LocalDateTime;
 
+import com.project.global.Auth.Role;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,6 +40,9 @@ public class User {
     
     @Column(name = "provider_id")
     private String providerId;
+    
+    @Enumerated(EnumType.STRING)
+    private Role role;
     
     @Column(name = "refresh_token")
     private String refreshToken;
@@ -73,5 +80,10 @@ public class User {
     public void preUpdate() {
         // 데이터가 수정될 때마다 자동으로 실행됨
         this.updatedAt = LocalDateTime.now();
+    }
+    
+    // 이 메서드가 없어서 에러가 났던 겁니다!
+    public String getRoleKey() {
+        return this.role.getKey();
     }
 }

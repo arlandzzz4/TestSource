@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -13,8 +14,9 @@ import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
 
 @Configuration
+@Profile("prod")
 public class FirebaseConfig {
-	@Value("${FIREBASE_CONFIG_PATH:src/main/resources/fcm-key.json}")
+	@Value("${FIREBASE_CONFIG_PATH:/app/config/fcm-key.json}")
 	private String configPath;
 	
     @PostConstruct

@@ -1,5 +1,7 @@
 package com.project.iob.user.querydsl;
 
+import java.util.Optional;
+
 import com.project.iob.user.entity.QUser;
 import com.project.iob.user.entity.User;
 import com.project.iob.user.repository.jpa.UserRepositoryCustom;
@@ -17,7 +19,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     @Override
 	public boolean existsByEmail(String email) {
 		QUser user = QUser.user;
-
         User result = queryFactory
                 .selectFrom(user)
                 .where(
@@ -30,6 +31,18 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 			return true;
 		} 
         return false;
+	}
+    
+    @Override
+	public Optional<User> findByEmail(String email) {
+		QUser user = QUser.user;
+        User result = queryFactory
+                .selectFrom(user)
+                .where(
+                	QUser.user.email.eq(email)
+                )
+                .fetchOne();
+        return Optional.ofNullable(result);
 	}
 
 	@Override

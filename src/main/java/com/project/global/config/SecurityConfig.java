@@ -22,6 +22,7 @@ import com.project.global.error.JwtAccessDeniedHandler;
 import com.project.global.error.JwtAuthenticationEntryPoint;
 import com.project.global.security.JwtAuthenticationFilter;
 import com.project.global.security.JwtTokenProvider;
+import com.project.iob.auth.service.CustomOAuth2UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +35,7 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -72,6 +74,13 @@ public class SecurityConfig {
                 // 그 외 모든 요청은 인증 필요 (4주 프로젝트 보안상 권장)
                 //.anyRequest().authenticated() 
                 .anyRequest().permitAll()
+            )
+            // OAuth2 로그인 설정 (필요 시 활성화)
+            .oauth2Login(oauth2 -> oauth2
+                .defaultSuccessUrl("/login-success") 
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)
+                )
             )
             // 4. 불필요한 기본 로그인창 비활성화
 //            .formLogin(form -> form
