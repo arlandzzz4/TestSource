@@ -52,6 +52,8 @@ public class SecurityConfig {
             
             // 3. 권한 설정: 구체적인 것부터 넓은 범위 순으로!
             .authorizeHttpRequests(auth -> auth
+            		.anyRequest().permitAll()
+            		/*
             	.requestMatchers("/error", "/favicon.ico").permitAll()
                 // Swagger 및 문서 관련 (누구나)
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
@@ -73,7 +75,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // 그 외 모든 요청은 인증 필요 (4주 프로젝트 보안상 권장)
                 //.anyRequest().authenticated() 
-                .anyRequest().permitAll()
+                .anyRequest().permitAll()*/
             )
             // OAuth2 로그인 설정 (필요 시 활성화)
             /*
