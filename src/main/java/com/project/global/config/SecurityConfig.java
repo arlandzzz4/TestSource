@@ -76,12 +76,13 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
             // OAuth2 로그인 설정 (필요 시 활성화)
+            /*
             .oauth2Login(oauth2 -> oauth2
                 .defaultSuccessUrl("/login-success") 
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService)
                 )
-            )
+            )*/
             // 4. 불필요한 기본 로그인창 비활성화
 //            .formLogin(form -> form
 //                // 1. 사용자 정의 로그인 페이지 경로 설정 (기본값은 /login)
