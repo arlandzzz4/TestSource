@@ -1,0 +1,82 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      - MYSQL_DATABASE=sisa
+      - MYSQL_USER=sisa
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD_RAW}
+      - MYSQL_PASSWORD=${DB_PASSWORD_RAW}
+    ports:
+      - "3307:3306" # 호스트의 3307 포트를 컨테이너의 3306 포트로 매핑
+    volumes:
+      - ./mysql_data:/var/lib/mysql # 내 컴퓨터의 mysql_data 폴더와 도커 DB 폴더를 연결
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # 이 폴더에 넣으면 첫 실행 시 자동 실행됨
+      - ${FCM_KEY_PATH}:/app/config/fcm-key.json
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+      interval: 10s
+    command:
+      - --performance_schema=OFF
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+  backend:
+    image: arlandzzz4/spring-backend:latest
+    container_name: spring-backend
+    restart: on-failure # 컨테이너가 실패할 때 자동으로 재시작하도록 설정
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env # .env.local 파일에서 환경 변수 로드
+    volumes:
+      # 호스트의 키 파일을 컨테이너 내부의 /app/config 경로로 연결합니다.
+      - /home/ubuntu/app/config/fcm-key.json:/app/config/fcm-key.json:ro
+    environment:
+      # 컨테이너로 띄우면 application-dev.yaml이 적용되도록 프로필 설정
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true
+      # (선택사항) 만약 버전 1부터 시작한다면 아래도 추가
+      - SPRING_FLYWAY_BASELINE_VERSION=0
+      # .env에서 가져온 정보들을 스프링 환경 변수로 주입
+      - SPRING_DATASOURCE_URL=${DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      # 스프링은 ENC() 형태의 암호문을 받음
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD_ENC}
+      # Jasypt 암호를 풀기 위한 마스터 키 전달
+      - JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_KEY}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - JAVA_OPTS=-Xmx800m -Xms800m
+      - CLOUD_AWS_CREDENTIALS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - CLOUD_AWS_CREDENTIALS_SECRET_KEY=${AWS_SECRET_KEY}
+      - CLOUD_AWS_S3_BUCKET=${AWS_BUCKET_NAME}
+      - FIREBASE_CONFIG_PATH=/app/config/fcm-key.json
+      - CLOUD_AWS_REGION_STATIC=ap-northeast-2 #
+  frontend:
+    image: arlandzzz4/react-frontend:latest
+    container_name: react-frontend
+    ports:
+      - "80:80"  # 외부에서 80포트로 접속
+      - "443:443"
+    depends_on:
+      - backend
+    restart: always
+    volumes:
+      - /home/ubuntu/app/main.conf:/etc/nginx/conf.d/default.conf:ro
+      - /home/ubuntu/app/data/certbot/conf:/etc/letsencrypt:ro
+      - /home/ubuntu/app/data/certbot/www:/var/www/certbot:ro
