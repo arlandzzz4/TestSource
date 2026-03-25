@@ -30,9 +30,7 @@ services:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: arlandzzz4/spring-backend:latest
     container_name: spring-backend
     restart: on-failure # 컨테이너가 실패할 때 자동으로 재시작하도록 설정
     ports:
@@ -42,9 +40,15 @@ services:
         condition: service_healthy
     env_file:
       - .env.dev # .env.local 파일에서 환경 변수 로드
+    volumes:
+      # 호스트의 키 파일을 컨테이너 내부의 /app/config 경로로 연결합니다.
+      - /home/ubuntu/app/config/fcm-key.json:/app/config/fcm-key.json:ro
     environment:
       # 컨테이너로 띄우면 application-dev.yaml이 적용되도록 프로필 설정
       - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true
+      # (선택사항) 만약 버전 1부터 시작한다면 아래도 추가
+      - SPRING_FLYWAY_BASELINE_VERSION=0
       # .env에서 가져온 정보들을 스프링 환경 변수로 주입
       - SPRING_DATASOURCE_URL=${DB_URL}
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
@@ -58,6 +62,11 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=true
       - JAVA_OPTS=-Xmx800m -Xms800m
+      - CLOUD_AWS_CREDENTIALS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - CLOUD_AWS_CREDENTIALS_SECRET_KEY=${AWS_SECRET_KEY}
+      - CLOUD_AWS_S3_BUCKET=${AWS_BUCKET_NAME}
+      - FIREBASE_CONFIG_PATH=/app/config/fcm-key.json
+      - CLOUD_AWS_REGION_STATIC=ap-northeast-2 #
   frontend:
     image: arlandzzz4/react-frontend:latest
     container_name: react-frontend
@@ -68,6 +77,6 @@ services:
       - backend
     restart: always
     volumes:
-      # main.conf 마운트가 누락되어 있었으므로 다시 추가합니다.
+      - /home/ubuntu/app/main.conf:/etc/nginx/conf.d/default.conf:ro
       - /home/ubuntu/app/data/certbot/conf:/etc/letsencrypt:ro
       - /home/ubuntu/app/data/certbot/www:/var/www/certbot:ro
