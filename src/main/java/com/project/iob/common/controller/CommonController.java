@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.iob.common.service.FileService;
+import com.project.iob.common.service.MailService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CommonController {
 
     private final FileService fileService;
+    private final MailService mailService;
     
     @Operation(
 	    summary = "단일 이미지 파일 업로드", 
@@ -110,6 +113,7 @@ public class CommonController {
 	    @ApiResponse(responseCode = "404", description = "해당 파일명을 찾을 수 없음"),
 	    @ApiResponse(responseCode = "500", description = "S3 통신 오류 또는 삭제 권한 없음")
 	})
+    @DeleteMapping("/{fileName}")
     public ResponseEntity<Void> delete(@Parameter(
             description = "삭제할 파일의 이름 (확장자 포함, 예: image123.jpg)", 
             required = true, 
@@ -117,6 +121,29 @@ public class CommonController {
         ) 
         @PathVariable(value = "fileName") String fileName) {
     	fileService.delete(fileName);
+        
+    	// 2. 204 No Content 반환 (성공했지만 줄 데이터는 없음)
+        return ResponseEntity.noContent().build(); 
+	}
+    
+    @Operation(
+	    summary = "메일 전송", 
+	    description = "특정 파일명을 수신자로 하여 테스트 이메일을 전송합니다. 실제 구현에서는 파일명이 이메일 주소로 매핑되어야 합니다."
+	)
+	@ApiResponses(value = {
+	    @ApiResponse(responseCode = "204", description = "메일 전송 성공 (반환 데이터 없음)"),
+	    @ApiResponse(responseCode = "404", description = "해당 이름을 찾을 수 없음 또는 이메일 주소로 매핑 실패"),
+	    @ApiResponse(responseCode = "500", description = "메일 서버 통신 오류 또는 전송 권한 없음")
+	})
+    @PostMapping("/sendEmail/{email}")
+    public ResponseEntity<Void> sendEmail(@Parameter(
+            description = "메일을 전송할 대상 이메일 주소 (예: email@example.com", 
+            required = true, 
+            example = "email@example.com"
+        ) 
+        @PathVariable(value = "email") String email) {
+    	
+    	mailService.sendEmail(email, "TestSubject", "TestText");
         
     	// 2. 204 No Content 반환 (성공했지만 줄 데이터는 없음)
         return ResponseEntity.noContent().build(); 

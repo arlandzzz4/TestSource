@@ -26,6 +26,14 @@ spring:
       write-dates-as-timestamps: false
       write-date-timestamps-as-nanoseconds: false
     time-zone: Asia/Seoul
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 
 springdoc:
   swagger-ui:

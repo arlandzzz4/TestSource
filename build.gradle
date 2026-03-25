@@ -111,6 +111,9 @@ dependencies {
     //구글로그인
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    
+    //구글 메일
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 // 상단에 이 설정이 추가되어야 합니다.
