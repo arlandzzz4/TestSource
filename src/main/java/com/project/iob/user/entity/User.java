@@ -2,7 +2,7 @@ package com.project.iob.user.entity;
 
 import java.time.LocalDateTime;
 
-import com.project.global.Auth.Role;
+import com.project.global.auth.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

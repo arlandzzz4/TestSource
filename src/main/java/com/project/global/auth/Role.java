@@ -1,4 +1,4 @@
-package com.project.global.Auth;
+package com.project.global.auth;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
