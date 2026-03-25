@@ -1,9 +1,12 @@
 package com.project.global.config;
 
+import java.util.List;
+
 import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -28,6 +31,10 @@ public class SwaggerConfig {
                         .bearerFormat("JWT"));
 
         return new OpenAPI()
+        		.servers(List.of(
+                    new Server().url("https://information-of-balance.xyz").description("운영 서버"),
+                    new Server().url("http://localhost:8080").description("로컬 테스트")
+                ))
                 .info(new Info()
                         .title("내 프로젝트 API 문서")
                         .description("백엔드 API 명세서")

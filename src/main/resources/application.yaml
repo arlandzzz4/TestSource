@@ -38,6 +38,10 @@ spring:
 server:
   # Nginx가 넘겨준 X-Forwarded-Proto(https) 헤더를 스프링이 인식하게 합니다.
   forward-headers-strategy: framework
+  # 혹은 톰캣 설정을 직접 건드리는 방법
+  tomcat:
+    remote-ip-header: x-forwarded-for
+    protocol-header: x-forwarded-proto
 springdoc:
   swagger-ui:
     persist-authorization: true
