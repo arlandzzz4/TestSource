@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Tag(name = "User API", description = "사용자 등록, 탈퇴, 조회 API")
+@Tag(name = "Fcm Admin API", description = "Fcm Admin API")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
