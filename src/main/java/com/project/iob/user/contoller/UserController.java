@@ -122,7 +122,7 @@ public class UserController {
         @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자의 요청"),
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저 정보"),
     })
-    @PatchMapping("/me/fcm-token")
+    @PatchMapping("/me/fcmToken")
     public ResponseEntity<Void> updateFcmToken(
         @RequestBody FcmTokenRequest request,
         @AuthenticationPrincipal User user // 현재 로그인된 유저
