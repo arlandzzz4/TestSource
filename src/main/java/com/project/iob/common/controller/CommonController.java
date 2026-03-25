@@ -135,7 +135,7 @@ public class CommonController {
 	    @ApiResponse(responseCode = "404", description = "해당 이름을 찾을 수 없음 또는 이메일 주소로 매핑 실패"),
 	    @ApiResponse(responseCode = "500", description = "메일 서버 통신 오류 또는 전송 권한 없음")
 	})
-    @PostMapping("/sendEmail/{email}")
+    @PostMapping("/sendemail/{email}")
     public ResponseEntity<Void> sendEmail(@Parameter(
             description = "메일을 전송할 대상 이메일 주소 (예: email@example.com", 
             required = true, 
