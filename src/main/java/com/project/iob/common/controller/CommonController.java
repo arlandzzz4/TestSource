@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Tag(name = "Auth API", description = "사용자 등록, 로그인, 로그아웃, 리프레시 API")
+@Tag(name = "Common API", description = "파일업로드, 이메일 등 공통 API")
 @Slf4j
 @RestController
 @RequestMapping("/api/common")
