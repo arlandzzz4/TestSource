@@ -13,7 +13,7 @@ import com.project.iob.common.service.FileService;
 
 @Service
 @Profile({"local", "dev"}) // 로컬과 dev 프로필에서만 활성화
-public class LocalFileService implements FileService {
+public class LocalFileServiceImpl implements FileService {
     private final String uploadPath = "/opt/data/uploads/"; // 도커 볼륨 마운트 경로
 
     @Override
