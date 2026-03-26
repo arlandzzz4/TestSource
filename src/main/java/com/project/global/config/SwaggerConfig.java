@@ -21,9 +21,6 @@ import jakarta.annotation.PostConstruct;
 @Configuration
 public class SwaggerConfig {
 	
-	@Value("${swagger.server-url}")
-    private String serverUrl;
-
     @Bean
     public OpenAPI openAPI() {
         String jwtSchemeName = "jwtAuth";
@@ -38,7 +35,7 @@ public class SwaggerConfig {
 
         return new OpenAPI()
         		.servers(List.of(
-                    new Server().url(serverUrl).description("현재 환경 서버"),
+                    new Server().url("https://information-of-balance.xyz").description("현재 환경 서버"),
                     new Server().url("http://localhost:8080").description("로컬 테스트")
                 ))
                 .info(new Info()
