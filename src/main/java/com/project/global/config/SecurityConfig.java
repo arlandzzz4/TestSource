@@ -76,6 +76,7 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // 관리자 API (권한 필요)
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/profile/**").hasAnyRole("USER", "ADMIN")
                 // 그 외 모든 요청은 인증 필요 (4주 프로젝트 보안상 권장)
                 //.anyRequest().authenticated() 
                 .anyRequest().permitAll()
