@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.iob.post.PostDto;
+import com.project.iob.post.dto.PostDto;
 import com.project.iob.post.service.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +38,7 @@ public class PostController {
     		@RequestParam(name = "lastId", required = false) Long lastId,
     	    @RequestParam(name = "limit", defaultValue = "10") int size
     		){
-    	List<PostDto> posts = postService.searchPosts();
+    	List<PostDto> posts = postService.searchPosts(lastId, size);
     	
         return ResponseEntity.ok(posts); 
 	}

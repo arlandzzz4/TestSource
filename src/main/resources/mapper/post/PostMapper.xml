@@ -3,7 +3,7 @@
 
 <mapper namespace="com.project.iob.post.service.repository.mybatis.PostDAO">
 
-    <select id="find" resultType="com.project.iob.post.PostDto">
+    <select id="find" resultType="com.project.iob.post.dto.PostDto">
         SELECT p.POST_ID										AS postId
         	, p.USER_EMAIL										AS userEmail
         	, p.CATEGORY_ID										AS categoryId
@@ -12,10 +12,14 @@
         	, p.UPDATED_AT										AS updatedAt
         	, u.NICKNAME										AS nickname
         	, (SELECT COUNT(*) FROM LIKES WHERE TARGET_ID = p.POST_ID) AS likes
-        	, (SELECT COUNT(*) FROM COMMENTS WHERE POST_ID = p.POST_ID) AS comments
+        	, (SELECT COUNT(*) FROM COMMENTS WHERE POST_ID = p.POST_ID AND STATE = 0) AS comments
 		FROM POSTS p JOIN USERS u ON p.USER_EMAIL = u.EMAIL
 		WHERE p.STATE = 0
-		ORDER BY p.CREATED_AT
+		<if test="lastId != null">
+        	AND p.POST_ID &lt; #{lastId}
+    	</if>
+		ORDER BY p.POST_ID
+		LIMIT #{size}
     </select>
 
 </mapper>

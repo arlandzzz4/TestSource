@@ -1,4 +1,4 @@
-package com.project.iob.post;
+package com.project.iob.post.dto;
 
 import java.sql.Date;
 
@@ -10,7 +10,8 @@ public record PostDto(
 		Date createdAt, 
 		Date updatedAt, 
 		String nickname, 
-		int likes, 
-		int comments) 
+		Long likes, 
+		Long comments
+		) 
 {
 }
