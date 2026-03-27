@@ -1,0 +1,30 @@
+package com.project.iob.post.service.impl;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.project.iob.post.PostDto;
+import com.project.iob.post.service.PostService;
+import com.project.iob.post.service.repository.mybatis.PostDAO;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class PostServiceImpl implements PostService {
+	private final PostDAO postDAO;
+	/**
+     * [게시글 목록]
+     */
+	public List<PostDto> searchPosts(){
+		List<PostDto> list = postDAO.find();
+		return list;
+	}
+	
+
+}
