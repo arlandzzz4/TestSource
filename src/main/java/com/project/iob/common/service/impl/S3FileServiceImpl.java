@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Profile("prod")
 @RequiredArgsConstructor
-public class S3FileService implements FileService {
+public class S3FileServiceImpl implements FileService {
 
     private final AmazonS3 amazonS3;
 

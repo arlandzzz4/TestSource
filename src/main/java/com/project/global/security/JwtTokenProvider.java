@@ -1,13 +1,18 @@
 package com.project.global.security;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -73,13 +78,23 @@ public class JwtTokenProvider {
 
     // 토큰에서 인증 정보 추출
     public Authentication getAuthentication(String token) {
-        // [변경 이유] parseClaimsJws().getBody() -> parseSignedClaims().getPayload()로 용어 변경
+        // parseClaimsJws().getBody() -> parseSignedClaims().getPayload()로 용어 변경
         Claims claims = Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
         
-        return new UsernamePasswordAuthenticationToken(claims.getSubject(), "", new ArrayList<>());
+        // 클레임에서 권한 정보 가져오기 (예: "ROLE_ADMIN,ROLE_USER")
+        Object authClaim = claims.get("auth");
+        Collection<? extends GrantedAuthority> authorities = new ArrayList<>();
+        
+        if (authClaim != null) {
+            authorities = Arrays.stream(authClaim.toString().split(","))
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+        }
+        
+        return new UsernamePasswordAuthenticationToken(claims.getSubject(), "", authorities);
     }
 }

@@ -57,3 +57,5 @@ cloud:
       secret-key: ${AWS_SECRET_KEY}
     stack:
       auto: false # 프로젝트 시작 시 EC2 스택 체크 방지 (속도 향상)
+swagger:
+  server-url: https://information-of-balance.xyz

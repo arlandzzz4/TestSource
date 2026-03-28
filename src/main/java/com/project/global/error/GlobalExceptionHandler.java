@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,7 +86,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
     
- // S3 업로드 중 발생한 IO 예외 처리
+    // S3 업로드 중 발생한 IO 예외 처리
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ErrorResponse> handleIOException(IOException e) {
     	// 1. 에러 응답 객체 생성 (기존에 만드신 ErrorResponse 형식을 따름)
@@ -103,6 +104,14 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(errorResponse);
+    }
+    
+    // NoResourceFoundException (404) 전용 핸들러 추가
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handleNoResourceFoundException(NoResourceFoundException e) {
+        // ERROR가 아닌 소음 방지용 DEBUG 로그만 남기거나 아예 생략합니다.
+        log.debug("정적 리소스를 찾을 수 없습니다: {}", e.getResourcePath());
     }
     
 }

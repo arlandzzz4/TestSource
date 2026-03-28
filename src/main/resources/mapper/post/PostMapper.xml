@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.iob.post.service.repository.mybatis.PostDAO">
+
+    <select id="find" resultType="com.project.iob.post.dto.PostDto">
+        SELECT p.POST_ID										AS postId
+        	, p.USER_EMAIL										AS userEmail
+        	, p.CATEGORY_ID										AS categoryId
+        	, p.TITLE											AS title
+        	, p.CREATED_AT										AS createdAt
+        	, p.UPDATED_AT										AS updatedAt
+        	, u.NICKNAME										AS nickname
+        	, (SELECT COUNT(*) FROM LIKES WHERE TARGET_ID = p.POST_ID) AS likes
+        	, (SELECT COUNT(*) FROM COMMENTS WHERE POST_ID = p.POST_ID AND STATE = 0) AS comments
+		FROM POSTS p JOIN USERS u ON p.USER_EMAIL = u.EMAIL
+		WHERE p.STATE = 0
+		<if test="lastId != null">
+        	AND p.POST_ID &lt; #{lastId}
+    	</if>
+		ORDER BY p.POST_ID
+		LIMIT #{size}
+    </select>
+
+</mapper>

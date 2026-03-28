@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,7 +23,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.google.api.client.util.Value;
 import com.project.global.error.JwtAccessDeniedHandler;
 import com.project.global.error.JwtAuthenticationEntryPoint;
 import com.project.global.security.JwtAuthenticationFilter;
@@ -76,6 +76,7 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // 관리자 API (권한 필요)
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/profile/**").hasAnyRole("USER", "ADMIN")
                 // 그 외 모든 요청은 인증 필요 (4주 프로젝트 보안상 권장)
                 //.anyRequest().authenticated() 
                 .anyRequest().permitAll()
@@ -159,7 +160,8 @@ public class SecurityConfig {
     }
     
     @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
+    @Profile({"prod", "dev"})
+    public ClientRegistrationRepository prodClientRegistrationRepository() {
         // [체크] 만약 환경변수 인식이 불안정하다면 System.getenv()를 직접 써보세요.
         String clientId = System.getenv("GOOGLE_CLIENT_ID");
         String clientSecret = System.getenv("GOOGLE_CLIENT_SECRET");
@@ -177,6 +179,18 @@ public class SecurityConfig {
                 .build(); // 여기서 "clientId cannot be empty"가 터졌던 겁니다.
 
         return new InMemoryClientRegistrationRepository(googleRegistration);
+    }
+    
+    @Bean
+    @Profile("local") // spring.profiles.active=local 일 때만 작동
+    public ClientRegistrationRepository localClientRegistrationRepository() {
+        System.out.println("DEBUG: 로컬 환경용 더미 OAuth2 설정을 로드합니다.");
+        return new InMemoryClientRegistrationRepository(
+            CommonOAuth2Provider.GOOGLE.getBuilder("google")
+                .clientId("local-dummy-id")
+                .clientSecret("local-dummy-secret")
+                .build()
+        );
     }
     
 }
