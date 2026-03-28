@@ -27,6 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 모든 경로에 대해
         		.allowedOrigins("https://information-of-balance.xyz",
+        				"https://www.information-of-balance.xyz",
         				"http://localhost:8080", // 스웨거 로컬
         				"http://localhost:3000"// 리액트 로컬
         				) // 실제 허용할 도메인으로 변경

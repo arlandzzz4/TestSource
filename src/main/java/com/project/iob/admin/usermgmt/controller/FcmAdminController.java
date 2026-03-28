@@ -7,15 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-//2. Firebase Admin SDK 관련 (메시지 규격 정의)
-//주의: com.google.firebase.messaging 패키지를 정확히 사용해야 합니다.
-import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-
 //3. 프로젝트 내부 DTO 및 Service (리더님의 패키지 경로에 맞게 확인)
 import com.project.iob.admin.usermgmt.dto.FcmRequestDto;
 import com.project.iob.admin.usermgmt.service.FcmAdminService;
-
 //4. 프로젝트 내부 Entity 및 Repository
 import com.project.iob.user.entity.User;
 import com.project.iob.user.querydsl.UserRepository;

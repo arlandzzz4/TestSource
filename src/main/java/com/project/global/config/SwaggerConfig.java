@@ -32,7 +32,9 @@ public class SwaggerConfig {
 
         return new OpenAPI()
         		.servers(List.of(
-                    new Server().url("https://information-of-balance.xyz").description("현재 환경 서버"),
+                    new Server().url("https://information-of-balance.xyz").description("도메인 서버"),
+                    new Server().url("https://www.information-of-balance.xyz").description("도메인 서버"),
+                    new Server().url("http://13.125.112.50:8080").description("운영 서버"),
                     new Server().url("http://localhost:8080").description("로컬 테스트")
                 ))
                 .info(new Info()
