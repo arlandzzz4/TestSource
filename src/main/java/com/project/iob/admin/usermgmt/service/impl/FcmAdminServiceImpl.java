@@ -19,15 +19,12 @@ public class FcmAdminServiceImpl implements FcmAdminService {
      * @param body 알림 내용
      * @param path 클릭 시 이동할 상세 경로 (예: /challenge/1)
      */
-    public void sendMessage(String token, String title, String body, String path) {
+    public void sendMessage(String token, String url, Notification notification) {
         // 1. 메시지 구성 (Notification + Data)
         Message message = Message.builder()
                 .setToken(token)
-                .setNotification(Notification.builder()
-                        .setTitle(title)
-                        .setBody(body)
-                        .build())
-                .putData("path", path) // 프론트엔드에서 이동할 경로로 활용
+                .setNotification(notification)
+                .putData("link_url", url) // 핵심: 프론트엔드 sw.js와 매칭
                 .build();
 
         // 2. 전송 요청
