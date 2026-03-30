@@ -62,7 +62,7 @@ public class SecurityConfig {
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
                 
                 // TODO: 설정을 통해 정적 리소스를 보안 대상에서 제외
-                .requestMatchers("/img/**").permitAll() 
+                .requestMatchers("/images/**").permitAll() 
                 
                 // TODO: 인증이 필요한 API와 익명 사용자만 접근 가능한 API를 명확히 구분하여 설정
                 // 로그인, 회원가입은 '익명 사용자'만 접근 가능하게 설정

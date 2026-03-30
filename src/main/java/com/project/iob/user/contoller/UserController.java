@@ -96,7 +96,7 @@ public class UserController {
     	// userService.updateFcmToken(user.getId(), null); // FCM 토큰 초기화 (선택적)
         
         // 3. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
-    	authService.logout("local".equalsIgnoreCase(user.getProvider()) ? user.getEmail() : user.getProviderId(), user.getProvider());
+    	authService.logout("local".equalsIgnoreCase(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
 
         // 4. 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
@@ -128,7 +128,7 @@ public class UserController {
         @AuthenticationPrincipal User user // 현재 로그인된 유저
     ) {
         // UserService에서 해당 유저의 fcm_token 필드만 업데이트
-        userService.updateFcmToken(user.getId(), request.fcmToken());
+        userService.updateFcmToken(user.getEmail(), request.fcmToken());
         return ResponseEntity.noContent().build();
     }
 }

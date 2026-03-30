@@ -28,9 +28,9 @@ public class FcmAdminController {
     @PostMapping("/send")
     public ResponseEntity<String> sendNotification(@RequestBody FcmRequestDto request) {
         // 실제로는 DB에서 해당 유저의 토큰을 가져와야 함
-    	// TODO: 유저 ID로 DB에서 FCM 토큰 조회 로직 추가 (UserRepository 활용)
+    	// 유저 ID로 DB에서 FCM 토큰 조회 로직 추가 (UserRepository 활용)
     	// 테이블 구조에 따라 조회가 달라저 임시로 만들어 놓음. 조회조건에 따라 로직 및 DTO 수정 필요.(다수 일 경우 반복문으로 처리)
-        User user = userRepository.findById(1L).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다.")); // 예시로 ID 1번 유저 조회
+        User user = userRepository.findByEmail(request.email()).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다.")); // 예시로 ID 1번 유저 조회
         
         if (user.getFcmToken() != null) {
         	fcmAdminService.sendMessage(

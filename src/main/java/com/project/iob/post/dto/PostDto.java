@@ -5,13 +5,13 @@ import java.sql.Date;
 public record PostDto(
 		Long postId, 
 		String userEmail, 
-		int categoryId, 
+		String categoryCode, 
 		String title, 
 		Date createdAt, 
 		Date updatedAt, 
 		String nickname, 
-		Long likes, 
-		Long comments
+		int likes, 
+		int comments
 		) 
 {
 }

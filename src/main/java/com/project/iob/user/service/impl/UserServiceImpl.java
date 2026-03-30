@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public User regist(UserRequestDto UserRequest) {
 		// 중복 체크
-		if("LOCAL".equalsIgnoreCase(UserRequest.provider())) {
+		if("LOCAL".equalsIgnoreCase(UserRequest.providerCode())) {
 	        if (!userRepository.existsByEmail(UserRequest.email())) {
 	        	throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
 	        }
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 		User user = User.builder()
 				.email(UserRequest.email())
 				.password(encodedPassword)
-				.provider(UserRequest.provider())
+				.providerCode(UserRequest.providerCode())
 				.providerId(UserRequest.providerId())
 				.build();
 		//등록
@@ -73,8 +73,17 @@ public class UserServiceImpl implements UserService {
      * [FCM 토큰 업데이트 로직]
      */
 	@Override
-	public void updateFcmToken(Long id, @NotBlank(message = "fcmToken은 필수 입력 값입니다.") String fcmToken) {
+	public void updateFcmToken(String email, @NotBlank(message = "fcmToken은 필수 입력 값입니다.") String fcmToken) {
 		// TODO 테이블 확정되면 수정
-		
+		userDAO.updateFcmToken(email, fcmToken);
+	}
+
+	/**
+     * [FCM 토큰 클리어 로직]
+     */
+	@Override
+	public void clearFcmToken(String email) {
+		// TODO Auto-generated method stub
+		userDAO.clearFcmToken(email);
 	}
 }
