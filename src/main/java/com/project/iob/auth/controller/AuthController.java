@@ -53,6 +53,8 @@ public class AuthController {
         
         //TODO 로그인 정보 외 필요한 정보 필요시
         User user = userService.searchUserByEmail(loginRequest.email());
+        
+        //
 
         // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
         ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenDto.refreshToken())
@@ -113,10 +115,10 @@ public class AuthController {
         HttpServletResponse response) {
     	
     	// FCM 토큰 삭제 (비우기)
-        //userService.clearFcmToken(user.getId());
+        userService.clearFcmToken(user.getEmail());
         
         // 1. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
-        authService.logout("local".equalsIgnoreCase(user.getProvider()) ? user.getEmail() : user.getProviderId(), user.getProvider());
+        authService.logout("local".equalsIgnoreCase(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
 
         // 2. 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")

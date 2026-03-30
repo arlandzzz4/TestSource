@@ -19,6 +19,11 @@ public interface UserService {
 	/**
      * [FCM 토큰 업데이트 로직]
      */
-	public void updateFcmToken(Long id, @NotBlank(message = "fcmToken은 필수 입력 값입니다.") String fcmToken);
+	public void updateFcmToken(String email, @NotBlank(message = "fcmToken은 필수 입력 값입니다.") String fcmToken);
+
+	/**
+     * [FCM 토큰 클리어 로직]
+     */
+	public void clearFcmToken(String email);
 
 }

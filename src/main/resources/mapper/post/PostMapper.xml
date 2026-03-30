@@ -6,7 +6,7 @@
     <select id="find" resultType="com.project.iob.post.dto.PostDto">
         SELECT p.POST_ID										AS postId
         	, p.USER_EMAIL										AS userEmail
-        	, p.CATEGORY_ID										AS categoryId
+        	, p.CATEGORY_CODE									AS categoryCode
         	, p.TITLE											AS title
         	, p.CREATED_AT										AS createdAt
         	, p.UPDATED_AT										AS updatedAt
@@ -14,7 +14,7 @@
         	, (SELECT COUNT(*) FROM LIKES WHERE TARGET_ID = p.POST_ID) AS likes
         	, (SELECT COUNT(*) FROM COMMENTS WHERE POST_ID = p.POST_ID AND STATE = 0) AS comments
 		FROM POSTS p JOIN USERS u ON p.USER_EMAIL = u.EMAIL
-		WHERE p.STATE = 0
+		WHERE p.DEL_YN = 0
 		<if test="lastId != null">
         	AND p.POST_ID &lt; #{lastId}
     	</if>

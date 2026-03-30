@@ -6,12 +6,34 @@
     <select id="findByEmail" parameterType="java.lang.String" resultType="com.project.iob.user.entity.User">
         SELECT 
             email, 
+            nickname,
             password, 
-            provider, 
-            provider_id, 
-            created_at
+            provider_code, 
+            provider_id,
+            profile_image_url,
+            user_status_code,
+            role_code,
+            fcm_token,
+            terms_agreed_yn,
+            privacy_agreed_yn,
+            terms_agreed_at		AS termsAgreedAt,
+            created_at			AS createdAt,
+            deleted_at			AS deletedAt,
+            last_login_at	    AS lastLoginAt
         FROM users
         WHERE email = #{email}
     </select>
-
+    
+    <update id="updateFcmToken" parameterType="com.project.iob.user.entity.User">
+        UPDATE users
+        SET fcm_token = #{fcmToken}
+        WHERE email = #{email}
+	</update>
+	
+	<update id="clearFcmToken" parameterType="com.project.iob.user.entity.User">
+        UPDATE users
+        SET fcm_token = ''
+        WHERE email = #{email}
+    </update>
 </mapper>
+    
