@@ -12,7 +12,7 @@
         	, p.UPDATED_AT										AS updatedAt
         	, u.NICKNAME										AS nickname
         	, (SELECT COUNT(*) FROM LIKES WHERE TARGET_ID = p.POST_ID) AS likes
-        	, (SELECT COUNT(*) FROM COMMENTS WHERE POST_ID = p.POST_ID AND STATE = 0) AS comments
+        	, (SELECT COUNT(*) FROM COMMENTS WHERE POST_ID = p.POST_ID AND DEL_YN = 0) AS comments
 		FROM POSTS p JOIN USERS u ON p.USER_EMAIL = u.EMAIL
 		WHERE p.DEL_YN = 0
 		<if test="lastId != null">
