@@ -4,6 +4,7 @@ import static com.project.iob.auth.entity.QRefreshToken.refreshToken1;
 
 import java.util.Optional;
 
+import com.project.global.auth.Provider;
 import com.project.iob.auth.entity.RefreshToken;
 import com.project.iob.auth.repository.jpa.RefreshTokenRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -20,7 +21,7 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepositoryCustom 
     	return Optional.ofNullable(
                 queryFactory
                     .selectFrom(refreshToken1)
-                    .where("local".equalsIgnoreCase(provider)?refreshToken1.email.eq(email):refreshToken1.providerId.eq(email))
+                    .where(Provider.LOCAL.equals(provider)?refreshToken1.email.eq(email):refreshToken1.providerId.eq(email))
                     .fetchOne()
             );
 	}

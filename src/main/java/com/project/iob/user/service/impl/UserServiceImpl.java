@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.project.global.auth.Provider;
 import com.project.global.error.NeedRegistrationException;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.entity.User;
@@ -34,7 +35,7 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public User regist(UserRequestDto UserRequest) {
 		// 중복 체크
-		if("LOCAL".equalsIgnoreCase(UserRequest.providerCode())) {
+		if(Provider.LOCAL.equals(UserRequest.providerCode())) {
 	        if (!userRepository.existsByEmail(UserRequest.email())) {
 	        	throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
 	        }

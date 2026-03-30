@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.project.global.auth.Provider;
 import com.project.global.error.NeedRegistrationException;
 import com.project.global.security.JwtTokenProvider;
 import com.project.iob.auth.dto.LoginRequestDto;
@@ -75,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
 	public TokenDto login(LoginRequestDto loginRequest) {
     	// 1. 식별자 결정 (LOCAL인 경우 이메일, 그 외에는 소셜 ID 등)
-    	String identifier = "local".equalsIgnoreCase(loginRequest.provider()) 
+    	String identifier = Provider.LOCAL.equals(loginRequest.provider()) 
     	                    ? loginRequest.email() 
     	                    : loginRequest.providerId();
 

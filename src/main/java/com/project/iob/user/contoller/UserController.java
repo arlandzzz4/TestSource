@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.global.auth.Provider;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.user.dto.FcmTokenRequest;
 import com.project.iob.user.dto.UserRequestDto;
@@ -96,7 +97,7 @@ public class UserController {
     	// userService.updateFcmToken(user.getId(), null); // FCM 토큰 초기화 (선택적)
         
         // 3. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
-    	authService.logout("local".equalsIgnoreCase(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
+    	authService.logout(Provider.LOCAL.equals(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
 
         // 4. 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")

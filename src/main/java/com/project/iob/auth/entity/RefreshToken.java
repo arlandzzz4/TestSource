@@ -35,8 +35,8 @@ public class RefreshToken {
     @Column(name = "token_rotated_at")
     private LocalDateTime tokenRotatedAt;
     
-    @Column(nullable = true)
-    private String provider = "local";
+    @Column(name = "provider_code", nullable = true)
+    private String providerCode = "01"; // 기본값은 "local"로 설정
     
     @Column(nullable = true, name = "provider_id")
     private String providerId;
