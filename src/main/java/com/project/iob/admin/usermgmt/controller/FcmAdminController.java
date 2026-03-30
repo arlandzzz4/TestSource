@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.firebase.messaging.Notification;
 import com.project.iob.admin.usermgmt.dto.FcmRequestDto;
 import com.project.iob.admin.usermgmt.service.FcmAdminService;
 import com.project.iob.user.entity.User;
@@ -32,12 +33,16 @@ public class FcmAdminController {
     	// 테이블 구조에 따라 조회가 달라저 임시로 만들어 놓음. 조회조건에 따라 로직 및 DTO 수정 필요.(다수 일 경우 반복문으로 처리)
         User user = userRepository.findByEmail(request.email()).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다.")); // 예시로 ID 1번 유저 조회
         
+        Notification notification = Notification.builder()
+				.setTitle(request.title())
+				.setBody(request.body())
+				.build();
+        
         if (user.getFcmToken() != null) {
         	fcmAdminService.sendMessage(
         		user.getFcmToken(), 
-                request.title(), 
-                request.body(),
-                request.path()
+                request.path(),
+                notification
             );
             return ResponseEntity.ok("전송 요청 성공");
         }
