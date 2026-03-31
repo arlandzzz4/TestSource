@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.iob.common.service.repository.mybatis.CommonDAO">
+
+    <select id="findCodeGroupList" resultType="com.project.iob.common.dto.CodeGroupsDto">
+        SELECT 
+        	c.CODE_NAME 		AS codeName, 
+        	c.CODE 				AS code,
+        	c.DESCRIPTION 		AS description,
+        	c.USE_YN 			AS useYn,
+        	c.SORT_ORDER		AS sortOrder,
+        	c.CREATED_AT		AS createdAt,
+        	c.CREATED_ID		AS createdId,
+        	c.UPDATED_AT		AS updatedAt,
+        	c.UPDATED_ID		AS updatedId
+		FROM CODE_GROUPS g JOIN CODES c
+			ON g.GROUP_CODE = c.GROUP_CODE
+		WHERE g.GROUP_CODE = #{code}
+			AND c.USE_YN = 'Y'
+		ORDER BY c.SORT_ORDER
+    </select>
+    
+    <select id="findCodeList" resultType="com.project.iob.common.dto.CodeDto">
+        SELECT 
+        	c.CODE 				AS code,
+        	c.GROUP_CODE 		AS groupGode,
+        	c.CODE_NAME 		AS codeName, 
+        	c.DESCRIPTION 		AS description,
+        	c.USE_YN 			AS useYn,
+        	c.SORT_ORDER		AS sortOrder,
+        	c.CREATED_AT		AS createdAt,
+        	c.CREATED_ID		AS createdId,
+        	c.UPDATED_AT		AS updatedAt,
+        	c.UPDATED_ID		AS updatedId
+		FROM CODES c
+		ORDER BY c.SORT_ORDER
+    </select>
+
+</mapper>
