@@ -7,6 +7,6 @@ import com.project.iob.user.entity.User;
 import com.project.iob.user.repository.jpa.UserRepositoryCustom;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
+public interface UserRepository extends JpaRepository<User, String>, UserRepositoryCustom {
 
 }
