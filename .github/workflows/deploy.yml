@@ -22,7 +22,7 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build -x test -p ./
+          ./gradlew clean compileJava build -x test
 
       # 3. 도커 로그인
       - name: Docker Login
