@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.global.auth.Provider;
+import com.project.global.enums.Provider;
 import com.project.iob.auth.dto.LoginRequestDto;
 import com.project.iob.auth.dto.LoginResponseDto;
 import com.project.iob.auth.dto.TokenDto;
@@ -48,29 +48,37 @@ public class AuthController {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest, HttpServletResponse response) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest, HttpServletResponse response)  {
         // 1. 서비스에서 토큰 발급 (성공 시 TokenDto 반환)
         TokenDto tokenDto = authService.login(loginRequest);
         
-        //TODO 로그인 정보 외 필요한 정보 필요시
-        User user = userService.searchUserByEmail(loginRequest.email());
+        if(tokenDto.isSuccess()) {
+        	//TODO 로그인 정보 외 필요한 정보 필요시
+        	User user = userService.searchUserByEmail(loginRequest.email());
 
-        // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenDto.refreshToken())
-                .path("/")
-                .httpOnly(true)
-                .secure(true) // HTTPS 환경 필수
-                .sameSite("Strict")
-                .maxAge(60 * 60 * 24 * 7) // 7일
-                .build();
+            // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
+            ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenDto.refreshToken())
+                    .path("/")
+                    .httpOnly(true)
+                    .secure(true) // HTTPS 환경 필수
+                    .sameSite("Strict")
+                    .maxAge(60 * 60 * 24 * 7) // 7일
+                    .build();
 
-        // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(LoginResponseDto.builder()
-                        .accessToken(tokenDto.accessToken()) // ★ 수정: refreshToken 넣지 않도록 주의
-                        .user(user)
-                        .build());
+            // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(LoginResponseDto.builder()
+                            .accessToken(tokenDto.accessToken()) // ★ 수정: refreshToken 넣지 않도록 주의
+                            .user(user)
+                            .build());
+        }else {
+        	// 로그인 실패 시 적절한 에러 메시지와 상태 코드 반환 (예: 401 Unauthorized)
+			return ResponseEntity.ok().body(LoginResponseDto.builder()
+					.isSuccess(tokenDto.isSuccess())
+					.message(tokenDto.message())
+					.build());
+        }
     }
     
     @Operation(summary = "토큰 재발급", description = "만료된 Access Token을 교체하기 위해 사용합니다. Cookie에 담긴 Refresh Token을 자동으로 검증합니다.")

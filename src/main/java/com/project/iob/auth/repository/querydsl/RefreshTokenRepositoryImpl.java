@@ -4,7 +4,7 @@ import static com.project.iob.auth.entity.QRefreshToken.refreshToken1;
 
 import java.util.Optional;
 
-import com.project.global.auth.Provider;
+import com.project.global.enums.Provider;
 import com.project.iob.auth.entity.RefreshToken;
 import com.project.iob.auth.repository.jpa.RefreshTokenRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;

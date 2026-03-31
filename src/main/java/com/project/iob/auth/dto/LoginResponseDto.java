@@ -19,5 +19,9 @@ public class LoginResponseDto {
 
     // 사용자 식별을 위한 이메일
     private User user;
+    
+    private boolean isSuccess;
+    
+    private String message;
 
 }

@@ -1,4 +1,4 @@
-package com.project.global.auth;
+package com.project.global.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

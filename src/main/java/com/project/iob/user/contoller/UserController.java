@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.global.auth.Provider;
+import com.project.global.enums.Provider;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.user.dto.FcmTokenRequest;
 import com.project.iob.user.dto.UserRequestDto;

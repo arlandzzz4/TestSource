@@ -2,12 +2,11 @@ package com.project.iob.auth.service.impl;
 
 import java.time.LocalDateTime;
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.project.global.auth.Provider;
+import com.project.global.enums.Provider;
 import com.project.global.error.NeedRegistrationException;
 import com.project.global.security.JwtTokenProvider;
 import com.project.iob.auth.dto.LoginRequestDto;
@@ -74,24 +73,24 @@ public class AuthServiceImpl implements AuthService {
 	   - provider가 "GOOGLE", "KAKAO" 등 소셜 로그인인 경우 providerId로 인증 (실제 구현에서는 DB에서 사용자 조회 후 providerId로 인증)
      */
     @Transactional
-	public TokenDto login(LoginRequestDto loginRequest) {
+	public TokenDto login(LoginRequestDto loginRequest) throws NeedRegistrationException {
     	// 1. 식별자 결정 (LOCAL인 경우 이메일, 그 외에는 소셜 ID 등)
     	String identifier = Provider.LOCAL.equals(loginRequest.providerCode()) 
     	                    ? loginRequest.email() 
     	                    : loginRequest.providerId();
 
     	// 2. DB에서 사용자 조회 및 "인증" 먼저 수행
-    	RefreshToken rt = refreshTokenRepository.findByEmail(identifier, loginRequest.providerCode()).get();
+    	RefreshToken rt = refreshTokenRepository.findByEmail(identifier, loginRequest.providerCode()).orElse(null);
     	if(rt == null) {
             if (Provider.LOCAL.equals(loginRequest.providerCode())) {
-                throw new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."); 
+                return new TokenDto("아이디 또는 비밀번호가 일치하지 않습니다.");
             }else {
-            	 throw new IllegalArgumentException("해당 소셜 계정으로 가입된 사용자가 없습니다. 회원가입이 필요합니다."); 
+            	return new TokenDto("해당 소셜 계정으로 가입된 사용자가 없습니다. 회원가입이 필요합니다.");
             }
     	}else {
     		// 3. 비밀번호 검증 (검증 실패 시 여기서 바로 예외 던짐)
         	if (!passwordEncoder.matches(loginRequest.password(), rt.getPassword())) {
-        	    throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+        	    return new TokenDto("비밀번호가 일치하지 않습니다.");
         	}
     	}
 
