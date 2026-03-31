@@ -4,6 +4,7 @@
 <mapper namespace="com.project.iob.post.service.repository.mybatis.PostDAO">
 
     <select id="find" resultType="com.project.iob.post.dto.PostDto">
+    	/*mapper.post.PostMapper.find */
         SELECT p.POST_ID										AS postId
         	, p.USER_EMAIL										AS userEmail
         	, p.CATEGORY_CODE									AS categoryCode

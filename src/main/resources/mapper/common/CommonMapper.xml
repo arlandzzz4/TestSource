@@ -4,6 +4,7 @@
 <mapper namespace="com.project.iob.common.service.repository.mybatis.CommonDAO">
 
     <select id="findCodeGroupList" resultType="com.project.iob.common.dto.CodeGroupsDto">
+    	/*mapper.common.CommonMapper.findCodeGroupList */
         SELECT 
         	c.CODE_NAME 		AS codeName, 
         	c.CODE 				AS code,
@@ -22,6 +23,7 @@
     </select>
     
     <select id="findCodeList" resultType="com.project.iob.common.dto.CodeDto">
+    	/*mapper.common.CommonMapper.findCodeList */
         SELECT 
         	c.CODE 				AS code,
         	c.GROUP_CODE 		AS groupGode,

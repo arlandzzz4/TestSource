@@ -4,6 +4,7 @@
 <mapper namespace="com.project.iob.user.repository.mybatis.UserDAO">
 
     <select id="findByEmail" parameterType="java.lang.String" resultType="com.project.iob.user.entity.User">
+    	/*mapper.user.UserMapper.findByEmail */
         SELECT 
             email, 
             nickname,
@@ -25,12 +26,14 @@
     </select>
     
     <update id="updateFcmToken" parameterType="com.project.iob.user.entity.User">
+    	/*mapper.user.UserMapper.updateFcmToken */
         UPDATE users
         SET fcm_token = #{fcmToken}
         WHERE email = #{email}
 	</update>
 	
 	<update id="clearFcmToken" parameterType="com.project.iob.user.entity.User">
+		/*mapper.user.UserMapper.updateFcmToken */
         UPDATE users
         SET fcm_token = ''
         WHERE email = #{email}
