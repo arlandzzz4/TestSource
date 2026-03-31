@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.iob.calendar.repository.mybatis.CalendarDAO">
+
+    <!-- 음식 검색 -->
+    <select id="searchFood" resultType="com.project.iob.calendar.dto.CalendarDietDto$FoodSearchResponse">
+        SELECT
+            food_id   AS foodId,
+            food_name AS name,
+            CAST(calories AS UNSIGNED) AS kcal,
+            CONCAT(CAST(serving_size AS UNSIGNED), 'g') AS unit
+        FROM foods
+        WHERE food_name LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY food_name ASC
+        LIMIT 30
+    </select>
+
+</mapper>

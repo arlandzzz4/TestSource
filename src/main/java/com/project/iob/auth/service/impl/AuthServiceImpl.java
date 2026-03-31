@@ -76,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
 	public TokenDto login(LoginRequestDto loginRequest) {
     	// 1. 식별자 결정 (LOCAL인 경우 이메일, 그 외에는 소셜 ID 등)
-    	String identifier = Provider.LOCAL.equals(loginRequest.provider()) 
+    	String identifier = Provider.LOCAL.getKey().equals(loginRequest.provider()) 
     	                    ? loginRequest.email() 
     	                    : loginRequest.providerId();
 
