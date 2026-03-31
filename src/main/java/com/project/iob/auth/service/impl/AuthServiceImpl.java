@@ -117,9 +117,9 @@ public class AuthServiceImpl implements AuthService {
      * [로그아웃 로직]
      */
 	@Transactional
-	public void logout(String email, String provider) {
+	public void logout(String email, String providerCode) {
         // DB에서 해당 유저의 리프레시 토큰을 삭제하여 재발급을 원천 차단
-        refreshTokenRepository.deleteRefreshTokenById(email, provider);
+        refreshTokenRepository.deleteRefreshTokenById(email, providerCode);
     }
 	
 }

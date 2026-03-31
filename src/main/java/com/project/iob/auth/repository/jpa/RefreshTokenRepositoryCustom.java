@@ -14,5 +14,5 @@ public interface RefreshTokenRepositoryCustom {
 	Optional<RefreshToken> findByEmail(String email, String provider);
     Optional<RefreshToken> findByEmail(String email);
     Optional<RefreshToken> findByToken(String token);
-    void deleteRefreshTokenById(String email, String provider);
+    void deleteRefreshTokenById(String email, String providerCode);
 }
