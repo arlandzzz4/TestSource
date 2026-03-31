@@ -40,17 +40,17 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // username 추출 key이름이 username일 뿐 실제 사람 이름은 아님. tokenProvider에서 인증 객체를 얻어 username을 추출(로그아웃된 사용자도 여기서 걸러짐)
-        String username = tokenProvider.getAuthentication(oldRefreshToken).getName();
+        String identifier = tokenProvider.getAuthentication(oldRefreshToken).getName();
         
         // DB 조회 (id를 username으로 쓰고 있으므로 findById 가능)
-        var savedToken = refreshTokenRepository.findByEmail(username)
+        var savedToken = refreshTokenRepository.findByEmail(identifier)
                 .orElseThrow(() -> new IllegalArgumentException("로그아웃된 사용자입니다."));
 
-        // [토큰 재사용 탐지 및 Race Condition 방어]
+        // 토큰 재사용 탐지 및 Race Condition 방어
         if (oldRefreshToken != null && !oldRefreshToken.equals(savedToken.getRefreshToken())) {
             // 2초 이내 중복 요청 처리 (클라이언트 사이드 중복 클릭 등)
             if (savedToken.getTokenRotatedAt().isAfter(LocalDateTime.now().minusSeconds(2))) {
-                return new TokenDto(tokenProvider.createAccessToken(username), savedToken.getRefreshToken());
+                return new TokenDto(tokenProvider.createAccessToken(identifier), savedToken.getRefreshToken());
             }
 
             // 보안 위협: 이미 사용된 토큰이 다시 들어옴
@@ -59,8 +59,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 정상 Rotation
-        String newAccessToken = tokenProvider.createAccessToken(username);
-        String newRefreshToken = tokenProvider.createRefreshToken(username);
+        String newAccessToken = tokenProvider.createAccessToken(identifier);
+        String newRefreshToken = tokenProvider.createRefreshToken(identifier);
         
         savedToken.updateToken(newRefreshToken);
 
@@ -76,17 +76,23 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
 	public TokenDto login(LoginRequestDto loginRequest) {
     	// 1. 식별자 결정 (LOCAL인 경우 이메일, 그 외에는 소셜 ID 등)
-    	String identifier = Provider.LOCAL.equals(loginRequest.provider()) 
+    	String identifier = Provider.LOCAL.equals(loginRequest.providerCode()) 
     	                    ? loginRequest.email() 
     	                    : loginRequest.providerId();
 
     	// 2. DB에서 사용자 조회 및 "인증" 먼저 수행
-    	RefreshToken rt = refreshTokenRepository.findByEmail(identifier, loginRequest.provider())
-    	    .orElseThrow(() -> new NeedRegistrationException("등록된 사용자가 아닙니다."));
-
-    	// 3. 비밀번호 검증 (검증 실패 시 여기서 바로 예외 던짐)
-    	if (!passwordEncoder.matches(loginRequest.password(), rt.getPassword())) {
-    	    throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+    	RefreshToken rt = refreshTokenRepository.findByEmail(identifier, loginRequest.providerCode()).get();
+    	if(rt == null) {
+            if (Provider.LOCAL.equals(loginRequest.providerCode())) {
+                throw new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."); 
+            }else {
+            	 throw new IllegalArgumentException("해당 소셜 계정으로 가입된 사용자가 없습니다. 회원가입이 필요합니다."); 
+            }
+    	}else {
+    		// 3. 비밀번호 검증 (검증 실패 시 여기서 바로 예외 던짐)
+        	if (!passwordEncoder.matches(loginRequest.password(), rt.getPassword())) {
+        	    throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+        	}
     	}
 
     	// 4. 인증에 성공했으므로 이제 "토큰 발급"
@@ -98,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
 
     	return new TokenDto(accessToken, refreshToken);
 	}
-	
+    
     /**
      * [토큰 검증 로직]
      */

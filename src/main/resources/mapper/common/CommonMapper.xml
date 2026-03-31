@@ -14,7 +14,7 @@
         	c.CREATED_ID		AS createdId,
         	c.UPDATED_AT		AS updatedAt,
         	c.UPDATED_ID		AS updatedId
-		FROM CODE_GROUPS g JOIN CODES c
+		FROM code_groups g JOIN codes c
 			ON g.GROUP_CODE = c.GROUP_CODE
 		WHERE g.GROUP_CODE = #{code}
 			AND c.USE_YN = 'Y'
@@ -33,7 +33,7 @@
         	c.CREATED_ID		AS createdId,
         	c.UPDATED_AT		AS updatedAt,
         	c.UPDATED_ID		AS updatedId
-		FROM CODES c
+		FROM codes c
 		ORDER BY c.SORT_ORDER
     </select>
 

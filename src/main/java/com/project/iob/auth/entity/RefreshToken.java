@@ -20,9 +20,6 @@ import lombok.NoArgsConstructor;
 public class RefreshToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // MySQL의 auto_increment를 사용하도록 설정
-    private Long id;
-    
     @Column(nullable = true)
     private String email;
     

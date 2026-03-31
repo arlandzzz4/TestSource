@@ -17,11 +17,11 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepositoryCustom 
     private final JPAQueryFactory queryFactory;
 
     @Override
-	public Optional<RefreshToken> findByEmail(String email, String provider) {
+	public Optional<RefreshToken> findByEmail(String email, String providerCode) {
     	return Optional.ofNullable(
                 queryFactory
                     .selectFrom(refreshToken1)
-                    .where(Provider.LOCAL.equals(provider)?refreshToken1.email.eq(email):refreshToken1.providerId.eq(email))
+                    .where(Provider.LOCAL.equals(providerCode)?refreshToken1.email.eq(email):refreshToken1.providerId.eq(email))
                     .fetchOne()
             );
 	}

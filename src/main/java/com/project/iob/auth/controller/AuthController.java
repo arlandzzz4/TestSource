@@ -54,8 +54,6 @@ public class AuthController {
         
         //TODO 로그인 정보 외 필요한 정보 필요시
         User user = userService.searchUserByEmail(loginRequest.email());
-        
-        //
 
         // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
         ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenDto.refreshToken())
