@@ -56,6 +56,9 @@ public class User {
     @Column(name = "terms_agreed_yn", updatable = false)
     private String termsAgreedYn;
     
+    @Column(name = "privacy_agreed_yn", updatable = false)
+    private String privacyAgreedYn;
+    
     @Column(name = "token_rotated_at")
     private LocalDateTime tokenRotatedAt;
     
@@ -75,7 +78,7 @@ public class User {
     private LocalDateTime lastLoginAt;
     
     @Builder
-    public User(String email, String nickname, String password, String providerCode, String providerId, String profileImageUrl, String userStatusCode, Role roleCode, String fcmToken, String termsAgreedYn,
+    public User(String email, String nickname, String password, String providerCode, String providerId, String profileImageUrl, String userStatusCode, Role roleCode, String fcmToken, String termsAgreedYn, String privacyAgreedYn,
     		LocalDateTime termsAgreedAt, LocalDateTime createdAt, LocalDateTime deletedAt, LocalDateTime lastLoginAt) {
         this.email = email;
         this.nickname = nickname;
@@ -87,6 +90,7 @@ public class User {
         this.roleCode = roleCode;
 		this.fcmToken = fcmToken;
 		this.termsAgreedYn = termsAgreedYn;
+		this.privacyAgreedYn = privacyAgreedYn;
 		this.termsAgreedAt = LocalDateTime.now();
         this.createdAt = LocalDateTime.now(); // 생성 시 시간 자동 입력 예시
         this.updatedAt = LocalDateTime.now();
@@ -104,6 +108,6 @@ public class User {
     }
     
     public String getRoleKey() {
-        return this.roleCode.getKey();
+        return this.roleCode.getRoleKey();
     }
 }

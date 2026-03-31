@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.project.global.auth.Provider;
+import com.project.global.auth.Role;
 import com.project.global.error.NeedRegistrationException;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.entity.User;
@@ -35,24 +36,29 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public User regist(UserRequestDto UserRequest) {
 		// 중복 체크
+		String encodedPassword = "";
 		if(Provider.LOCAL.equals(UserRequest.providerCode())) {
 	        if (!userRepository.existsByEmail(UserRequest.email())) {
 	        	throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
 	        }
+	      //패스워드 암호화
+	        encodedPassword = passwordEncoder.encode(UserRequest.password());
 		} else {
 			if (!userRepository.existsByProviderId(UserRequest.providerId())) {
 				throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 소셜 계정입니다.");
 	        }
 		}
-		//패스워드 암호화
-		String encodedPassword = passwordEncoder.encode(UserRequest.password());
 		
 		//엔티티 생성
 		User user = User.builder()
 				.email(UserRequest.email())
+				.nickname(UserRequest.nickname())
 				.password(encodedPassword)
 				.providerCode(UserRequest.providerCode())
 				.providerId(UserRequest.providerId())
+				.roleCode(Role.USER) // 기본 권한 설정
+				.termsAgreedYn(UserRequest.termsAgreedYn())
+				.privacyAgreedYn(UserRequest.privacyAgreedYn())
 				.build();
 		//등록
 		user = userRepository.save(user);
