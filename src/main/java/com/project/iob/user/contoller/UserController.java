@@ -60,22 +60,6 @@ public class UserController {
         return ResponseEntity.ok(response); 
 	}
     
-    @Operation(summary = "회원가입", description = "새로운 유저 정보를 등록합니다. 중복된 이메일이나 소셜 계정은 가입이 거부됩니다.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "회원가입 성공 (신규 유저 정보 반환)"),
-        @ApiResponse(responseCode = "400", description = "입력값 검증 실패 (비밀번호 형식 등)"),
-        @ApiResponse(responseCode = "409", description = "이미 존재하는 이메일 또는 소셜 계정")
-    })
-    @PostMapping("/regist")
-    public ResponseEntity<UserResponseDto> regist(@RequestBody UserRequestDto UserRequest) {
-    	User savedUser = userService.regist(UserRequest);
-    	
-    	// 엔티티 -> DTO 변환 (비밀번호 제외)
-    	UserResponseDto response = UserResponseDto.from(savedUser);
-        
-        return ResponseEntity.ok(response);
-	}
-    
     //탈퇴
     @Operation(summary = "회원 탈퇴", description = "유저의 계정을 삭제하고 관련된 모든 인증 정보를 무효화합니다. 성공 시 쿠키가 삭제됩니다.")
     @ApiResponses(value = {
@@ -94,7 +78,7 @@ public class UserController {
     	// userService.deleteUser(user.getId());
     	
     	// 2. FcmToken 등 인증 관련 정보 무효화 (로그아웃 처리)
-    	// userService.updateFcmToken(user.getId(), null); // FCM 토큰 초기화 (선택적)
+    	 userService.updateFcmToken(user.getEmail(), null); // FCM 토큰 초기화 (선택적)
         
         // 3. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
     	authService.logout(Provider.LOCAL.equals(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());

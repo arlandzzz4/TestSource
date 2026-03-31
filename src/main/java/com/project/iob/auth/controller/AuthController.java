@@ -18,6 +18,8 @@ import com.project.iob.auth.dto.LoginRequestDto;
 import com.project.iob.auth.dto.LoginResponseDto;
 import com.project.iob.auth.dto.TokenDto;
 import com.project.iob.auth.service.AuthService;
+import com.project.iob.user.dto.UserRequestDto;
+import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
 import com.project.iob.user.service.UserService;
 
@@ -144,5 +146,21 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(body);
     }
+    
+    @Operation(summary = "회원가입", description = "새로운 유저 정보를 등록합니다. 중복된 이메일이나 소셜 계정은 가입이 거부됩니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "회원가입 성공 (신규 유저 정보 반환)"),
+        @ApiResponse(responseCode = "400", description = "입력값 검증 실패 (비밀번호 형식 등)"),
+        @ApiResponse(responseCode = "409", description = "이미 존재하는 이메일 또는 소셜 계정")
+    })
+    @PostMapping("/regist")
+    public ResponseEntity<UserResponseDto> regist(@RequestBody UserRequestDto UserRequest) {
+    	User savedUser = userService.regist(UserRequest);
+    	
+    	// 엔티티 -> DTO 변환 (비밀번호 제외)
+    	UserResponseDto response = UserResponseDto.from(savedUser);
+        
+        return ResponseEntity.ok(response);
+	}
     
 }
