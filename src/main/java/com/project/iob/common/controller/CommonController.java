@@ -23,6 +23,7 @@ import com.project.iob.common.service.MailService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,8 +53,8 @@ public class CommonController {
 	})
 	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> upload(
-    		@Parameter(description = "업로드할 이미지 파일 (jpg, png 등)", required = true) // <--- 파라미터 설명 추가
-    		@RequestPart MultipartFile file) throws IOException {
+    		@Parameter(description = "업로드할 이미지 파일 (jpg, png 등)", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+    		@RequestPart("file") MultipartFile file) throws IOException {
     	// 1. 파일이 비어있는지 확인
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("파일이 없습니다.");
@@ -87,8 +88,8 @@ public class CommonController {
 	})
     @PostMapping(value = "/uploadList", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadList(
-    		@Parameter(description = "업로드할 이미지 파일 목록 (jpg, png 등)", required = true)
-    		@RequestPart List<MultipartFile> files) throws IOException{
+    		@Parameter(description = "업로드할 이미지 파일 목록 (jpg, png 등)", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+    		@RequestPart("file") List<MultipartFile> files) throws IOException{
     	// 1. 파일 리스트가 비어있는지 체크
         if (files == null || files.isEmpty()) {
             return ResponseEntity.badRequest().body("업로드할 파일이 없습니다.");
