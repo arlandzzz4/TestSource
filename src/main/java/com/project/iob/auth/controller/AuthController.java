@@ -57,13 +57,15 @@ public class AuthController {
         if(tokenDto.isSuccess()) {
         	//TODO 로그인 정보 외 필요한 정보 필요시
         	User user = userService.searchUserByEmail(loginRequest.email());
-
+        	
             // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
             ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenDto.refreshToken())
                     .path("/")
                     .httpOnly(true)
-                    .secure(true) // HTTPS 환경 필수
-                    .sameSite("Strict")
+                    .secure(false)
+                    //.secure(true) // HTTPS 환경 필수
+                    //.sameSite("Strict")
+                    .sameSite("Lax")
                     .maxAge(60 * 60 * 24 * 7) // 7일
                     .build();
 
@@ -73,6 +75,7 @@ public class AuthController {
                     .body(LoginResponseDto.builder()
                             .accessToken(tokenDto.accessToken()) // ★ 수정: refreshToken 넣지 않도록 주의
                             .user(user)
+                            .isSuccess(true)
                             .build());
         }else {
         	// 로그인 실패 시 적절한 에러 메시지와 상태 코드 반환 (예: 401 Unauthorized)

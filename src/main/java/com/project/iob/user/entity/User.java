@@ -2,6 +2,7 @@ package com.project.iob.user.entity;
 
 import java.time.LocalDateTime;
 
+import com.project.global.enums.Provider;
 import com.project.global.enums.Role;
 
 import jakarta.persistence.Column;
@@ -32,7 +33,7 @@ public class User {
     private String password;
     
     @Column(name = "provider_code")
-    private String providerCode = "local";
+    private String providerCode = Provider.LOCAL.getKey(); // 기본값 설정
     
     @Column(name = "provider_id")
     private String providerId;
@@ -44,8 +45,7 @@ public class User {
     private String userStatusCode;
     
     @Column(name = "role_code")
-    @Enumerated(EnumType.STRING)
-    private Role roleCode;
+    private String roleCode;
     
     @Column(name = "fcm_token")
     private String fcmToken;
@@ -77,8 +77,12 @@ public class User {
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
     
+    public static User createEmpty() {
+        return new User();
+    }
+    
     @Builder
-    public User(String email, String nickname, String password, String providerCode, String providerId, String profileImageUrl, String userStatusCode, Role roleCode, String fcmToken, String termsAgreedYn, String privacyAgreedYn,
+    public User(String email, String nickname, String password, String providerCode, String providerId, String profileImageUrl, String userStatusCode, String roleCode, String fcmToken, String termsAgreedYn, String privacyAgreedYn,
     		LocalDateTime termsAgreedAt, LocalDateTime createdAt, LocalDateTime deletedAt, LocalDateTime lastLoginAt) {
         this.email = email;
         this.nickname = nickname;
@@ -107,7 +111,4 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
     
-    public String getRoleKey() {
-        return this.roleCode.getRoleKey();
-    }
 }

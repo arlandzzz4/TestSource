@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.global.enums.Provider;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.user.dto.FcmTokenRequest;
-import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
 import com.project.iob.user.service.UserService;
@@ -110,10 +110,14 @@ public class UserController {
     @PatchMapping("/me/fcmToken")
     public ResponseEntity<Void> updateFcmToken(
         @RequestBody FcmTokenRequest request,
-        @AuthenticationPrincipal User user // 현재 로그인된 유저
+        @AuthenticationPrincipal String email
     ) {
+    	if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    	
         // UserService에서 해당 유저의 fcm_token 필드만 업데이트
-        userService.updateFcmToken(user.getEmail(), request.fcmToken());
+        userService.updateFcmToken(email, request.fcmToken());
         return ResponseEntity.noContent().build();
     }
 }

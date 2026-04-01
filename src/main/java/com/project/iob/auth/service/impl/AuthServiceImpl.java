@@ -89,9 +89,11 @@ public class AuthServiceImpl implements AuthService {
             }
     	}else {
     		// 3. 비밀번호 검증 (검증 실패 시 여기서 바로 예외 던짐)
-        	if (!passwordEncoder.matches(loginRequest.password(), rt.getPassword())) {
-        	    return new TokenDto("비밀번호가 일치하지 않습니다.");
-        	}
+    		if (Provider.LOCAL.getKey().equals(loginRequest.providerCode())) {
+	        	if (!passwordEncoder.matches(loginRequest.password(), rt.getPassword())) {
+	        	    return new TokenDto("비밀번호가 일치하지 않습니다.");
+	        	}
+    		}
     	}
 
     	// 4. 인증에 성공했으므로 이제 "토큰 발급"
@@ -125,6 +127,7 @@ public class AuthServiceImpl implements AuthService {
 	public void logout(String email, String providerCode) {
         // DB에서 해당 유저의 리프레시 토큰을 삭제하여 재발급을 원천 차단
         refreshTokenRepository.deleteRefreshTokenById(email, providerCode);
+        em.flush(); // 영속성 컨텍스트의 변경 내용을 DB에 반영
     }
 	
 }
