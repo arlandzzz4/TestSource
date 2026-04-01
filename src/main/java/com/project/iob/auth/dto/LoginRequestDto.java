@@ -15,5 +15,6 @@ public record LoginRequestDto(
     
     String providerId,
     
-    String nickname
+    String nickname,
+    String fcmToken
 ) {}

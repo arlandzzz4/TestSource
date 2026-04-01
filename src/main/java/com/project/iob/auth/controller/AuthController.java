@@ -68,6 +68,10 @@ public class AuthController {
                     .sameSite("Lax")
                     .maxAge(60 * 60 * 24 * 7) // 7일
                     .build();
+            //fcmToken 업데이트 (로그인 시마다 최신화)
+        	if(loginRequest.fcmToken() != null && !loginRequest.fcmToken().isBlank()) {
+        		userService.updateFcmToken(loginRequest.email(), loginRequest.fcmToken());
+    		}
 
             // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
             return ResponseEntity.ok()
