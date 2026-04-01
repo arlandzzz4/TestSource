@@ -38,8 +38,10 @@ springdoc:
     doc-expansion: list
 
 mybatis:
-  mapper-locations: classpath:mapper/**/*.xml
-  configuration:
+ mapper-locations:
+ - classpath:mapper/**/*.xml
+ - classpath:mapper.common/*.xml
+ configuration:
     map-underscore-to-camel-case: true
 
 jwt:  
