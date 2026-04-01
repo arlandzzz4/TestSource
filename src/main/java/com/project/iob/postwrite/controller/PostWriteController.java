@@ -32,8 +32,8 @@ public class PostWriteController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PostMapping("/create")
-    public ResponseEntity<Void> createPost(@RequestBody PostWriteDto postWriteDto) {
+    public ResponseEntity<Long> createPost(@RequestBody PostWriteDto postWriteDto) {
         postWriteService.createPost(postWriteDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(postWriteDto.getPostId());
     }
 }

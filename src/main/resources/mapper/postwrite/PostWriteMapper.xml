@@ -5,7 +5,7 @@
 <mapper namespace="com.project.iob.postwrite.service.repository.mybatis.PostWriteDAO">
  
     <!-- 게시글 등록 -->
-    <insert id="insert">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="postId">
         INSERT INTO posts (
             user_email,
             category_code,

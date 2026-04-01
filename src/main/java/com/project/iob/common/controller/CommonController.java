@@ -30,6 +30,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.web.bind.annotation.RequestParam;
+
 @Tag(name = "Common API", description = "파일업로드, 이메일 등 공통 API")
 @Slf4j
 @RestController
@@ -42,73 +44,77 @@ public class CommonController {
     private final CommonService commonService;
     
     @Operation(
-	    summary = "단일 이미지 파일 업로드", 
-	    description = "S3 또는 서버에 하나의 이미지 파일을 업로드하고 저장된 URL을 반환합니다."
-	)
-	@ApiResponses(value = {
-	    @ApiResponse(responseCode = "200", description = "업로드 성공 (저장된 URL 반환)"),
-	    @ApiResponse(responseCode = "400", description = "파일이 없거나 잘못된 요청"),
-	    @ApiResponse(responseCode = "415", description = "이미지 형식이 아닌 파일 업로드 시도"),
-	    @ApiResponse(responseCode = "500", description = "S3 서버 전송 중 서버 에러")
-	})
-	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    	    summary = "단일 이미지 파일 업로드", 
+    	    description = "S3 또는 서버에 하나의 이미지 파일을 업로드하고 저장된 URL을 반환합니다."
+    	)
+    	@ApiResponses(value = {
+    	    @ApiResponse(responseCode = "200", description = "업로드 성공 (저장된 URL 반환)"),
+    	    @ApiResponse(responseCode = "400", description = "파일이 없거나 잘못된 요청"),
+    	    @ApiResponse(responseCode = "415", description = "이미지 형식이 아닌 파일 업로드 시도"),
+    	    @ApiResponse(responseCode = "500", description = "S3 서버 전송 중 서버 에러")
+    	})
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> upload(
-    		@Parameter(description = "업로드할 이미지 파일 (jpg, png 등)", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-    		@RequestPart("file") MultipartFile file) throws IOException {
-    	// 1. 파일이 비어있는지 확인
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("파일이 없습니다.");
-        }
+            @Parameter(description = "게시글 ID", required = true)
+            @RequestParam("postId") Long postId,
+            @Parameter(description = "업로드할 이미지 파일 (jpg, png 등)", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+            @RequestPart("file") MultipartFile file) throws IOException {
+    	    // 1. 파일이 비어있는지 확인
+    	    if (file.isEmpty()) {
+    	        return ResponseEntity.badRequest().body("파일이 없습니다.");
+    	    }
 
-        // 2. Content-Type이 image로 시작하는지 확인
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                                 .body("이미지 파일만 허용됩니다.");
-        }
+    	    // 2. Content-Type이 image로 시작하는지 확인
+    	    String contentType = file.getContentType();
+    	    if (contentType == null || !contentType.startsWith("image/")) {
+    	        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    	                             .body("이미지 파일만 허용됩니다.");
+    	    }
 
-        // 3. (심화) 파일 확장자 추가 체크
-        String fileName = file.getOriginalFilename();
-        if (fileName != null && !fileName.toLowerCase().matches(".*\\.(jpg|jpeg|png|gif|webp)$")) {
-            return ResponseEntity.badRequest().body("지원하지 않는 확장자입니다.");
-        }
-        
-    	String filename = fileService.upload(file); // ★ 실제 파일 업로드 로직은 MultipartFile을 받아서 처리해야 함 (예시에서는 생략)
-        // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
-        return ResponseEntity.ok()
-                .body(filename);
-    }
-    
-    @Operation(summary = "파일업로드", description = "다수의 파일을 업로드합니다.")
-    @ApiResponses(value = {
-	    @ApiResponse(responseCode = "200", description = "업로드 성공 (저장된 URL 반환)"),
-	    @ApiResponse(responseCode = "400", description = "파일이 없거나 잘못된 요청"),
-	    @ApiResponse(responseCode = "415", description = "이미지 형식이 아닌 파일 업로드 시도"),
-	    @ApiResponse(responseCode = "500", description = "S3 서버 전송 중 서버 에러")
-	})
-    @PostMapping(value = "/uploadList", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadList(
-    		@Parameter(description = "업로드할 이미지 파일 목록 (jpg, png 등)", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-    		@RequestPart("file") List<MultipartFile> files) throws IOException{
-    	// 1. 파일 리스트가 비어있는지 체크
-        if (files == null || files.isEmpty()) {
-            return ResponseEntity.badRequest().body("업로드할 파일이 없습니다.");
-        }
+    	    // 3. (심화) 파일 확장자 추가 체크
+    	    String fileName = file.getOriginalFilename();
+    	    if (fileName != null && !fileName.toLowerCase().matches(".*\\.(jpg|jpeg|png|gif|webp)$")) {
+    	        return ResponseEntity.badRequest().body("지원하지 않는 확장자입니다.");
+    	    }
+    	    
+    	    String filename = fileService.upload(file, postId); // ★ 실제 파일 업로드 로직은 MultipartFile을 받아서 처리해야 함 (예시에서는 생략)
+    	    // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
+    	    return ResponseEntity.ok()
+    	            .body(filename);
+    	}
 
-        // 2. 모든 파일이 이미지인지 전수 조사 (리더의 보안 수칙)
-        for (MultipartFile file : files) {
-            String contentType = file.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                                     .body("이미지 파일만 업로드 가능합니다: " + file.getOriginalFilename());
-            }
-        }
-        
-    	List<String> filenames = fileService.uploadList(files);
-        // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
-        return ResponseEntity.ok()
-                .body(filenames);
-    }
+    	@Operation(summary = "파일업로드", description = "다수의 파일을 업로드합니다.")
+    	@ApiResponses(value = {
+    	    @ApiResponse(responseCode = "200", description = "업로드 성공 (저장된 URL 반환)"),
+    	    @ApiResponse(responseCode = "400", description = "파일이 없거나 잘못된 요청"),
+    	    @ApiResponse(responseCode = "415", description = "이미지 형식이 아닌 파일 업로드 시도"),
+    	    @ApiResponse(responseCode = "500", description = "S3 서버 전송 중 서버 에러")
+    	})
+    	@PostMapping(value = "/uploadList", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    	public ResponseEntity<?> uploadList(
+    	        @Parameter(description = "게시글 ID", required = true)
+    	        @RequestParam("postId") Long postId,
+    	        @Parameter(description = "업로드할 이미지 파일 목록 (jpg, png 등)", required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+    	        @RequestPart("file") List<MultipartFile> files) throws IOException {
+    	    // 1. 파일 리스트가 비어있는지 체크
+    	    if (files == null || files.isEmpty()) {
+    	        return ResponseEntity.badRequest().body("업로드할 파일이 없습니다.");
+    	    }
+
+    	    // 2. 모든 파일이 이미지인지 전수 조사 (리더의 보안 수칙)
+    	    for (MultipartFile file : files) {
+    	        String contentType = file.getContentType();
+    	        if (contentType == null || !contentType.startsWith("image/")) {
+    	            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    	                                 .body("이미지 파일만 업로드 가능합니다: " + file.getOriginalFilename());
+    	        }
+    	    }
+    	    
+    	    List<String> filenames = fileService.uploadList(files, postId);
+    	    // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
+    	    return ResponseEntity.ok()
+    	            .body(filenames);
+    	}
     
     @Operation(
 	    summary = "파일 삭제", 

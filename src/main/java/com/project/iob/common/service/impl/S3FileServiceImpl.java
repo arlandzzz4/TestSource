@@ -15,6 +15,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.project.iob.common.service.FileService;
+import com.project.iob.common.service.repository.mybatis.PostImageDAO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,26 +25,38 @@ import lombok.RequiredArgsConstructor;
 public class S3FileServiceImpl implements FileService {
 
     private final AmazonS3 amazonS3;
+    private final PostImageDAO postImageDAO;
 
     @Value("${cloud.aws.s3.bucket}") // 2.x 버전은 보통 cloud.aws 로 시작합니다.
     private String bucket;
 
     @Override
-    public String upload(MultipartFile file) throws IOException {
+    public String upload(MultipartFile file, Long postId) throws IOException {
         // 1. 파일명 중복 방지
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-
         // 2. 메타데이터 설정 (파일 타입 및 크기)
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
-
         // 3. S3 업로드 실행
         amazonS3.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata)
                 .withCannedAcl(CannedAccessControlList.PublicRead)); // 외부에서 읽기 가능하도록 설정
-
         // 4. 저장된 파일의 URL 반환
         return amazonS3.getUrl(bucket, fileName).toString();
+    }
+
+    @Override
+    public List<String> uploadList(List<MultipartFile> files, Long postId) throws IOException {
+        List<String> fileNames = new java.util.ArrayList<>();
+        for (MultipartFile multipartFile : files) {
+            String fileName = upload(multipartFile, postId); // 개별 파일 업로드
+            fileNames.add(fileName); // 업로드된 파일의 URL을 리스트에 추가
+        }
+        // post_images 테이블에 INSERT
+        if (!fileNames.isEmpty()) {
+            postImageDAO.insertImages(postId, fileNames);
+        }
+        return fileNames;
     }
 
     @Override
@@ -51,14 +64,4 @@ public class S3FileServiceImpl implements FileService {
         // 파일 삭제 (파일명/Key 기준)
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }
-
-	@Override
-	public List<String> uploadList(List<MultipartFile> file) throws IOException {
-		 List<String> fileNames = new java.util.ArrayList<>();
-	     for (MultipartFile multipartFile : file) {
-	         String fileName = upload(multipartFile); // 개별 파일 업로드
-	         fileNames.add(fileName); // 업로드된 파일의 URL을 리스트에 추가
-	     }	
-	     return fileNames;
-	}
 }

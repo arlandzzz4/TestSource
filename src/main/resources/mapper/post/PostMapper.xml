@@ -4,23 +4,22 @@
 <mapper namespace="com.project.iob.post.service.repository.mybatis.PostDAO">
 
     <select id="find" resultType="com.project.iob.post.dto.PostDto">
-    	/*mapper.post.PostMapper.find */
-        SELECT p.POST_ID										AS postId
-        	, p.USER_EMAIL										AS userEmail
-        	, p.CATEGORY_CODE									AS categoryCode
-        	, p.TITLE											AS title
-        	, p.CREATED_AT										AS createdAt
-        	, p.UPDATED_AT										AS updatedAt
-        	, u.NICKNAME										AS nickname
-        	, (SELECT COUNT(*) FROM likes WHERE TARGET_ID = p.POST_ID) AS likes
-        	, (SELECT COUNT(*) FROM comments WHERE POST_ID = p.POST_ID AND DEL_YN = 0) AS comments
-		FROM posts p JOIN users u ON p.USER_EMAIL = u.EMAIL
-		WHERE p.DEL_YN = 0
-		<if test="lastId != null">
-        	AND p.POST_ID &lt; #{lastId}
-    	</if>
-		ORDER BY p.POST_ID
-		LIMIT #{size}
-    </select>
-
+    SELECT p.POST_ID          AS postId
+        , p.USER_EMAIL        AS userEmail
+        , p.CATEGORY_CODE     AS categoryCode
+        , p.TITLE             AS title
+        , p.CREATED_AT        AS createdAt
+        , p.UPDATED_AT        AS updatedAt
+        , u.NICKNAME          AS nickname
+        , (SELECT COUNT(*) FROM likes WHERE TARGET_ID = p.POST_ID) AS likes
+        , (SELECT COUNT(*) FROM comments WHERE POST_ID = p.POST_ID AND DEL_YN = 'N') AS comments
+        , (SELECT image_url FROM post_images WHERE post_id = p.POST_ID AND del_yn = 'N' ORDER BY sort_order ASC LIMIT 1) AS thumbnail
+    FROM posts p JOIN users u ON p.USER_EMAIL = u.EMAIL
+    WHERE p.DEL_YN = 'N'
+    <if test="lastId != null">
+        AND p.POST_ID &lt; #{lastId}
+    </if>
+    ORDER BY p.POST_ID DESC
+    LIMIT #{size}
+</select>
 </mapper>
