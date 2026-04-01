@@ -13,7 +13,10 @@
             provider_id,
             profile_image_url,
             user_status_code,
-            role_code,
+            CASE role_code 
+    WHEN '01' THEN 'USER' 
+    WHEN '02' THEN 'ADMIN' 
+END AS role_code,
             fcm_token,
             terms_agreed_yn,
             privacy_agreed_yn,
