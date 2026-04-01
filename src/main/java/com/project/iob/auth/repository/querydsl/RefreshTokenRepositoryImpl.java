@@ -21,7 +21,7 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepositoryCustom 
     	return Optional.ofNullable(
                 queryFactory
                     .selectFrom(refreshToken1)
-                    .where(Provider.LOCAL.equals(providerCode)?refreshToken1.email.eq(email):refreshToken1.providerId.eq(email))
+                    .where(Provider.LOCAL.name().equals(providerCode)?refreshToken1.email.eq(email):refreshToken1.providerId.eq(email))
                     .fetchOne()
             );
 	}
