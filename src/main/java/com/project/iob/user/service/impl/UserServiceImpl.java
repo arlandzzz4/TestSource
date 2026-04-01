@@ -83,7 +83,6 @@ public class UserServiceImpl implements UserService {
      */
 	@Override
 	public void updateFcmToken(String email, @NotBlank(message = "fcmToken은 필수 입력 값입니다.") String fcmToken) {
-		// TODO 테이블 확정되면 수정
 		userDAO.updateFcmToken(email, fcmToken);
 	}
 
@@ -92,7 +91,6 @@ public class UserServiceImpl implements UserService {
      */
 	@Override
 	public void clearFcmToken(String email) {
-		// TODO Auto-generated method stub
 		userDAO.clearFcmToken(email);
 	}
 }
