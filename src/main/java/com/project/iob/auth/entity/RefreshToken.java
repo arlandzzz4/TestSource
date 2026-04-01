@@ -51,4 +51,9 @@ public class RefreshToken {
         this.refreshToken = token;
         this.tokenRotatedAt = LocalDateTime.now();
     }
+
+	public void updateProvider(String providerCode, String providerId) {
+		this.providerCode = providerCode;
+		this.providerId = providerId;
+	}
 }

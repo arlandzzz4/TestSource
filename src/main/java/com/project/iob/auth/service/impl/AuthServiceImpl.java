@@ -14,6 +14,7 @@ import com.project.iob.auth.dto.TokenDto;
 import com.project.iob.auth.entity.RefreshToken;
 import com.project.iob.auth.repository.querydsl.RefreshTokenRepository;
 import com.project.iob.auth.service.AuthService;
+import com.project.iob.user.repository.mybatis.UserDAO;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserDAO userDAO;
     private final EntityManager em;
 
     /**
@@ -52,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
                 return new TokenDto(tokenProvider.createAccessToken(identifier), savedToken.getRefreshToken());
             }
 
-            // 보안 위협: 이미 사용된 토큰이 다시 들어옴
+            // 이미 사용된 토큰이 다시 들어옴
             refreshTokenRepository.delete(savedToken);
             throw new IllegalStateException("보안 위협이 감지되어 강제 로그아웃되었습니다.");
         }
@@ -74,34 +76,33 @@ public class AuthServiceImpl implements AuthService {
      */
     @Transactional
 	public TokenDto login(LoginRequestDto loginRequest) throws NeedRegistrationException {
-    	// 1. 식별자 결정 (LOCAL인 경우 이메일, 그 외에는 소셜 ID 등)
-    	String identifier = Provider.LOCAL.getKey().equals(loginRequest.providerCode()) 
-    	                    ? loginRequest.email() 
-    	                    : loginRequest.providerId();
+    	String email = loginRequest.email();
+        String providerCode = loginRequest.providerCode();
 
-    	// 2. DB에서 사용자 조회 및 "인증" 먼저 수행
-    	RefreshToken rt = refreshTokenRepository.findByEmail(identifier, loginRequest.providerCode()).orElse(null);
-    	if(rt == null) {
-            if (Provider.LOCAL.getKey().equals(loginRequest.providerCode())) {
-                return new TokenDto("아이디 또는 비밀번호가 일치하지 않습니다.");
-            }else {
-            	return new TokenDto("해당 소셜 계정으로 가입된 사용자가 없습니다. 회원가입이 필요합니다.");
+        RefreshToken rt = refreshTokenRepository.findByEmail(email).orElse(null);
+        if (rt == null) {
+            return new TokenDto("해당 계정으로 가입된 사용자가 없습니다. 회원가입이 필요합니다.");
+        }
+
+        if (Provider.GOOGLE.getKey().equals(providerCode) && Provider.LOCAL.getKey().equals(rt.getProviderCode())) {
+            rt.updateProvider(Provider.GOOGLE.getKey(), loginRequest.providerId());
+        } 
+        else if (Provider.LOCAL.getKey().equals(providerCode)) {
+        	if (!Provider.LOCAL.getKey().equals(rt.getProviderCode())) {
+                return new TokenDto("구글 등 소셜 계정으로 가입된 이메일입니다. 소셜 로그인을 이용해 주세요.");
             }
-    	}else {
-    		// 3. 비밀번호 검증 (검증 실패 시 여기서 바로 예외 던짐)
-    		if (Provider.LOCAL.getKey().equals(loginRequest.providerCode())) {
-	        	if (!passwordEncoder.matches(loginRequest.password(), rt.getPassword())) {
-	        	    return new TokenDto("비밀번호가 일치하지 않습니다.");
-	        	}
-    		}
-    	}
+            if (loginRequest.password() == null || !passwordEncoder.matches(loginRequest.password(), rt.getPassword())) {
+                return new TokenDto("비밀번호가 일치하지 않습니다.");
+            }
+        }
+        
+    	String accessToken = tokenProvider.createAccessToken(email);
+    	String refreshToken = tokenProvider.createRefreshToken(email);
 
-    	// 4. 인증에 성공했으므로 이제 "토큰 발급"
-    	String accessToken = tokenProvider.createAccessToken(identifier);
-    	String refreshToken = tokenProvider.createRefreshToken(identifier);
-
-    	// 5. DB의 RefreshToken 값 업데이트 (Dirty Checking)
     	rt.updateToken(refreshToken);
+    	if (loginRequest.fcmToken() != null) {
+            userDAO.updateFcmToken(email, loginRequest.fcmToken());
+        }
 
     	return new TokenDto(accessToken, refreshToken);
 	}
