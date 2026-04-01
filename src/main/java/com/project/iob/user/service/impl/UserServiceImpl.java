@@ -8,7 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.project.global.enums.Provider;
 import com.project.global.enums.Role;
-import com.project.global.error.NeedRegistrationException;
+import com.project.global.enums.UserStateCode;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.entity.User;
 import com.project.iob.user.querydsl.UserRepository;
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
 	        if (!userRepository.existsByEmail(UserRequest.email())) {
 	        	throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
 	        }
-	      //패스워드 암호화
+	        //패스워드 암호화
 	        encodedPassword = passwordEncoder.encode(UserRequest.password());
 		} else {
 			if (!userRepository.existsByProviderId(UserRequest.providerId())) {
@@ -56,12 +56,14 @@ public class UserServiceImpl implements UserService {
 				.password(encodedPassword)
 				.providerCode(UserRequest.providerCode())
 				.providerId(UserRequest.providerId())
-				.roleCode(Role.USER) // 기본 권한 설정
+				.roleCode(Role.USER.getCode()) // 기본 권한 설정
 				.termsAgreedYn(UserRequest.termsAgreedYn())
 				.privacyAgreedYn(UserRequest.privacyAgreedYn())
+				.userStatusCode(UserStateCode.ACTIVE.getKey()) // 기본 상태 설정
 				.build();
 		//등록
 		user = userRepository.save(user);
+		em.flush(); // 영속성 컨텍스트의 변경 내용을 DB에 반영
 		//리턴
 		return user;
 	}
@@ -72,7 +74,7 @@ public class UserServiceImpl implements UserService {
 	@Transactional(readOnly = true)
 	public User searchUserByEmail(String email) {
 		User user = userDAO.findByEmail(email)
-	            .orElseThrow(() -> new NeedRegistrationException("회원이 아닙니다."));
+				.orElseGet(() -> User.createEmpty());
 		return user;
 	}
 

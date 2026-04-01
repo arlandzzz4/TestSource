@@ -55,7 +55,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // 5. 시큐리티 세션에 저장될 유저 객체 반환
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
+                Collections.singleton(new SimpleGrantedAuthority(user.getRoleCode())),
                 attributes,
                 "email" // 검증 기준이 될 필드명
         );
