@@ -75,14 +75,14 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
 	public TokenDto login(LoginRequestDto loginRequest) throws NeedRegistrationException {
     	// 1. 식별자 결정 (LOCAL인 경우 이메일, 그 외에는 소셜 ID 등)
-    	String identifier = Provider.LOCAL.equals(loginRequest.providerCode()) 
+    	String identifier = Provider.LOCAL.getKey().equals(loginRequest.providerCode()) 
     	                    ? loginRequest.email() 
     	                    : loginRequest.providerId();
 
     	// 2. DB에서 사용자 조회 및 "인증" 먼저 수행
     	RefreshToken rt = refreshTokenRepository.findByEmail(identifier, loginRequest.providerCode()).orElse(null);
     	if(rt == null) {
-            if (Provider.LOCAL.equals(loginRequest.providerCode())) {
+            if (Provider.LOCAL.getKey().equals(loginRequest.providerCode())) {
                 return new TokenDto("아이디 또는 비밀번호가 일치하지 않습니다.");
             }else {
             	return new TokenDto("해당 소셜 계정으로 가입된 사용자가 없습니다. 회원가입이 필요합니다.");

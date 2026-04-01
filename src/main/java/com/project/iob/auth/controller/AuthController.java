@@ -127,7 +127,7 @@ public class AuthController {
         userService.clearFcmToken(user.getEmail());
         
         // 1. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
-        authService.logout(Provider.LOCAL.equals(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
+        authService.logout(Provider.LOCAL.getKey().equals(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
 
         // 2. 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")

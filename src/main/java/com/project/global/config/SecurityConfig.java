@@ -23,6 +23,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.project.global.enums.Role;
 import com.project.global.error.JwtAccessDeniedHandler;
 import com.project.global.error.JwtAuthenticationEntryPoint;
 import com.project.global.security.JwtAuthenticationFilter;
@@ -75,8 +76,8 @@ public class SecurityConfig {
                 
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // 관리자 API (권한 필요)
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/profile/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.getCode())
+                .requestMatchers("/api/profile/**").hasAnyRole(Role.USER.getCode(), Role.ADMIN.getCode())
                 // 그 외 모든 요청은 인증 필요 (4주 프로젝트 보안상 권장)
                 //.anyRequest().authenticated() 
                 .anyRequest().permitAll()

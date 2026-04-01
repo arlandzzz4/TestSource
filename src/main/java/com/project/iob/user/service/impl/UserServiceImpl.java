@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 	public User regist(UserRequestDto UserRequest) {
 		// 중복 체크
 		String encodedPassword = "";
-		if(Provider.LOCAL.equals(UserRequest.providerCode())) {
+		if(Provider.LOCAL.getKey().equals(UserRequest.providerCode())) {
 	        if (!userRepository.existsByEmail(UserRequest.email())) {
 	        	throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
 	        }
