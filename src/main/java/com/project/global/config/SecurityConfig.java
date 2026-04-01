@@ -132,7 +132,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
         	    "https://information-of-balance.xyz",      // 운영 도메인 (필수)
         	    "https://www.information-of-balance.xyz",  // www 포함 도메인 (필수)
-        	    "http://localhost:3000"                   // 로컬 개발용 (선택)
+        	    "http://localhost:3000",                   // 로컬 개발용 (선택)
+        	    "http://localhost:8080"						 // 이 줄 추가. 스웨거 ui에서 테스트용
         	));
         
         //인증 정보(쿠키 등)를 같이 보낸다면 아래 설정도 필수입니다.
