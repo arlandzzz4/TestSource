@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.iob.map.repository.MapPinMapper">
+
+    <!-- 전체 핀 조회 (삭제된 것 제외) -->
+    <select id="getAllPins" resultType="com.project.iob.map.dto.MapPinDto">
+        SELECT
+            p.pin_id,
+            p.user_email,
+            u.nickname,
+            p.place_name,
+            p.facility_type,
+            p.comment,
+            p.latitude,
+            p.longitude,
+            p.del_yn,
+            p.created_at
+        FROM map_pins p
+        LEFT JOIN users u ON p.user_email = u.email
+        WHERE p.del_yn = 'N'
+        ORDER BY p.created_at DESC
+    </select>
+
+    <!-- 핀 등록 -->
+    <insert id="insertPin" parameterType="com.project.iob.map.dto.MapPinDto">
+        INSERT INTO map_pins (
+            user_email,
+            place_name,
+            facility_type,
+            comment,
+            latitude,
+            longitude,
+            del_yn,
+            created_at
+        ) VALUES (
+            #{userEmail},
+            #{placeName},
+            #{facilityType},
+            #{comment},
+            #{latitude},
+            #{longitude},
+            'N',
+            NOW()
+        )
+    </insert>
+
+    <!-- 핀 삭제 (del_yn = Y) -->
+    <update id="deletePin" parameterType="Long">
+        UPDATE map_pins
+        SET del_yn = 'Y'
+        WHERE pin_id = #{pinId}
+    </update>
+
+</mapper>
