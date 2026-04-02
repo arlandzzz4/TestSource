@@ -11,7 +11,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
 @Configuration
-@Profile("prod, local") // S3 클라이언트는 프로덕션 환경에서만 활성화
+@Profile("prod") // S3 클라이언트는 프로덕션 환경에서만 활성화
 public class S3Config {
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
