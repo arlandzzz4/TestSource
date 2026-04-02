@@ -25,6 +25,7 @@ public class JacksonConfig {
         // 2. LocalDateTime의 포맷을 강제로 고정
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(formatter));
+        javaTimeModule.addDeserializer(LocalDateTime.class, new com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer(formatter));
         
         objectMapper.registerModule(javaTimeModule);
         
