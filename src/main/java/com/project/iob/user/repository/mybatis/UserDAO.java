@@ -19,3 +19,4 @@ public interface UserDAO {
     // 특정 조건의 사용자 리스트 조회 (예시)
     // List<Users> findAllActiveUsers();
 }
+
