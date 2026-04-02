@@ -44,6 +44,11 @@ public class RefreshToken {
         this.tokenRotatedAt = LocalDateTime.now();
     }
     
+    public void clearToken() {
+        this.refreshToken = null; 
+        this.tokenRotatedAt = null;
+    }
+    
     @Builder
     public RefreshToken(String email, String token, String password) {
         this.email = email;

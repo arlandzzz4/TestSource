@@ -49,7 +49,8 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepositoryCustom 
 	@Override
 	public void deleteRefreshTokenById(String email, String providerCode) {
 		queryFactory
-			.delete(refreshToken1)
+			.update(refreshToken1)
+			.setNull(refreshToken1.refreshToken)
 			.where(refreshToken1.email.eq(email).and(refreshToken1.providerCode.eq(providerCode)))
 			.execute();
 	}
