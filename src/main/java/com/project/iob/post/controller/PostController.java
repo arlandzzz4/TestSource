@@ -42,4 +42,32 @@ public class PostController {
     	
         return ResponseEntity.ok(posts); 
 	}
+	
+	@Operation(summary = "총 게시글 검색", description = "전체 게시글 수를 조회합니다. 성공 시 총 게시글 수를 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공 (총 게시글 수 반환)"),
+        @ApiResponse(responseCode = "404", description = "존재하는 게시글 수 없음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @GetMapping("/search/totalcnt")
+    public ResponseEntity<Integer> searchPostTotalCount() {
+    	int cnt = postService.searchPostCount(null, null, null);
+    	
+        return ResponseEntity.ok(cnt); 
+	}
+    
+    @Operation(summary = "오늘 작성된 게시글 수 검색", description = "오늘 작성된 게시글 수를 조회합니다. 성공 시 오늘 작성된 게시글 수를 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공 (오늘 작성된 게시글 수 반환)"),
+        @ApiResponse(responseCode = "404", description = "존재하는 게시글 수 없음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @GetMapping("/search/todaycnt")
+    public ResponseEntity<Integer> searchPostTodayCount(){
+    	//오늘
+    	String today = java.time.LocalDate.now().toString();
+    	int cnt = postService.searchPostCount(null, null, today);
+    	
+        return ResponseEntity.ok(cnt); 
+	}
 }

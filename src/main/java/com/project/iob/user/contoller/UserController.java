@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.global.enums.Provider;
+import com.project.global.enums.Role;
 import com.project.iob.auth.service.AuthService;
+import com.project.iob.common.controller.CommonController;
 import com.project.iob.user.dto.FcmTokenRequest;
 import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
@@ -39,9 +41,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserController {
 
+    private final CommonController commonController;
+
     private final UserService userService;
     private final AuthService authService;
-    
+
     @Operation(summary = "이메일로 유저 검색", description = "입력한 이메일과 일치하는 유저 정보를 조회합니다. 존재하지 않을 경우 404를 반환합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "조회 성공 (유저 정보 반환)"),
@@ -120,4 +124,35 @@ public class UserController {
         userService.updateFcmToken(email, request.fcmToken());
         return ResponseEntity.noContent().build();
     }
+    
+    @Operation(summary = "총 유저수 검색", description = "전체 유저 수를 조회합니다. 성공 시 총 유저 수를 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공 (총 유저 수 반환)"),
+        @ApiResponse(responseCode = "404", description = "존재하는 유저가 없음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @GetMapping("/search/totalcnt")
+    public ResponseEntity<Integer> searchUserTotalCount() {
+    	int cnt = userService.searchUserCount(Role.USER.getCode(), null, null); // 전체 유저 수 조회 (날짜 조건 없이)
+    	
+        return ResponseEntity.ok(cnt); 
+	}
+    
+    @Operation(summary = "오늘 가입 유저수 검색", description = "오늘 가입한 유저 수를 조회합니다. 성공 시 오늘 가입한 유저 수를 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공 (오늘 가입한 유저 수 반환)"),
+        @ApiResponse(responseCode = "404", description = "존재하는 유저가 없음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @GetMapping("/search/todaycnt")
+    public ResponseEntity<Integer> searchUserTodayCount(){
+    	//오늘
+    	String today = java.time.LocalDate.now().toString();
+    	//한달 전 
+    	String oneMonthAgo = java.time.LocalDate.now().minusMonths(1).toString();
+    	log.info("today: {}, oneMonthAgo: {}", today, oneMonthAgo);
+    	int cnt = userService.searchUserCount(Role.USER.getCode(), oneMonthAgo, today);
+    	
+        return ResponseEntity.ok(cnt); 
+	}
 }

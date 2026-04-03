@@ -12,6 +12,7 @@ public record PostDto(
         String nickname,
         int likes,
         int comments,
-        String thumbnail  // 추가
+        String thumbnail,  // 추가
+        String delYn
 ) {
 }

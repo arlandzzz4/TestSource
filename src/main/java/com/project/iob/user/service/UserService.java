@@ -25,5 +25,10 @@ public interface UserService {
      * [FCM 토큰 클리어 로직]
      */
 	public void clearFcmToken(String email);
+	
+	/**
+     * [유저 수 조회]
+     */
+	public int searchUserCount(String roleCode, String oneMonthAgo, String today);
 
 }

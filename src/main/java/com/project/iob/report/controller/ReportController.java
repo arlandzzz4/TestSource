@@ -1,0 +1,58 @@
+package com.project.iob.report.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.global.enums.Role;
+import com.project.iob.common.controller.CommonController;
+import com.project.iob.report.service.ReportService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Tag(name = "Report API", description = "신고 API")
+@Slf4j
+@RestController
+@RequestMapping("/api/report")
+@RequiredArgsConstructor
+public class ReportController {
+
+    private final CommonController commonController;
+    private final ReportService reportService;
+
+    
+    
+    @Operation(summary = "총 신고 수 검색", description = "전체 신고 수를 조회합니다. 성공 시 총 신고 수를 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공 (총 신고 수 반환)"),
+        @ApiResponse(responseCode = "404", description = "존재하는 신고가 없음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @GetMapping("/search/totalcnt")
+    public ResponseEntity<Integer> searchReportTotalCount() {
+    	int cnt = reportService.searchReportCount(null);
+    	
+        return ResponseEntity.ok(cnt); 
+	}
+    
+    @Operation(summary = "오늘 신고된 신고 검색", description = "오늘 신고된 신고 수를 조회합니다. 성공 시 오늘 신고된 신고 수를 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공 (오늘 신고된 신고 수 반환)"),
+        @ApiResponse(responseCode = "404", description = "존재하는 신고가 없음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @GetMapping("/search/todaycnt")
+    public ResponseEntity<Integer> searchReportTodayCount(){
+    	//오늘
+    	String today = java.time.LocalDate.now().toString();
+    	int cnt = reportService.searchReportCount(today);
+    	
+        return ResponseEntity.ok(cnt); 
+	}
+}

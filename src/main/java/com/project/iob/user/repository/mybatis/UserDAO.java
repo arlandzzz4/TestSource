@@ -15,6 +15,8 @@ public interface UserDAO {
 	void updateFcmToken(@Param("email")String email, @Param("fcmToken") String fcmToken);
 
 	void clearFcmToken(String email);
+
+	int findUserCount(@Param("roleCode") String roleCode, @Param("oneMonthAgo") String oneMonthAgo, @Param("today")String today);
     
     // 특정 조건의 사용자 리스트 조회 (예시)
     // List<Users> findAllActiveUsers();

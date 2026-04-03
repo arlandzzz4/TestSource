@@ -25,6 +25,10 @@ public class PostServiceImpl implements PostService {
 		List<PostDto> list = postDAO.find(lastId, size);
 		return list;
 	}
+	@Override
+	public int searchPostCount(String categoryCode, String delYn, String today) {
+		return postDAO.findPostCount(categoryCode, delYn,today);
+	}
 	
 
 }

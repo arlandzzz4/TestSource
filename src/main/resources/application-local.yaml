@@ -56,5 +56,12 @@ logging:
 file:
   upload-path: ${FILE_UPLOAD_PATH:C:/temp/uploads/} # 환경 변수가 없으면 C드라이브 사용
   resource-path: /images/**
+  
 swagger:
   server-url: http://localhost:8080
+  
+
+food:
+  api:
+    key: 73e4653c8ac39f5ec20624cfeb3778e5703b9f7d5907116ffef5ba6f5afe8b4f
+    url: https://apis.data.go.kr/1471000/FoodNtrCpntDbInfo02/getFoodNtrCpntDbInq02   
