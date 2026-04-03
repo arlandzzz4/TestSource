@@ -17,7 +17,7 @@ public class ReportServiceImpl implements ReportService {
     private final ReportDAO reportDAO; // MyBatis 매퍼 주입
 	
 	/**
-     * [날짜별 사용자 조회. 날짜 없을 경우 총 사용자 조회]
+     * [신고수 조회]
      */
 	@Override
 	public int searchReportCount(String today) {

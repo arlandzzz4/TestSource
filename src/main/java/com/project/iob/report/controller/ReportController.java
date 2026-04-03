@@ -36,7 +36,7 @@ public class ReportController {
     })
     @GetMapping("/search/totalcnt")
     public ResponseEntity<Integer> searchReportTotalCount() {
-    	int cnt = reportService.searchReportCount(null); // 전체 유저 수 조회 (날짜 조건 없이)
+    	int cnt = reportService.searchReportCount(null);
     	
         return ResponseEntity.ok(cnt); 
 	}
