@@ -11,7 +11,7 @@
         WHERE
         	1=1
         <if test="today != null">
-        	AND created_at between #{today}|' 00:00:00' and #{today}|' 23:59:59'
+        	AND created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
         </if>
     </select>
 </mapper>

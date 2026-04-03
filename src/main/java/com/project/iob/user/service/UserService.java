@@ -29,6 +29,6 @@ public interface UserService {
 	/**
      * [유저 수 조회]
      */
-	public int searchUserCount(String roleCode, String today);
+	public int searchUserCount(String roleCode, String oneMonthAgo, String today);
 
 }

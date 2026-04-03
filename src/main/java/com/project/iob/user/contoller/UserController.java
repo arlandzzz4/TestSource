@@ -133,7 +133,7 @@ public class UserController {
     })
     @GetMapping("/search/totalcnt")
     public ResponseEntity<Integer> searchUserTotalCount() {
-    	int cnt = userService.searchUserCount(Role.USER.getCode(), null); // 전체 유저 수 조회 (날짜 조건 없이)
+    	int cnt = userService.searchUserCount(Role.USER.getCode(), null, null); // 전체 유저 수 조회 (날짜 조건 없이)
     	
         return ResponseEntity.ok(cnt); 
 	}
@@ -148,7 +148,10 @@ public class UserController {
     public ResponseEntity<Integer> searchUserTodayCount(){
     	//오늘
     	String today = java.time.LocalDate.now().toString();
-    	int cnt = userService.searchUserCount(Role.USER.getCode(), today);
+    	//한달 전 
+    	String oneMonthAgo = java.time.LocalDate.now().minusMonths(1).toString();
+    	log.info("today: {}, oneMonthAgo: {}", today, oneMonthAgo);
+    	int cnt = userService.searchUserCount(Role.USER.getCode(), oneMonthAgo, today);
     	
         return ResponseEntity.ok(cnt); 
 	}

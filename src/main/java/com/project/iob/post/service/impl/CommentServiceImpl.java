@@ -20,7 +20,7 @@ public class CommentServiceImpl implements CommentService {
      */
 	@Override
 	public int searcCommentCount(String today) {
-		return commentDAO.findCommentCount(today);
+		return commentDAO.findCommentCount(null, today);
 	}
 	
 

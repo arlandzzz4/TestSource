@@ -6,6 +6,6 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface CommentDAO {
 
-	int findCommentCount(@Param("today") String today);
+	int findCommentCount(@Param("postId") String postId, @Param("today") String today);
     
 }
