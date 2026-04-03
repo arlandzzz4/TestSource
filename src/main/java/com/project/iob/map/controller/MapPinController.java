@@ -27,9 +27,10 @@ public class MapPinController {
         return ResponseEntity.ok(mapPinService.createPin(mapPinDto));
     }
 
-    // 핀 삭제
+ // 핀 삭제
     @DeleteMapping("/pins/{pinId}")
-    public ResponseEntity<Integer> deletePin(@PathVariable Long pinId) {
-        return ResponseEntity.ok(mapPinService.deletePin(pinId));
+    public ResponseEntity<Void> deletePin(@PathVariable("pinId") Long pinId) {
+        mapPinService.deletePin(pinId);
+        return ResponseEntity.ok().build();
     }
 }
