@@ -93,4 +93,12 @@ public class UserServiceImpl implements UserService {
 	public void clearFcmToken(String email) {
 		userDAO.clearFcmToken(email);
 	}
+
+	/**
+     * [날짜별 사용자 조회. 날짜 없을 경우 총 사용자 조회]
+     */
+	@Override
+	public int searchUserCount(String roleCode, String today) {
+		return userDAO.searchUserCount(roleCode, today);
+	}
 }
