@@ -138,7 +138,7 @@ public class UserController {
         return ResponseEntity.ok(cnt); 
 	}
     
-    @Operation(summary = "오늘 가입 유저수 검색", description = "입력한 이메일과 일치하는 유저 정보를 조회합니다. 존재하지 않을 경우 404를 반환합니다.")
+    @Operation(summary = "오늘 가입 유저수 검색", description = "오늘 가입한 유저 수를 조회합니다. 성공 시 오늘 가입한 유저 수를 반환합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "조회 성공 (오늘 가입한 유저 수 반환)"),
         @ApiResponse(responseCode = "404", description = "존재하는 유저가 없음"),

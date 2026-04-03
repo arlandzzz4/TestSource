@@ -22,4 +22,16 @@
     ORDER BY p.POST_ID DESC
     LIMIT #{size}
 </select>
+
+	<select id="searchPostCount" resultType="Integer">
+    	/*mapper.user.PostMapper.searchPostCount */
+        SELECT 
+            count(*) AS count
+        FROM posts
+        WHERE
+        	1=1
+        <if test="today != null">
+        	AND created_at between #{today}|' 00:00:00' and #{today}|' 23:59:59'
+        </if>
+    </select>
 </mapper>

@@ -27,7 +27,7 @@ public interface UserService {
 	public void clearFcmToken(String email);
 	
 	/**
-     * [날짜 기준 유저 수 조회]
+     * [유저 수 조회]
      */
 	public int searchUserCount(String roleCode, String today);
 
