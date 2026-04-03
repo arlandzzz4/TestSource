@@ -12,6 +12,6 @@ public interface PostDAO {
     // 이메일로 사용자 상세 정보 조회
     List<PostDto> find(@Param("lastId") Long lastId, @Param("size") int size);
 
-	int searchPostCount(@Param("categoryCode") String categoryCode, @Param("delYn") String delYn, @Param("today") String today);
+	int findPostCount(@Param("categoryCode") String categoryCode, @Param("delYn") String delYn, @Param("today") String today);
     
 }

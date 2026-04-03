@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.iob.report.repository.mybatis.ReportDAO">
+
+    <select id="findReportCount" resultType="Integer">
+    	/*mapper.user.ReportMapper.findReportCount */
+        SELECT 
+            count(*) AS count
+        FROM reports
+        WHERE
+        	1=1
+        <if test="today != null">
+        	AND created_at between #{today}|' 00:00:00' and #{today}|' 23:59:59'
+        </if>
+    </select>
+</mapper>
+    

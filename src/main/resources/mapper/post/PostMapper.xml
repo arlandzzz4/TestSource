@@ -23,8 +23,8 @@
     LIMIT #{size}
 </select>
 
-	<select id="searchPostCount" resultType="Integer">
-    	/*mapper.user.PostMapper.searchPostCount */
+	<select id="findPostCount" resultType="Integer">
+    	/*mapper.user.PostMapper.findPostCount */
         SELECT 
             count(*) AS count
         FROM posts

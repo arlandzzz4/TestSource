@@ -40,8 +40,8 @@
         WHERE email = #{email}
     </update>
     
-    <select id="searchUserCount" resultType="Integer">
-    	/*mapper.user.UserMapper.searchUserCount */
+    <select id="findUserCount" resultType="Integer">
+    	/*mapper.user.UserMapper.findUserCount */
         SELECT 
             count(*) AS count
         FROM users

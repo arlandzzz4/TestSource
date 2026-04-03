@@ -99,6 +99,6 @@ public class UserServiceImpl implements UserService {
      */
 	@Override
 	public int searchUserCount(String roleCode, String today) {
-		return userDAO.searchUserCount(roleCode, today);
+		return userDAO.findUserCount(roleCode, today);
 	}
 }
