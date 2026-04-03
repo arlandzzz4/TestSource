@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.iob.challenge.service.repository.mybatis.UserChallengeDao">
+
+    <!-- 챌린지 추가 -->
+    <insert id="insertChallenge" parameterType="com.project.iob.challenge.entity.UserChallenges"
+            useGeneratedKeys="true" keyProperty="challengeId">
+        INSERT INTO user_challenges (user_email, title, description, start_date, end_date, goal_days)
+        VALUES (#{userEmail}, #{title}, #{description}, #{startDate}, #{endDate}, #{goalDays})
+    </insert>
+
+    <!-- 챌린지 목록 조회 -->
+    <select id="selectChallengesByEmail" resultType="com.project.iob.challenge.entity.UserChallenges">
+        SELECT challenge_id, user_email, title, description, start_date, end_date, goal_days, created_at
+        FROM user_challenges
+        WHERE user_email = #{userEmail}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 챌린지 단건 조회 -->
+    <select id="selectChallengeById" resultType="com.project.iob.challenge.entity.UserChallenges">
+        SELECT challenge_id, user_email, title, description, start_date, end_date, goal_days, created_at
+        FROM user_challenges
+        WHERE challenge_id = #{challengeId}
+          AND user_email = #{userEmail}
+    </select>
+
+    <!-- 챌린지 삭제 -->
+    <delete id="deleteChallenge">
+        DELETE FROM user_challenges
+        WHERE challenge_id = #{challengeId}
+          AND user_email = #{userEmail}
+    </delete>
+
+</mapper>

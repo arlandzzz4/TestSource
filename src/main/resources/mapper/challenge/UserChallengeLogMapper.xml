@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.iob.challenge.service.repository.mybatis.UserChallengeLogDao">
+
+    <!-- 인증 로그 추가 -->
+    <insert id="insertLog" parameterType="com.project.iob.challenge.entity.UserChallengeLogs"
+            useGeneratedKeys="true" keyProperty="logId">
+        INSERT INTO user_challenge_logs (challenge_id, checked_date)
+        VALUES (#{challengeId}, #{checkedDate})
+    </insert>
+
+    <!-- n일 달성 카운트 -->
+    <select id="countLogsByChallengeId" resultType="int">
+        SELECT COUNT(*)
+        FROM user_challenge_logs
+        WHERE challenge_id = #{challengeId}
+    </select>
+
+    <!-- 오늘 중복 인증 확인 -->
+    <select id="countTodayLog" resultType="int">
+        SELECT COUNT(*)
+        FROM user_challenge_logs
+        WHERE challenge_id = #{challengeId}
+          AND checked_date = #{checkedDate}
+    </select>
+
+    <!-- 최근 인증 날짜 -->
+    <select id="selectLastCheckedDate" resultType="java.time.LocalDate">
+        SELECT MAX(checked_date)
+        FROM user_challenge_logs
+        WHERE challenge_id = #{challengeId}
+    </select>
+
+</mapper>
