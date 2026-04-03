@@ -12,8 +12,8 @@ build/
 **/src/main/generated
 **/src/main/generated/**
 
-config/
-config/**
+/config/
+/config/**
 
 ### STS ###
 .apt_generated
@@ -30,3 +30,5 @@ bin/
 
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+
+.metadata/
