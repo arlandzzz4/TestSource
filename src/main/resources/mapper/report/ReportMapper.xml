@@ -14,5 +14,25 @@
         	AND created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
         </if>
     </select>
+    
+    <select id="findReportList" parameterType="com.project.iob.report.dto.ReportDto" resultType="com.project.iob.report.entity.Reports">
+	    SELECT r.REPORT_ID			AS reportId
+	        , r.TARGET_CODE			AS targetCode
+	        , r.TARGET_ID			AS targetId
+	        , r.REPORTER_EMAIL		AS reporterEmail
+	        , r.REASON_CODE			AS reasonCode
+	        , r.DETAIL				AS detail
+	        , r.REPORT_STATUS_CODE	AS reportStatusCode
+	        , r.PROCESSED_BY		AS processedBy
+	        , r.CREATED_AT			AS createdAt
+	        , r.PROCESSED_AT		AS processedAt
+	    FROM reports r
+	    WHERE 1=1
+	    <if test="lastId != 0">
+	        AND r.REPORT_ID &lt; #{lastId}
+	    </if>
+	    ORDER BY r.REPORT_ID DESC
+	    LIMIT #{size}
+	</select>
 </mapper>
     

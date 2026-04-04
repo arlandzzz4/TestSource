@@ -1,12 +1,16 @@
 package com.project.iob.report.controller;
 
+import java.util.List;
+
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.global.enums.Role;
 import com.project.iob.common.controller.CommonController;
+import com.project.iob.report.dto.ReportDto;
+import com.project.iob.report.entity.Reports;
 import com.project.iob.report.service.ReportService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,5 +58,20 @@ public class ReportController {
     	int cnt = reportService.searchReportCount(today);
     	
         return ResponseEntity.ok(cnt); 
+	}
+    
+    @Operation(summary = "게시글 조회(페이징)", description = "게시글을 페이징하여 조회합니다. 페이지 번호와 페이지 크기를 쿼리 파라미터로 전달받아 해당 페이지의 게시글 목록을 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공 (게시글 정보 반환)"),
+        @ApiResponse(responseCode = "404", description = "게시글이 존재하지 않음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @GetMapping("/search/report")
+    public ResponseEntity<List<Reports>> searcRepot(
+    		@ParameterObject ReportDto ReportDto
+    		){
+    	List<Reports> reports = reportService.searchReports(ReportDto);
+    	
+        return ResponseEntity.ok(reports); 
 	}
 }

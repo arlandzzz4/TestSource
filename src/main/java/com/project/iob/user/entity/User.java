@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.project.global.enums.Provider;
 
+import jakarta.annotation.PreDestroy;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -81,8 +82,9 @@ public class User {
     }
     
     @Builder
-    public User(String email, String nickname, String password, String providerCode, String providerId, String profileImageUrl, String userStatusCode, String roleCode, String fcmToken, String termsAgreedYn, String privacyAgreedYn,
-    		LocalDateTime termsAgreedAt, LocalDateTime createdAt, LocalDateTime deletedAt, LocalDateTime lastLoginAt) {
+    public User(String email, String nickname, String password, String providerCode, String providerId
+    		, String profileImageUrl, String userStatusCode, String roleCode, String fcmToken, String termsAgreedYn
+    		, String privacyAgreedYn) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
@@ -108,6 +110,11 @@ public class User {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+    
+    @PreDestroy
+    public void preDelete() {
+        this.deletedAt = LocalDateTime.now();
     }
     
 }
