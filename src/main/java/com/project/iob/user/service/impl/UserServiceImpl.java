@@ -110,4 +110,9 @@ public class UserServiceImpl implements UserService {
 	public List<UserResponseDto> searchUsers(UserRequestDto userRequestDto) {
 		return userDAO.findUserList(userRequestDto);
 	}
+
+	@Override
+	public void updateUserStatusCode(UserRequestDto userRequestDto) {
+		userDAO.updateUserStatusCode(userRequestDto);
+	}
 }

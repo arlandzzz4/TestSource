@@ -13,11 +13,14 @@ public record UserRequestDto(
     
     String termsAgreedYn,
     
+    String userStatusCode,
+    
     String privacyAgreedYn,
     @Schema(description = "마지막 조회 ID")
     Date lastId,
     @Schema(description = "페이지 크기", defaultValue = "10")
-    Integer size
+    Integer size,
+    Integer offset
 ) {
 	public UserRequestDto {
         if (size == null) size = 10;

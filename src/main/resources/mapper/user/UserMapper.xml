@@ -47,6 +47,7 @@
         FROM users
         WHERE
         	1=1
+        	AND ROLE_CODE = '01'
         <if test="roleCode != null">
         	AND role_code = #{roleCode}
         </if>
@@ -69,13 +70,34 @@
 	        , u.UPDATED_AT			AS updatedAt
 	        , u.DELETED_AT			AS deletedAt
 	        , u.LAST_LOGIN_AT		AS lastLoginAt
+	        <if test="offset != null">
+	        , (SELECT COUNT(*) FROM posts WHERE EMAIL = u.EMAIL) AS postCnt
+	        </if>
 	    FROM users u
 	    WHERE 1=1
+	    	AND u.ROLE_CODE = '01'
+	    <if test="email != null">
+	        AND u.email like CONCAT('%', #{email}, '%')
+	    </if>
+	    <if test="userStatusCode != null">
+	        AND u.user_status_code = #{userStatusCode}
+	    </if>
 	    <if test="lastId != null">
 	        AND u.CREATED_AT &lt; #{lastId}
 	    </if>
 	    ORDER BY u.CREATED_AT DESC
 	    LIMIT #{size}
+	    <if test="offset != null">
+	    	OFFSET #{offset}
+	    </if>
 	</select>
+	
+	<update id="updateUserStatusCode" parameterType="com.project.iob.user.dto.UserRequestDto">
+    	/*mapper.user.UserMapper.updateUserStatusCode */
+        UPDATE users
+        SET USER_STATUS_CODE = #{userStatusCode}
+        	, UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE email = #{email}
+	</update>
 </mapper>
     

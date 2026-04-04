@@ -22,6 +22,8 @@ public interface UserDAO {
 	int findUserCount(@Param("roleCode") String roleCode, @Param("oneMonthAgo") String oneMonthAgo, @Param("today")String today);
 
 	List<UserResponseDto> findUserList(UserRequestDto userRequestDto);
+
+	void updateUserStatusCode(UserRequestDto userRequestDto);
     
     // 특정 조건의 사용자 리스트 조회 (예시)
     // List<Users> findAllActiveUsers();

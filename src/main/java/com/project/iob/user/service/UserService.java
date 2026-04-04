@@ -38,5 +38,9 @@ public interface UserService {
      * [유저 목록 조회]
      */
 	public List<UserResponseDto> searchUsers(UserRequestDto userRequestDto);
+	/**
+     * [유저 상태 수정]
+     */
+	public void updateUserStatusCode(UserRequestDto userRequestDto);
 
 }

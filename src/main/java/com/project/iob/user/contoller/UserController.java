@@ -174,4 +174,19 @@ public class UserController {
     	
         return ResponseEntity.ok(users); 
 	}
+    
+    @Operation(summary = "FcmToken", description = "유저의 FCM 토큰을 업데이트합니다. 이 엔드포인트는 인증된 사용자만 접근할 수 있으며, 성공적으로 업데이트되면 204 No Content를 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "FCM 토큰 업데이트 성공 (응답 바디 없음)"),
+        @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자의 요청"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저 정보"),
+    })
+    @PatchMapping("/updateUserStatusCode")
+    public ResponseEntity<Void> updateUserStatusCode(
+    		@ParameterObject UserRequestDto userRequestDto
+    ) {
+        // UserService에서 해당 유저의 fcm_token 필드만 업데이트
+        userService.updateUserStatusCode(userRequestDto);
+        return ResponseEntity.noContent().build();
+    }
 }
