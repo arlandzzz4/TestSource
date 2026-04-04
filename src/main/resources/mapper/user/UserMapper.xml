@@ -61,7 +61,8 @@
 	        , u.NICKNAME			AS nickname
 	        , u.PROVIDER_CODE		AS providerCode
 	        , u.PROFILE_IMAGE_URL	AS profileImageUrl
-	        , u.USER_STATUS_CODE	AS useStatusCode
+	        , u.USER_STATUS_CODE	AS userStatusCode
+	        , u.ROLE_CODE			AS roleCode
 	        , u.TERMS_AGREED_YN		AS termsAgreedYn
 	        , u.PRIVACY_AGREED_YN	AS privacyAgreedYn
 	        , u.CREATED_AT			AS createdAt
