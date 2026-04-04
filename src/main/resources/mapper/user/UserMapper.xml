@@ -54,5 +54,27 @@
         	AND created_at between STR_TO_DATE(CONCAT(#{oneMonthAgo},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
         </if>
     </select>
+    
+    <select id="findUserList" parameterType="com.project.iob.user.dto.UserDto" resultType="com.project.iob.user.entity.User">
+	    /*mapper.user.UserMapper.findUserList */
+	    SELECT u.EMAIL			AS email
+	        , u.NICKNAME			AS nickname
+	        , u.PROVIDER_CODE		AS providerCode
+	        , u.PROFILE_IMAGE_URL	AS profileImageUrl
+	        , u.USER_STATUS_CODE	AS useStatusCode
+	        , u.TERMS_AGREED_YN		AS termsAgreedYn
+	        , u.PRIVACY_AGREED_YN	AS privacyAgreedYn
+	        , u.CREATED_AT			AS createdAt
+	        , u.UPDATED_AT			AS updatedAt
+	        , u.DELETED_AT			AS deletedAt
+	        , u.LAST_LOGIN_AT		AS lastLoginAt
+	    FROM users u
+	    WHERE 1=1
+	    <if test="lastId != null">
+	        AND u.CREATED_AT &lt; #{lastId}
+	    </if>
+	    ORDER BY u.CREATED_AT DESC
+	    LIMIT #{size}
+	</select>
 </mapper>
     

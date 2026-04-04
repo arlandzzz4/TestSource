@@ -60,10 +60,10 @@ public class ReportController {
         return ResponseEntity.ok(cnt); 
 	}
     
-    @Operation(summary = "게시글 조회(페이징)", description = "게시글을 페이징하여 조회합니다. 페이지 번호와 페이지 크기를 쿼리 파라미터로 전달받아 해당 페이지의 게시글 목록을 반환합니다.")
+    @Operation(summary = "리포트 조회(페이징)", description = "리포트를 페이징하여 조회합니다. 페이지 번호와 페이지 크기를 쿼리 파라미터로 전달받아 해당 페이지의 리포트 목록을 반환합니다.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공 (게시글 정보 반환)"),
-        @ApiResponse(responseCode = "404", description = "게시글이 존재하지 않음"),
+        @ApiResponse(responseCode = "200", description = "조회 성공 (리포트 정보 반환)"),
+        @ApiResponse(responseCode = "404", description = "리포트가 존재하지 않음"),
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/report")

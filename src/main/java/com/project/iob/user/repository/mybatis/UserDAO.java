@@ -1,10 +1,12 @@
 package com.project.iob.user.repository.mybatis;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.project.iob.user.dto.UserDto;
 import com.project.iob.user.entity.User;
 
 @Mapper
@@ -17,6 +19,8 @@ public interface UserDAO {
 	void clearFcmToken(String email);
 
 	int findUserCount(@Param("roleCode") String roleCode, @Param("oneMonthAgo") String oneMonthAgo, @Param("today")String today);
+
+	List<User> findUserList(UserDto userDto);
     
     // 특정 조건의 사용자 리스트 조회 (예시)
     // List<Users> findAllActiveUsers();

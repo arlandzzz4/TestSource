@@ -16,6 +16,7 @@
     </select>
     
     <select id="findReportList" parameterType="com.project.iob.report.dto.ReportDto" resultType="com.project.iob.report.entity.Reports">
+	    /*mapper.user.ReportMapper.findReportList */
 	    SELECT r.REPORT_ID			AS reportId
 	        , r.TARGET_CODE			AS targetCode
 	        , r.TARGET_ID			AS targetId
@@ -28,7 +29,7 @@
 	        , r.PROCESSED_AT		AS processedAt
 	    FROM reports r
 	    WHERE 1=1
-	    <if test="lastId != 0">
+	    <if test="lastId != null">
 	        AND r.REPORT_ID &lt; #{lastId}
 	    </if>
 	    ORDER BY r.REPORT_ID DESC

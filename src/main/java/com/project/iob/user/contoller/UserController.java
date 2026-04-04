@@ -1,8 +1,10 @@
 package com.project.iob.user.contoller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -21,6 +23,7 @@ import com.project.global.enums.Role;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.common.controller.CommonController;
 import com.project.iob.user.dto.FcmTokenRequest;
+import com.project.iob.user.dto.UserDto;
 import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
 import com.project.iob.user.service.UserService;
@@ -154,5 +157,20 @@ public class UserController {
     	int cnt = userService.searchUserCount(Role.USER.getCode(), oneMonthAgo, today);
     	
         return ResponseEntity.ok(cnt); 
+	}
+    
+    @Operation(summary = "사용자 조회(페이징)", description = "사용자를 페이징하여 조회합니다. 페이지 번호와 페이지 크기를 쿼리 파라미터로 전달받아 해당 페이지의 사용자 목록을 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공 (사용자 정보 반환)"),
+        @ApiResponse(responseCode = "404", description = "사용자가 존재하지 않음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @GetMapping("/search/user")
+    public ResponseEntity<List<User>> searcUsers(
+    		@ParameterObject UserDto userDto
+    		){
+    	List<User> users = userService.searchUsers(userDto);
+    	
+        return ResponseEntity.ok(users); 
 	}
 }

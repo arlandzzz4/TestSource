@@ -1,5 +1,7 @@
 package com.project.iob.user.service.impl;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.project.global.enums.Provider;
 import com.project.global.enums.Role;
 import com.project.global.enums.UserStateCode;
+import com.project.iob.user.dto.UserDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.entity.User;
 import com.project.iob.user.querydsl.UserRepository;
@@ -100,5 +103,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public int searchUserCount(String roleCode, String oneMonthAgo, String today) {
 		return userDAO.findUserCount(roleCode, oneMonthAgo, today);
+	}
+
+	@Override
+	public List<User> searchUsers(UserDto userDto) {
+		return userDAO.findUserList(userDto);
 	}
 }

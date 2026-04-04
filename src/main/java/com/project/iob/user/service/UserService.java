@@ -1,5 +1,8 @@
 package com.project.iob.user.service;
 
+import java.util.List;
+
+import com.project.iob.user.dto.UserDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.entity.User;
 
@@ -30,5 +33,9 @@ public interface UserService {
      * [유저 수 조회]
      */
 	public int searchUserCount(String roleCode, String oneMonthAgo, String today);
+	/**
+     * [유저 목록 조회]
+     */
+	public List<User> searchUsers(UserDto userDto);
 
 }
