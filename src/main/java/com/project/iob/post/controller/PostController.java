@@ -2,13 +2,14 @@ package com.project.iob.post.controller;
 
 import java.util.List;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.iob.post.dto.PostDto;
+import com.project.iob.post.dto.PostRequestDto;
+import com.project.iob.post.dto.PostResponseDto;
 import com.project.iob.post.service.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,11 +35,10 @@ public class PostController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/post")
-    public ResponseEntity<List<PostDto>> searcPosts(
-    		@RequestParam(name = "lastId", required = false) Long lastId,
-    	    @RequestParam(name = "limit", defaultValue = "10") int size
+    public ResponseEntity<List<PostResponseDto>> searcPosts(
+    		@ParameterObject PostRequestDto postRequestDto
     		){
-    	List<PostDto> posts = postService.searchPosts(lastId, size);
+    	List<PostResponseDto> posts = postService.searchPosts(postRequestDto);
     	
         return ResponseEntity.ok(posts); 
 	}

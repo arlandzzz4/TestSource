@@ -1,23 +1,25 @@
 package com.project.iob.user.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import java.util.Date;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record UserRequestDto(
-    @Email(message = "이메일 형식에 맞지 않습니다.")
     String email,
     
     String nickname,
 
-    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
-    String password,
-    
-    @NotBlank(message = "소셜 연동 필드 값은 필수 입력 값입니다.")
     String providerCode,
-    
-    String providerId,
     
     String termsAgreedYn,
     
-    String privacyAgreedYn
-) {}
+    String privacyAgreedYn,
+    @Schema(description = "마지막 조회 ID")
+    Date lastId,
+    @Schema(description = "페이지 크기", defaultValue = "10")
+    Integer size
+) {
+	public UserRequestDto {
+        if (size == null) size = 10;
+    }
+}

@@ -2,8 +2,9 @@ package com.project.iob.user.service;
 
 import java.util.List;
 
-import com.project.iob.user.dto.UserDto;
+import com.project.iob.user.dto.UserAuthRequestDto;
 import com.project.iob.user.dto.UserRequestDto;
+import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
 
 import jakarta.validation.constraints.NotBlank;
@@ -12,7 +13,7 @@ public interface UserService {
 	/**
      * [회원가입 로직]
      */
-	public User regist(UserRequestDto UserRequest);
+	public User regist(UserAuthRequestDto UserRequest);
 	
 	/**
      * [회원 정보 조회 로직]
@@ -36,6 +37,6 @@ public interface UserService {
 	/**
      * [유저 목록 조회]
      */
-	public List<User> searchUsers(UserDto userDto);
+	public List<UserResponseDto> searchUsers(UserRequestDto userRequestDto);
 
 }

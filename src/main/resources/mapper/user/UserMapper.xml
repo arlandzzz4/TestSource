@@ -55,7 +55,7 @@
         </if>
     </select>
     
-    <select id="findUserList" parameterType="com.project.iob.user.dto.UserDto" resultType="com.project.iob.user.entity.User">
+    <select id="findUserList" parameterType="com.project.iob.user.dto.UserRequestDto" resultType="com.project.iob.user.dto.UserResponseDto">
 	    /*mapper.user.UserMapper.findUserList */
 	    SELECT u.EMAIL			AS email
 	        , u.NICKNAME			AS nickname

@@ -11,8 +11,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.project.global.enums.Provider;
 import com.project.global.enums.Role;
 import com.project.global.enums.UserStateCode;
-import com.project.iob.user.dto.UserDto;
+import com.project.iob.user.dto.UserAuthRequestDto;
 import com.project.iob.user.dto.UserRequestDto;
+import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
 import com.project.iob.user.querydsl.UserRepository;
 import com.project.iob.user.repository.mybatis.UserDAO;
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
      * [회원가입 로직]
      */
 	@Transactional
-	public User regist(UserRequestDto UserRequest) {
+	public User regist(UserAuthRequestDto UserRequest) {
 		// 중복 체크
 		String encodedPassword = "";
 		if(Provider.LOCAL.getKey().equals(UserRequest.providerCode())) {
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> searchUsers(UserDto userDto) {
-		return userDAO.findUserList(userDto);
+	public List<UserResponseDto> searchUsers(UserRequestDto userRequestDto) {
+		return userDAO.findUserList(userRequestDto);
 	}
 }

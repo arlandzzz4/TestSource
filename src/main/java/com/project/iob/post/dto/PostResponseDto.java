@@ -2,7 +2,7 @@ package com.project.iob.post.dto;
 
 import java.sql.Date;
 
-public record PostDto(
+public record PostResponseDto(
         Long postId,
         String userEmail,
         String categoryCode,
@@ -10,9 +10,9 @@ public record PostDto(
         Date createdAt,
         Date updatedAt,
         String nickname,
-        int likes,
-        int comments,
-        String thumbnail,  // 추가
+        Integer likes,
+        Integer comments,
+        String thumbnail,
         String delYn
 ) {
 }

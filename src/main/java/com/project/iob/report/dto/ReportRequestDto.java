@@ -4,7 +4,7 @@ import java.sql.Date;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ReportDto(
+public record ReportRequestDto(
         Long reportId,
         String targetCode,
         Long targetId,
@@ -20,4 +20,8 @@ public record ReportDto(
         @Schema(description = "페이지 크기", defaultValue = "10")
         Integer size
 ) {
+	public ReportRequestDto {
+        if (lastId == null) lastId = 0L;
+        if (size == null) size = 10;
+    }
 }

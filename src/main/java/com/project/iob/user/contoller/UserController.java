@@ -23,7 +23,8 @@ import com.project.global.enums.Role;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.common.controller.CommonController;
 import com.project.iob.user.dto.FcmTokenRequest;
-import com.project.iob.user.dto.UserDto;
+import com.project.iob.user.dto.UserAuthResponseDto;
+import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
 import com.project.iob.user.service.UserService;
@@ -56,13 +57,13 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "잘못된 이메일 형식")
     })
     @GetMapping("/search/{email}")
-    public ResponseEntity<UserResponseDto> searchUserByEmail(
+    public ResponseEntity<UserAuthResponseDto> searchUserByEmail(
         @Parameter(description = "검색할 유저의 이메일", example = "user@example.com") 
         @PathVariable(value = "email") String email) {
     	User savedUser = userService.searchUserByEmail(email);
     	
     	// 엔티티 -> DTO 변환 (비밀번호 제외)
-    	UserResponseDto response = UserResponseDto.from(savedUser);
+    	UserAuthResponseDto response = UserAuthResponseDto.from(savedUser);
         
         return ResponseEntity.ok(response); 
 	}
@@ -166,10 +167,10 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/user")
-    public ResponseEntity<List<User>> searcUsers(
-    		@ParameterObject UserDto userDto
+    public ResponseEntity<List<UserResponseDto>> searcUsers(
+    		@ParameterObject UserRequestDto userRequestDto
     		){
-    	List<User> users = userService.searchUsers(userDto);
+    	List<UserResponseDto> users = userService.searchUsers(userRequestDto);
     	
         return ResponseEntity.ok(users); 
 	}

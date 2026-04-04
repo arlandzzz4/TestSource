@@ -3,7 +3,7 @@
 
 <mapper namespace="com.project.iob.post.service.repository.mybatis.PostDAO">
 
-    <select id="find" resultType="com.project.iob.post.dto.PostDto">
+    <select id="find" parameterType="com.project.iob.post.dto.PostRequestDto" resultType="com.project.iob.post.dto.PostResponseDto">
     /*mapper.post.PostMapper.find */
     SELECT p.POST_ID          AS postId
         , p.USER_EMAIL        AS userEmail
@@ -18,7 +18,7 @@
         , p.DEL_YN             AS delYn
     FROM posts p JOIN users u ON p.USER_EMAIL = u.EMAIL
     WHERE p.DEL_YN = 'N'
-    <if test="lastId != null">
+    <if test="lastId != 0">
         AND p.POST_ID &lt; #{lastId}
     </if>
     ORDER BY p.POST_ID DESC
@@ -33,7 +33,7 @@
         WHERE
         	1=1
         <if test="today != null">
-        	AND created_at between #{today}|' 00:00:00' and #{today}|' 23:59:59'
+        	AND created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
         </if>
     </select>
 </mapper>

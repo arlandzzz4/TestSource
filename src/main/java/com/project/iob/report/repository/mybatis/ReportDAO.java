@@ -5,15 +5,15 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.project.iob.report.dto.ReportDto;
-import com.project.iob.report.entity.Reports;
+import com.project.iob.report.dto.ReportRequestDto;
+import com.project.iob.report.dto.ReportResponseDto;
 
 @Mapper
 public interface ReportDAO {
 
 	int findReportCount(@Param("today")String today);
 	
-	List<Reports> findReportList(ReportDto reportDto);
+	List<ReportResponseDto> findReportList(ReportRequestDto reportRequestDto);
     
 }
 

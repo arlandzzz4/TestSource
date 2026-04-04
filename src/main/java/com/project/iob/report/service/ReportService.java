@@ -2,8 +2,8 @@ package com.project.iob.report.service;
 
 import java.util.List;
 
-import com.project.iob.report.dto.ReportDto;
-import com.project.iob.report.entity.Reports;
+import com.project.iob.report.dto.ReportRequestDto;
+import com.project.iob.report.dto.ReportResponseDto;
 
 public interface ReportService {
 	
@@ -15,6 +15,6 @@ public interface ReportService {
 	/**
      * [리포트 조회]
      */
-	public List<Reports> searchReports(ReportDto reportDto);
+	public List<ReportResponseDto> searchReports(ReportRequestDto reportRequestDto);
 
 }

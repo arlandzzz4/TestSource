@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.iob.common.controller.CommonController;
-import com.project.iob.report.dto.ReportDto;
-import com.project.iob.report.entity.Reports;
+import com.project.iob.report.dto.ReportRequestDto;
+import com.project.iob.report.dto.ReportResponseDto;
 import com.project.iob.report.service.ReportService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,10 +67,10 @@ public class ReportController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/report")
-    public ResponseEntity<List<Reports>> searcRepot(
-    		@ParameterObject ReportDto ReportDto
+    public ResponseEntity<List<ReportResponseDto>> searcRepot(
+    		@ParameterObject ReportRequestDto reportRequestDto
     		){
-    	List<Reports> reports = reportService.searchReports(ReportDto);
+    	List<ReportResponseDto> reports = reportService.searchReports(reportRequestDto);
     	
         return ResponseEntity.ok(reports); 
 	}
