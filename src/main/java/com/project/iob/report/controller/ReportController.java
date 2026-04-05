@@ -55,10 +55,12 @@ public class ReportController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/todaycnt")
-    public ResponseEntity<Integer> searchReportTodayCount(){
+    public ResponseEntity<Integer> searchReportTodayCount(
+    		@RequestParam(name = "targetCode") String targetCode
+    		){
     	//오늘
     	String today = java.time.LocalDate.now().toString();
-    	int cnt = reportService.searchReportCount(null, today);
+    	int cnt = reportService.searchReportCount(targetCode, today);
     	
         return ResponseEntity.ok(cnt); 
 	}

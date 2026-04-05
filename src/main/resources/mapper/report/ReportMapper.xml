@@ -30,6 +30,11 @@
 	        , r.PROCESSED_BY		AS processedBy
 	        , r.CREATED_AT			AS createdAt
 	        , r.PROCESSED_AT		AS processedAt
+	        <if test="offset == null">
+	        , '' AS targetNickname
+	        , '' AS reporterNickname
+	        , '' AS content
+	        </if>
 	        <if test="offset != null">
 	        , CASE WHEN target_code = '01'
 	        	THEN (SELECT u.NICKNAME 
