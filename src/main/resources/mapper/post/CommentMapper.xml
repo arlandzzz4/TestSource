@@ -22,6 +22,6 @@
     	/*mapper.comment.ComemntMapper.updateCommentDelYn */
     	UPDATE comments set DEL_YN = #{delYn}, 
     			deleted_at = CURRENT_TIMESTAMP
-    	WHERE COMEMNT_ID = #{commentId}
+    	WHERE COMMENT_ID = #{commentId}
     </update>
 </mapper>

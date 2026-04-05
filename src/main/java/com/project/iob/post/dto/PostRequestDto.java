@@ -16,6 +16,7 @@ public record PostRequestDto(
         Integer comments,
         String thumbnail,  // 추가
         String delYn,
+        String deletedId,
         @Schema(description = "마지막 조회 ID", defaultValue = "0")
         Long lastId,
         @Schema(description = "페이지 크기", defaultValue = "10")
