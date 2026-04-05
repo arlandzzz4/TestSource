@@ -14,6 +14,10 @@ public interface PostService {
      * [게시글 수 조회]
      */
 	public int searchPostCount(String categoryCode, String delYn, String today);
+	/**
+     * [게시글 삭제 조회]
+     */
+	public void updatePostDelYn(PostRequestDto postRequestDto);
 	
 	
 

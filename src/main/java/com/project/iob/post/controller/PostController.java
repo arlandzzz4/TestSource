@@ -5,6 +5,7 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -69,5 +70,20 @@ public class PostController {
     	int cnt = postService.searchPostCount(null, null, today);
     	
         return ResponseEntity.ok(cnt); 
+	}
+    
+    @Operation(summary = "게시글 삭제", description = "게시글 삭제")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "삭제 성공"),
+        @ApiResponse(responseCode = "404", description = "존재하는 게시글 없음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @PatchMapping("/delete")
+    public ResponseEntity<Void> deletePost(
+    	@ParameterObject PostRequestDto postRequestDto
+        ){
+    	postService.updatePostDelYn(postRequestDto);
+    	
+        return ResponseEntity.noContent().build(); 
 	}
 }

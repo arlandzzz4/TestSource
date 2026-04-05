@@ -31,6 +31,11 @@ public class PostServiceImpl implements PostService {
 	public int searchPostCount(String categoryCode, String delYn, String today) {
 		return postDAO.findPostCount(categoryCode, delYn,today);
 	}
+
+	@Override
+	public void updatePostDelYn(PostRequestDto postRequestDto) {
+		postDAO.updatePostDelYn(postRequestDto);
+	}
 	
 	
 

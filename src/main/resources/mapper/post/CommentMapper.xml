@@ -17,4 +17,11 @@
         	AND created_at between #{today}|' 00:00:00' and #{today}|' 23:59:59'
         </if>
     </select>
+    
+    <update id="updateCommentDelYn" parameterType="com.project.iob.post.dto.CommentRequestDto">
+    	/*mapper.comment.ComemntMapper.updateCommentDelYn */
+    	UPDATE comments set DEL_YN = #{delYn}, 
+    			deleted_at = CURRENT_TIMESTAMP
+    	WHERE COMEMNT_ID = #{commentId}
+    </update>
 </mapper>

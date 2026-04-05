@@ -14,5 +14,7 @@ public interface PostDAO {
     List<PostResponseDto> find(PostRequestDto postRequestDto);
 
 	int findPostCount(@Param("categoryCode") String categoryCode, @Param("delYn") String delYn, @Param("today") String today);
+
+	void updatePostDelYn(PostRequestDto postRequestDto);
     
 }

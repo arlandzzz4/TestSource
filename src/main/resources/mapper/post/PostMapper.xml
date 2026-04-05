@@ -36,4 +36,12 @@
         	AND created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
         </if>
     </select>
+    
+    <update id="updatePostDelYn" parameterType="com.project.iob.post.dto.PostRequestDto">
+    	/*mapper.post.PostMapper.updatePostDelYn */
+    	UPDATE posts set DEL_YN = #{delYn},
+    		deleted_id = #{deletedId},
+    		deleted_at = CURRENT_TIMESTAMP
+    	WHERE POST_ID = #{postId}
+    </update>
 </mapper>

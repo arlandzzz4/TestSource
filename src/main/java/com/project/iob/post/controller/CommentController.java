@@ -1,10 +1,13 @@
 package com.project.iob.post.controller;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.iob.post.dto.CommentRequestDto;
 import com.project.iob.post.service.CommentService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,5 +53,20 @@ public class CommentController {
     	int cnt = commentService.searcCommentCount(today);
     	
         return ResponseEntity.ok(cnt); 
+	}
+    
+    @Operation(summary = "댓글 삭제", description = "댓글 삭제")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "삭제 성공"),
+        @ApiResponse(responseCode = "404", description = "존재하는 댓글 없음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @PatchMapping("/delete")
+    public ResponseEntity<Void> deletePost(
+    	@ParameterObject CommentRequestDto commentRequestDto
+        ){
+    	commentService.updateCommentDelYn(commentRequestDto);
+    	
+        return ResponseEntity.noContent().build(); 
 	}
 }

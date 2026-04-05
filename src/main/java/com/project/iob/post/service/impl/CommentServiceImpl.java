@@ -3,6 +3,7 @@ package com.project.iob.post.service.impl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.project.iob.post.dto.CommentRequestDto;
 import com.project.iob.post.service.CommentService;
 import com.project.iob.post.service.repository.mybatis.CommentDAO;
 
@@ -21,6 +22,11 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public int searcCommentCount(String today) {
 		return commentDAO.findCommentCount(null, today);
+	}
+	@Override
+	public void updateCommentDelYn(CommentRequestDto commentRequestDto) {
+		commentDAO.updateCommentDelYn(commentRequestDto);
+		
 	}
 	
 

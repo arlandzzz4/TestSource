@@ -18,7 +18,7 @@ import com.project.iob.auth.dto.LoginRequestDto;
 import com.project.iob.auth.dto.LoginResponseDto;
 import com.project.iob.auth.dto.TokenDto;
 import com.project.iob.auth.service.AuthService;
-import com.project.iob.user.dto.UserRequestDto;
+import com.project.iob.user.dto.UserAuthRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
 import com.project.iob.user.service.UserService;
@@ -159,7 +159,7 @@ public class AuthController {
         @ApiResponse(responseCode = "409", description = "이미 존재하는 이메일 또는 소셜 계정")
     })
     @PostMapping("/regist")
-    public ResponseEntity<UserResponseDto> regist(@RequestBody UserRequestDto UserRequest) {
+    public ResponseEntity<UserResponseDto> regist(@RequestBody UserAuthRequestDto UserRequest) {
     	User savedUser = userService.regist(UserRequest);
     	
     	// 엔티티 -> DTO 변환 (비밀번호 제외)
