@@ -6,6 +6,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.iob.common.controller.CommonController;
@@ -39,8 +40,10 @@ public class ReportController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/totalcnt")
-    public ResponseEntity<Integer> searchReportTotalCount() {
-    	int cnt = reportService.searchReportCount(null);
+    public ResponseEntity<Integer> searchReportTotalCount(
+    		@RequestParam(name = "targetCode") String targetCode
+    	) {
+    	int cnt = reportService.searchReportCount(targetCode, null);
     	
         return ResponseEntity.ok(cnt); 
 	}
@@ -55,7 +58,7 @@ public class ReportController {
     public ResponseEntity<Integer> searchReportTodayCount(){
     	//오늘
     	String today = java.time.LocalDate.now().toString();
-    	int cnt = reportService.searchReportCount(today);
+    	int cnt = reportService.searchReportCount(null, today);
     	
         return ResponseEntity.ok(cnt); 
 	}

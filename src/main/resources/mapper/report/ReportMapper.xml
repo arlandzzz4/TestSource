@@ -10,6 +10,9 @@
         FROM reports
         WHERE
         	1=1
+        <if test="targetCode != null">
+        	AND TARGET_CODE = #{targetCode}
+        </if>
         <if test="today != null">
         	AND created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
         </if>
@@ -27,13 +30,39 @@
 	        , r.PROCESSED_BY		AS processedBy
 	        , r.CREATED_AT			AS createdAt
 	        , r.PROCESSED_AT		AS processedAt
+	        <if test="offset != null">
+	        , CASE WHEN target_code = '01'
+	        	THEN (SELECT u.NICKNAME 
+			           FROM posts p 
+			           JOIN users u ON p.USER_EMAIL = u.EMAIL 
+			           WHERE p.post_id = r.TARGET_ID
+	        		)
+	        	ELSE (SELECT u.NICKNAME 
+			           FROM comments c 
+			           JOIN users u ON c.USER_EMAIL = u.EMAIL 
+			           WHERE c.comment_id = r.TARGET_ID
+	        		)
+	        	END AS targetNickname
+	        , (SELECT NICKNAME FROM users WHERE EMAIL = r.REPORTER_EMAIL) AS reporterNickname
+	        , CASE WHEN target_code = '01'
+	        	THEN (SELECT title FROM posts WHERE post_id = r.TARGET_ID)
+	        	ELSE (SELECT content FROM comments WHERE comment_id = r.TARGET_ID)
+	        	END
+	         AS content
+	         </if>
 	    FROM reports r
 	    WHERE 1=1
 	    <if test="lastId != 0">
 	        AND r.REPORT_ID &lt; #{lastId}
 	    </if>
+	    <if test="targetCode != null">
+	    	AND r.TARGET_CODE = #{targetCode}
+	    </if>
 	    ORDER BY r.REPORT_ID DESC
 	    LIMIT #{size}
+	    <if test="offset != null">
+	    	OFFSET #{offset}
+	    </if>
 	</select>
 </mapper>
     

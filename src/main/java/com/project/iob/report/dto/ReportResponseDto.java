@@ -12,6 +12,9 @@ public record ReportResponseDto(
         String reportStatusCode,
         String processedBy,
         Date createdAt,
-        Date processedAt
+        Date processedAt,
+        String targetNickname,
+        String reporterNickname,
+        String content
 ) {
 }

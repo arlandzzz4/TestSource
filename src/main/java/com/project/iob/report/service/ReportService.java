@@ -11,7 +11,7 @@ public interface ReportService {
 	/**
      * [리포트 수 조회]
      */
-	public int searchReportCount(String today);
+	public int searchReportCount(String targetCode, String today);
 	/**
      * [리포트 조회]
      */
