@@ -6,12 +6,15 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.iob.post.dto.PostRequestDto;
 import com.project.iob.post.dto.PostResponseDto;
 import com.project.iob.post.service.PostService;
+import com.project.iob.report.dto.ReportRequestDto;
+import com.project.iob.report.service.ReportService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PostController {
 	
 	private final PostService postService;
+	private final ReportService reportService;
 	
 	@Operation(summary = "게시글 조회(페이징)", description = "게시글을 페이징하여 조회합니다. 페이지 번호와 페이지 크기를 쿼리 파라미터로 전달받아 해당 페이지의 게시글 목록을 반환합니다.")
     @ApiResponses(value = {
@@ -80,9 +84,12 @@ public class PostController {
     })
     @PatchMapping("/delete")
     public ResponseEntity<Void> deletePost(
-    	@ParameterObject PostRequestDto postRequestDto
+    		@RequestBody PostRequestDto postRequestDto
         ){
     	postService.updatePostDelYn(postRequestDto);
+    	//처리
+    	ReportRequestDto reportRequestDto = new ReportRequestDto(postRequestDto.reportId(),"02");
+    	reportService.updateReportStatusCode(reportRequestDto);
     	
         return ResponseEntity.noContent().build(); 
 	}

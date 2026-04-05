@@ -5,11 +5,14 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.iob.common.controller.CommonController;
+import com.project.iob.post.service.CommentService;
+import com.project.iob.post.service.PostService;
 import com.project.iob.report.dto.ReportRequestDto;
 import com.project.iob.report.dto.ReportResponseDto;
 import com.project.iob.report.service.ReportService;
@@ -28,9 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ReportController {
 
-    private final CommonController commonController;
     private final ReportService reportService;
-
+    private final PostService postService;
+    private final CommentService commentService;
     
     
     @Operation(summary = "총 신고 수 검색", description = "전체 신고 수를 조회합니다. 성공 시 총 신고 수를 반환합니다.")
@@ -78,5 +81,20 @@ public class ReportController {
     	List<ReportResponseDto> reports = reportService.searchReports(reportRequestDto);
     	
         return ResponseEntity.ok(reports); 
+	}
+    
+    @Operation(summary = "신고 상태 코드 수정", description = "신고 상태 코드 수정")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "수정 성공"),
+        @ApiResponse(responseCode = "404", description = "존재하는 신고 없음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @PatchMapping("/updateReportStatusCode")
+    public ResponseEntity<Void> updateReportStatusCode(
+    		@RequestBody ReportRequestDto reportRequestDto
+        ){
+    	reportService.updateReportStatusCode(reportRequestDto);
+    	
+        return ResponseEntity.noContent().build(); 
 	}
 }

@@ -57,6 +57,7 @@
 	         </if>
 	    FROM reports r
 	    WHERE 1=1
+	    	AND r.REPORT_STATUS_CODE = #{reportStatusCode}
 	    <if test="lastId != 0">
 	        AND r.REPORT_ID &lt; #{lastId}
 	    </if>
@@ -69,5 +70,11 @@
 	    	OFFSET #{offset}
 	    </if>
 	</select>
+	
+	<update id="updateReportStatusCode" parameterType="com.project.iob.report.dto.ReportRequestDto">
+    	/*mapper.user.ReportMapper.updateReportStatusCode */
+    	UPDATE reports set REPORT_STATUS_CODE = #{reportStatusCode}
+    	WHERE REPORT_ID = #{reportId}
+    </update>
 </mapper>
     

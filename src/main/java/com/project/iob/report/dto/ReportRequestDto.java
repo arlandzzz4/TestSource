@@ -2,8 +2,12 @@ package com.project.iob.report.dto;
 
 import java.sql.Date;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.project.iob.auth.dto.TokenDto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
+
+@Builder
 public record ReportRequestDto(
         Long reportId,
         String targetCode,
@@ -24,5 +28,10 @@ public record ReportRequestDto(
 	public ReportRequestDto {
         if (lastId == null) lastId = 0L;
         if (size == null) size = 10;
+        if (reportStatusCode == null) reportStatusCode = "01";
     }
+
+	public ReportRequestDto(Long reportId, String reportStatusCode) {
+		this(reportId, null, null, null, null, null, reportStatusCode, null, null, null, null, null, null);
+	}
 }

@@ -34,4 +34,11 @@ public class ReportServiceImpl implements ReportService {
 	public List<ReportResponseDto> searchReports(ReportRequestDto reportRequestDto) {
 		return reportDAO.findReportList(reportRequestDto);
 	}
+	/**
+     * [신고 상태 코드 수정]
+     */
+	@Override
+	public void updateReportStatusCode(ReportRequestDto reportRequestDto) {
+		reportDAO.updateReportStatusCode(reportRequestDto);
+	}
 }

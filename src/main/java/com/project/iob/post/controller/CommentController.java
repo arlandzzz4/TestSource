@@ -1,14 +1,16 @@
 package com.project.iob.post.controller;
 
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.iob.post.dto.CommentRequestDto;
 import com.project.iob.post.service.CommentService;
+import com.project.iob.report.dto.ReportRequestDto;
+import com.project.iob.report.service.ReportService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CommentController {
 	
 	private final CommentService commentService;
+	private final ReportService reportService;
 	
 	
 	@Operation(summary = "총 댓글 검색", description = "전체 댓글 수를 조회합니다. 성공 시 총 댓글 수를 반환합니다.")
@@ -62,10 +65,13 @@ public class CommentController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PatchMapping("/delete")
-    public ResponseEntity<Void> deletePost(
-    	@ParameterObject CommentRequestDto commentRequestDto
+    public ResponseEntity<Void> deleteComment(
+    		@RequestBody CommentRequestDto commentRequestDto
         ){
     	commentService.updateCommentDelYn(commentRequestDto);
+    	//처리
+    	ReportRequestDto reportRequestDto = new ReportRequestDto(commentRequestDto.reportId(),"02");
+    	reportService.updateReportStatusCode(reportRequestDto);
     	
         return ResponseEntity.noContent().build(); 
 	}
