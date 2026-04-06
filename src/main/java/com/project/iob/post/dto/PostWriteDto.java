@@ -1,4 +1,4 @@
-package com.project.iob.postwrite.dto;
+package com.project.iob.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.project.iob.postwrite.controller;
+package com.project.iob.post.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.iob.postwrite.dto.PostWriteDto;
-import com.project.iob.postwrite.service.PostWriteService;
+import com.project.iob.post.dto.PostWriteDto;
+import com.project.iob.post.service.PostWriteService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

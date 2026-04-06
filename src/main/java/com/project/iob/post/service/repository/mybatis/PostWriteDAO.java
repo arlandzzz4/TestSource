@@ -1,9 +1,9 @@
-package com.project.iob.postwrite.service.repository.mybatis;
+package com.project.iob.post.service.repository.mybatis;
  
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
- 
-import com.project.iob.postwrite.dto.PostWriteDto;
+
+import com.project.iob.post.dto.PostWriteDto;
  
 @Mapper
 public interface PostWriteDAO {
