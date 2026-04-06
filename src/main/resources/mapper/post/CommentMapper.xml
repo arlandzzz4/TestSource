@@ -3,7 +3,7 @@
 
 <mapper namespace="com.project.iob.post.service.repository.mybatis.CommentDAO">
 
-    <select id="findCommentCount" resultType="Integer">
+    <select id="findCommentCount" resultType="Integer" parameterType="com.project.iob.post.dto.CommentRequestDto">
     	/*mapper.user.CommentMapper.findCommentCount */
         SELECT 
             count(*) AS count
@@ -19,6 +19,33 @@
         <if test="today != null">
         	AND created_at between #{today}|' 00:00:00' and #{today}|' 23:59:59'
         </if>
+    </select>
+    
+    <select id="findComments" parameterType="com.project.iob.post.dto.CommentRequestDto" resultType="com.project.iob.post.dto.CommentResponseDto">
+    	/*mapper.user.CommentMapper.findComments */
+    	SELECT c.COMMENT_ID			AS commentId
+    		, c.POST_ID				AS postId
+    		, c.USER_EMAIL			AS userEmail
+    		, c.PARENT_COMMENT_ID	AS parentCommentId
+    		, c.CONTENT				AS content
+    		, c.DEL_YN				AS delYn
+    		, c.CREATED_AT			AS createdAt
+    		, c.UPDATED_AT			AS updatedAt
+    		, c.DELETED_AT			AS deletedAt
+    	FROM comments c
+    	WHERE
+    	    1=1
+    	    <if test="delYn != null and delYn != ''">
+		        AND c.DEL_YN = #{delYn}
+		    </if>
+	        <if test="lastId != 0">
+		        AND c.COMMENT_ID &lt; #{lastId}
+		    </if>
+		    ORDER BY c.COMMENT_ID DESC
+	        LIMIT #{size}
+		    <if test="offset != null">
+		    	OFFSET #{offset}
+		    </if>
     </select>
     
     <update id="updateCommentDelYn" parameterType="com.project.iob.post.dto.CommentRequestDto">

@@ -18,10 +18,16 @@ public record CommentRequestDto(
         Long lastId,
         @Schema(description = "페이지 크기", defaultValue = "10")
         Integer size,
-        Long reportId
+        Long reportId,
+        Integer offset,
+        String today
 ) {
 	public CommentRequestDto {
         if (lastId == null) lastId = 0L;
         if (size == null) size = 10;
     }
+	
+	public CommentRequestDto(String today) {
+		this(null, null, null, null, null, null, null, null, null, 0L, 10, null, null, today);
+	}
 }

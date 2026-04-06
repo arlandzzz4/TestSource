@@ -2,6 +2,7 @@ package com.project.iob.post.controller;
 
 import java.util.List;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.iob.post.dto.CommentRequestDto;
-import com.project.iob.post.dto.PostResponseDto;
+import com.project.iob.post.dto.CommentResponseDto;
 import com.project.iob.post.service.CommentService;
 import com.project.iob.report.dto.ReportRequestDto;
 import com.project.iob.report.service.ReportService;
@@ -42,9 +43,9 @@ public class CommentController {
     })
     @GetMapping("/search/totalcnt")
     public ResponseEntity<Integer> searchCommentTotalCount(
-    		@RequestParam("delYn") String delYn
+    		@ParameterObject CommentRequestDto commentRequestDto
     		) {
-    	int cnt = commentService.searchCommentCount(delYn, null);
+    	int cnt = commentService.searchCommentCount(commentRequestDto);
     	
         return ResponseEntity.ok(cnt); 
 	}
@@ -56,10 +57,12 @@ public class CommentController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/todaycnt")
-    public ResponseEntity<Integer> searchPostTodayCount(){
+    public ResponseEntity<Integer> searchPostTodayCount(
+    		){
     	//오늘
     	String today = java.time.LocalDate.now().toString();
-    	int cnt = commentService.searchCommentCount(null, today);
+    	CommentRequestDto commentRequestDto = new CommentRequestDto(today);
+    	int cnt = commentService.searchCommentCount(commentRequestDto);
     	
         return ResponseEntity.ok(cnt); 
 	}
@@ -89,11 +92,11 @@ public class CommentController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/comment")
-    public ResponseEntity<List<PostResponseDto>> searchComments(
-    		//@ParameterObject PostRequestDto postRequestDto
+    public ResponseEntity<List<CommentResponseDto>> searchComments(
+    		@ParameterObject CommentRequestDto commentRequestDto
     		){
-    	List<PostResponseDto> posts = null;//postService.searchPosts(postRequestDto);
+    	List<CommentResponseDto> comments = commentService.searchComments(commentRequestDto);
     	
-        return ResponseEntity.ok(posts); 
+        return ResponseEntity.ok(comments); 
 	}
 }
