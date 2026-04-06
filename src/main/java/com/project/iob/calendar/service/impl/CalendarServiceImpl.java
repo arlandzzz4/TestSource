@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import com.project.iob.calendar.entity.FavMeal;
+import com.project.iob.calendar.repository.jpa.FavMealRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 @Service
@@ -160,5 +163,59 @@ public class CalendarServiceImpl implements CalendarService {
             Integer.parseInt(parts[1]),
             Integer.parseInt(parts[2])
         );
+    }
+    
+    @Autowired
+    private FavMealRepository favMealRepository;
+
+    @Autowired
+    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+
+    /** [즐겨먹는 식단 조회] */
+    @Override
+    @Transactional(readOnly = true)
+    public List<CalendarDietDto.FavMealResponse> getFavMeals(String email) {
+        return favMealRepository.findByUserEmail(email).stream()
+            .map(f -> {
+                try {
+                    List<CalendarDietDto.FoodItem> items = objectMapper.readValue(
+                        f.getItems(),
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, CalendarDietDto.FoodItem.class)
+                    );
+                    return CalendarDietDto.FavMealResponse.builder()
+                        .id(f.getFavId())
+                        .name(f.getName())
+                        .items(items)
+                        .build();
+                } catch (Exception e) {
+                	e.printStackTrace();  // ← 추가
+                    log.error("즐겨찾기 저장 실패: {}", e.getMessage(), e);
+                    throw new RuntimeException("즐겨찾기 저장 실패", e);
+                }
+            })
+            .filter(f -> f != null)
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    /** [즐겨먹는 식단 저장] */
+    @Override
+    public void saveFavMeal(String email, String name, List<CalendarDietDto.FoodItem> items) {
+        try {
+            String itemsJson = objectMapper.writeValueAsString(items);
+            favMealRepository.save(FavMeal.builder()
+                .userEmail(email)
+                .name(name)
+                .items(itemsJson)
+                .build());
+        } catch (Exception e) {
+            throw new RuntimeException("즐겨찾기 저장 실패", e);
+        }
+    }
+
+    /** [즐겨먹는 식단 삭제] */
+    @Override
+    public void deleteFavMeal(String email, Long favId) {
+    	
+        favMealRepository.deleteByFavIdAndUserEmail(favId, email);
     }
 }
