@@ -21,8 +21,8 @@
         , (SELECT target_id FROM reports WHERE TARGET_CODE = '01' AND TARGET_ID = p.POST_ID) AS targetId
     FROM posts p LEFT OUTER JOIN users u ON p.USER_EMAIL = u.EMAIL
     WHERE 1=1
-    <if test="word != null or word != ''">
-    	AND (title like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
+    <if test="word != null and word != ''">
+    	AND (p.title like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
     </if>
     <if test="delYn == null or delYn == ''">
     	AND p.DEL_YN = 'N'
@@ -50,17 +50,17 @@
         FROM posts p LEFT OUTER JOIN users u ON p.USER_EMAIL = u.EMAIL
         WHERE
         	1=1
-        <if test="word != null or word != ''">
-	    	AND (title like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
+        <if test="word != null and word != ''">
+	    	AND (p.title like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
 	    </if>
         <if test="categoryCode != null and categoryCode != ''">
-	        AND CATEGORY_CODE = #{categoryCode}
+	        AND p.CATEGORY_CODE = #{categoryCode}
 	    </if>
         <if test="delYn != null and delYn != ''">
-	        AND DEL_YN = #{delYn}
+	        AND p.DEL_YN = #{delYn}
 	    </if>
         <if test="today != null and today != ''">
-        	AND created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
+        	AND p.created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
         </if>
     </select>
     
