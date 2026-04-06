@@ -102,8 +102,8 @@ public class UserServiceImpl implements UserService {
      * [날짜별 사용자 조회. 날짜 없을 경우 총 사용자 조회]
      */
 	@Override
-	public int searchUserCount(String roleCode, String oneMonthAgo, String today) {
-		return userDAO.findUserCount(roleCode, oneMonthAgo, today);
+	public int searchUserCount(UserRequestDto userRequestDto) {
+		return userDAO.findUserCount(userRequestDto);
 	}
 
 	@Override

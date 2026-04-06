@@ -10,7 +10,10 @@
         FROM comments
         WHERE
         	1=1
-        <if test="postId != null">
+        <if test="delYn != null and delYn != ''">
+	        AND DEL_YN = #{delYn}
+	    </if>
+        <if test="postId != null and postId != 0">
             AND post_id = #{postId}
         </if>
         <if test="today != null">

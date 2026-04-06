@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.iob.post.dto.PostRequestDto;
@@ -15,6 +16,7 @@ import com.project.iob.post.dto.PostResponseDto;
 import com.project.iob.post.service.PostService;
 import com.project.iob.report.dto.ReportRequestDto;
 import com.project.iob.report.service.ReportService;
+import com.project.iob.user.dto.UserRequestDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,7 +42,7 @@ public class PostController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/post")
-    public ResponseEntity<List<PostResponseDto>> searcPosts(
+    public ResponseEntity<List<PostResponseDto>> searchPosts(
     		@ParameterObject PostRequestDto postRequestDto
     		){
     	List<PostResponseDto> posts = postService.searchPosts(postRequestDto);
@@ -55,8 +57,10 @@ public class PostController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/totalcnt")
-    public ResponseEntity<Integer> searchPostTotalCount() {
-    	int cnt = postService.searchPostCount(null, null, null);
+    public ResponseEntity<Integer> searchPostTotalCount(
+    		@ParameterObject PostRequestDto postRequestDto
+    		) {
+    	int cnt = postService.searchPostCount(postRequestDto);
     	
         return ResponseEntity.ok(cnt); 
 	}
@@ -71,7 +75,9 @@ public class PostController {
     public ResponseEntity<Integer> searchPostTodayCount(){
     	//오늘
     	String today = java.time.LocalDate.now().toString();
-    	int cnt = postService.searchPostCount(null, null, today);
+    	
+    	PostRequestDto postRequestDto = new PostRequestDto(today);
+    	int cnt = postService.searchPostCount(postRequestDto);
     	
         return ResponseEntity.ok(cnt); 
 	}

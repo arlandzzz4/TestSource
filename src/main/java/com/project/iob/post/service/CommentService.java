@@ -6,7 +6,7 @@ public interface CommentService {
 	/**
      * [댓글 수 조회]
      */
-	public int searcCommentCount(String today);
+	public int searchCommentCount(String delYn, String today);
 
 	public void updateCommentDelYn(CommentRequestDto commentRequestDto);
 	

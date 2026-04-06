@@ -13,7 +13,7 @@ public interface PostService {
 	/**
      * [게시글 수 조회]
      */
-	public int searchPostCount(String categoryCode, String delYn, String today);
+	public int searchPostCount(PostRequestDto postRequestDto);
 	/**
      * [게시글 삭제 조회]
      */

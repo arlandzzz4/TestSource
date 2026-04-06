@@ -21,7 +21,9 @@ public record PostRequestDto(
         Long lastId,
         @Schema(description = "페이지 크기", defaultValue = "10")
         Integer size,
-        Long reportId
+        Long reportId,
+        Integer offset,
+        String today
 ) {
 	public PostRequestDto {
         if (lastId == null) lastId = 0L;
@@ -29,4 +31,8 @@ public record PostRequestDto(
         if (likes == null) likes = 0;
         if (comments == null) comments = 0;
     }
+	
+	public PostRequestDto(String today) {
+		this(null, null, null, null, null, null, null, 0, 0, null, null, null, 0L, 10, null, null, today);
+	}
 }
