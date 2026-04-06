@@ -49,10 +49,10 @@
         	1=1
         	AND ROLE_CODE = '01'
         <if test="email != null and email != ''">
-	        AND u.email like CONCAT('%', #{email}, '%')
+	        AND email like CONCAT('%', #{email}, '%')
 	    </if>
 	    <if test="userStatusCode != null and userStatusCode != ''">
-	        AND u.user_status_code = #{userStatusCode}
+	        AND user_status_code = #{userStatusCode}
 	    </if>
         <if test="oneMonthAgo != null and today != null">
         	AND created_at between STR_TO_DATE(CONCAT(#{oneMonthAgo},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
