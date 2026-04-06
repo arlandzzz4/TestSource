@@ -38,4 +38,20 @@ public class CalendarDietDto {
         private Integer kcal;
         private String unit;
     }
+    
+    /** 즐겨먹는 식단 응답 */
+    @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class FavMealResponse {
+        private Long id;
+        private String name;
+        private List<FoodItem> items;
+    }
+
+    /** 즐겨먹는 식단 저장 요청 */
+    @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+    public static class FavMealRequest {
+        private String userEmail;
+        private String name;
+        private List<FoodItem> items;
+    }
 }

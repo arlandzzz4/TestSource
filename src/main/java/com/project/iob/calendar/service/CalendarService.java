@@ -26,4 +26,13 @@ public interface CalendarService {
 
     /** [음식 검색] */
     List<CalendarDietDto.FoodSearchResponse> searchFood(String keyword);
+    
+    /** [즐겨먹는 식단 조회] */
+    List<CalendarDietDto.FavMealResponse> getFavMeals(String email);
+
+    /** [즐겨먹는 식단 저장] */
+    void saveFavMeal(String email, String name, List<CalendarDietDto.FoodItem> items);
+
+    /** [즐겨먹는 식단 삭제] */
+    void deleteFavMeal(String email, Long favId);
 }

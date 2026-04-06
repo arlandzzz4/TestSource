@@ -21,25 +21,26 @@ public class CalendarController {
     private final CalendarService calendarService;
 
     /** [월별 캘린더 조회] POST /api/calendar/diet */
-    @PostMapping("/diet")
+    // POST → GET 으로 변경
+    @GetMapping("/diet")
     public ResponseEntity<Map<String, CalendarDto.DayResponse>> getMonthlyCalendar(
         @RequestParam("year") int year,
         @RequestParam("month") int month,
-        @RequestBody User user
+        @RequestParam("email") String email
     ) {
         return ResponseEntity.ok(
-            calendarService.getMonthlyCalendar(user.getEmail(), year, month)
+            calendarService.getMonthlyCalendar(email, year, month)
         );
     }
 
-    /** [식단 상세 조회] POST /api/calendar/diet/detail */
-    @PostMapping("/diet/detail")
+    /** [식단 상세 조회] GET /api/calendar/diet/detail */
+    @GetMapping("/diet/detail")
     public ResponseEntity<CalendarDietDto.DietDetailResponse> getDietDetail(
         @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-        @RequestBody User user
+        @RequestParam("email") String email
     ) {
         return ResponseEntity.ok(
-            calendarService.getDietDetail(user.getEmail(), date)
+            calendarService.getDietDetail(email, date)
         );
     }
 
@@ -76,5 +77,32 @@ public class CalendarController {
         @RequestParam("q") String q
     ) {
         return ResponseEntity.ok(calendarService.searchFood(q));
+    }
+    
+    /** [즐겨먹는 식단 조회] GET /api/calendar/fav-meals */
+    @GetMapping("/fav-meals")
+    public ResponseEntity<List<CalendarDietDto.FavMealResponse>> getFavMeals(
+        @RequestParam("email") String email
+    ) {
+        return ResponseEntity.ok(calendarService.getFavMeals(email));
+    }
+
+    /** [즐겨먹는 식단 저장] POST /api/calendar/fav-meals */
+    @PostMapping("/fav-meals")
+    public ResponseEntity<Void> saveFavMeal(
+        @RequestBody CalendarDietDto.FavMealRequest req
+    ) {
+        calendarService.saveFavMeal(req.getUserEmail(), req.getName(), req.getItems());
+        return ResponseEntity.ok().build();
+    }
+
+    /** [즐겨먹는 식단 삭제] DELETE /api/calendar/fav-meals/{favId} */
+    @DeleteMapping("/fav-meals/{favId}")
+    public ResponseEntity<Void> deleteFavMeal(
+        @PathVariable("favId") Long favId,
+        @RequestParam("email") String email
+    ) {
+        calendarService.deleteFavMeal(email, favId);
+        return ResponseEntity.ok().build();
     }
 }
