@@ -14,6 +14,7 @@ public record PostResponseDto(
         Integer likes,
         Integer comments,
         String thumbnail,
-        String delYn
+        String delYn,
+        String reportStatusCode
 ) {
 }

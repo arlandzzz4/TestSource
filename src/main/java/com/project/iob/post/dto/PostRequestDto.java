@@ -23,7 +23,8 @@ public record PostRequestDto(
         Integer size,
         Long reportId,
         Integer offset,
-        String today
+        String today,
+        String word
 ) {
 	public PostRequestDto {
         if (lastId == null) lastId = 0L;
@@ -33,6 +34,6 @@ public record PostRequestDto(
     }
 	
 	public PostRequestDto(String today) {
-		this(null, null, null, null, null, null, null, 0, 0, null, null, null, 0L, 10, null, null, today);
+		this(null, null, null, null, null, null, null, 0, 0, null, null, null, 0L, 10, null, null, today, null);
 	}
 }

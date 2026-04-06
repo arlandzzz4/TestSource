@@ -17,8 +17,12 @@
         , (SELECT COUNT(*) FROM comments WHERE POST_ID = p.POST_ID AND DEL_YN = 'N') AS comments
         , (SELECT image_url FROM post_images WHERE post_id = p.POST_ID AND del_yn = 'N' ORDER BY sort_order ASC LIMIT 1) AS thumbnail
         , p.DEL_YN             AS delYn
-    FROM posts p JOIN users u ON p.USER_EMAIL = u.EMAIL
+        , (SELECT report_status_code FROM reports WHERE TARGET_CODE = '01' AND TARGET_ID = p.POST_ID) AS reportStatusCode
+    FROM posts p LEFT OUTER JOIN users u ON p.USER_EMAIL = u.EMAIL
     WHERE 1=1
+    <if test="word != null or word != ''">
+    	AND (title like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
+    </if>
     <if test="delYn == null or delYn == ''">
     	AND p.DEL_YN = 'N'
     </if>
@@ -42,9 +46,12 @@
     	/*mapper.post.PostMapper.findPostCount */
         SELECT 
             count(*) AS count
-        FROM posts
+        FROM posts p LEFT OUTER JOIN users u ON p.USER_EMAIL = u.EMAIL
         WHERE
         	1=1
+        <if test="word != null or word != ''">
+	    	AND (title like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
+	    </if>
         <if test="categoryCode != null and categoryCode != ''">
 	        AND CATEGORY_CODE = #{categoryCode}
 	    </if>
