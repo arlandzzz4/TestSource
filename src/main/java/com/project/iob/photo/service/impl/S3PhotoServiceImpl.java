@@ -1,6 +1,7 @@
-package com.project.iob.common.service.impl;
+package com.project.iob.photo.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,22 +15,26 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.project.iob.common.service.FileService;
+import com.project.iob.photo.service.PhotoService;
+import com.project.iob.photo.service.repository.mybatis.PhotoDAO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
-@Profile("prod")
+@Profile("prod") // 프로덕션 환경에서만 활성화
 @RequiredArgsConstructor
-public class S3FileServiceImpl implements FileService {
+public class S3PhotoServiceImpl implements PhotoService {
 
     private final AmazonS3 amazonS3;
+    private final PhotoDAO photoDAO;
 
-    @Value("${cloud.aws.s3.bucket}") // 2.x 버전은 보통 cloud.aws 로 시작합니다.
+    @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     @Override
-    public String upload(MultipartFile file) throws IOException {
+    public String upload(MultipartFile file, Long postId) throws IOException {
         // 1. 파일명 중복 방지
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         // 2. 메타데이터 설정 (파일 타입 및 크기)
@@ -44,18 +49,22 @@ public class S3FileServiceImpl implements FileService {
     }
 
     @Override
-    public void delete(String fileName) {
-        // 파일 삭제 (파일명/Key 기준)
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+    public List<String> uploadList(List<MultipartFile> files, Long postId) throws IOException {
+        List<String> fileNames = new ArrayList<>();
+        for (MultipartFile multipartFile : files) {
+            String fileName = upload(multipartFile, postId); // 개별 파일 업로드
+            fileNames.add(fileName); // 업로드된 파일의 URL을 리스트에 추가
+        }
+        // post_images 테이블에 INSERT
+        if (!fileNames.isEmpty()) {
+            photoDAO.insertImages(postId, fileNames);
+        }
+        return fileNames;
     }
 
     @Override
-    public List<String> uploadList(List<MultipartFile> file) throws IOException {
-        List<String> fileNames = new java.util.ArrayList<>();
-        for (MultipartFile multipartFile : file) {
-            String fileName = upload(multipartFile); // 개별 파일 업로드
-            fileNames.add(fileName); // 업로드된 파일의 URL을 리스트에 추가
-        }	
-        return fileNames;
+    public void delete(String fileName) {
+        // 파일 삭제 (파일명/Key 기준)
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }
 }
