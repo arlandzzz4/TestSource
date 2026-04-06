@@ -71,15 +71,15 @@
 	        , u.DELETED_AT			AS deletedAt
 	        , u.LAST_LOGIN_AT		AS lastLoginAt
 	        <if test="offset != null">
-	        , (SELECT COUNT(*) FROM posts WHERE EMAIL = u.EMAIL) AS postCnt
+	        , (SELECT COUNT(*) FROM posts WHERE USER_EMAIL = u.EMAIL) AS postCnt
 	        </if>
 	    FROM users u
 	    WHERE 1=1
 	    	AND u.ROLE_CODE = '01'
-	    <if test="email != null">
+	    <if test="email != null and email != ''">
 	        AND u.email like CONCAT('%', #{email}, '%')
 	    </if>
-	    <if test="userStatusCode != null">
+	    <if test="userStatusCode != null and userStatusCode != ''">
 	        AND u.user_status_code = #{userStatusCode}
 	    </if>
 	    <if test="lastId != null">
