@@ -1,6 +1,6 @@
-package com.project.iob.postwrite.service;
+package com.project.iob.post.service;
  
-import com.project.iob.postwrite.dto.PostWriteDto;
+import com.project.iob.post.dto.PostWriteDto;
  
 public interface PostWriteService {
     /**
