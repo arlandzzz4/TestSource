@@ -20,7 +20,8 @@ public record CommentRequestDto(
         Integer size,
         Long reportId,
         Integer offset,
-        String today
+        String today,
+        String word
 ) {
 	public CommentRequestDto {
         if (lastId == null) lastId = 0L;
@@ -28,6 +29,6 @@ public record CommentRequestDto(
     }
 	
 	public CommentRequestDto(String today) {
-		this(null, null, null, null, null, null, null, null, null, 0L, 10, null, null, today);
+		this(null, null, null, null, null, null, null, null, null, 0L, 10, null, null, today, null);
 	}
 }

@@ -11,6 +11,8 @@ public record CommentResponseDto(
         Date createdAt,
         Date updatedAt,
         Date deleteAt,
-        String delYn
+        String delYn,
+        String nickname,
+        String title
 ) {
 }

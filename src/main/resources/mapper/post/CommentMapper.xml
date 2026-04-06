@@ -7,17 +7,20 @@
     	/*mapper.user.CommentMapper.findCommentCount */
         SELECT 
             count(*) AS count
-        FROM comments
+        FROM comments c LEFT OUTER JOIN users u ON c.USER_EMAIL = u.EMAIL
         WHERE
         	1=1
+       	<if test="word != null and word != ''">
+	    	AND (c.content like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
+	    </if>
         <if test="delYn != null and delYn != ''">
-	        AND DEL_YN = #{delYn}
+	        AND c.DEL_YN = #{delYn}
 	    </if>
         <if test="postId != null and postId != 0">
-            AND post_id = #{postId}
+            AND c.post_id = #{postId}
         </if>
         <if test="today != null">
-        	AND created_at between #{today}|' 00:00:00' and #{today}|' 23:59:59'
+        	AND c.created_at between #{today}|' 00:00:00' and #{today}|' 23:59:59'
         </if>
     </select>
     
@@ -32,9 +35,14 @@
     		, c.CREATED_AT			AS createdAt
     		, c.UPDATED_AT			AS updatedAt
     		, c.DELETED_AT			AS deletedAt
-    	FROM comments c
+    		, u.NICKNAME			AS nickname
+    		, (SELECT title FROM posts WHERE post_id = c.post_id) AS title
+    	FROM comments c LEFT OUTER JOIN users u ON c.USER_EMAIL = u.EMAIL
     	WHERE
     	    1=1
+    	    <if test="word != null and word != ''">
+		    	AND (c.content like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
+		    </if>
     	    <if test="delYn != null and delYn != ''">
 		        AND c.DEL_YN = #{delYn}
 		    </if>
