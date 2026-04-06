@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.iob.post.dto.PostRequestDto;
@@ -16,7 +15,6 @@ import com.project.iob.post.dto.PostResponseDto;
 import com.project.iob.post.service.PostService;
 import com.project.iob.report.dto.ReportRequestDto;
 import com.project.iob.report.service.ReportService;
-import com.project.iob.user.dto.UserRequestDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -94,8 +92,10 @@ public class PostController {
         ){
     	postService.updatePostDelYn(postRequestDto);
     	//처리
-    	ReportRequestDto reportRequestDto = new ReportRequestDto(postRequestDto.reportId(),"02");
-    	reportService.updateReportStatusCode(reportRequestDto);
+    	if(postRequestDto.reportId() != null) {
+	    	ReportRequestDto reportRequestDto = new ReportRequestDto(postRequestDto.reportId(),"02");
+	    	reportService.updateReportStatusCode(reportRequestDto);
+    	}
     	
         return ResponseEntity.noContent().build(); 
 	}

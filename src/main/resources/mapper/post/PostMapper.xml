@@ -18,6 +18,7 @@
         , (SELECT image_url FROM post_images WHERE post_id = p.POST_ID AND del_yn = 'N' ORDER BY sort_order ASC LIMIT 1) AS thumbnail
         , p.DEL_YN             AS delYn
         , (SELECT report_status_code FROM reports WHERE TARGET_CODE = '01' AND TARGET_ID = p.POST_ID) AS reportStatusCode
+        , (SELECT target_id FROM reports WHERE TARGET_CODE = '01' AND TARGET_ID = p.POST_ID) AS targetId
     FROM posts p LEFT OUTER JOIN users u ON p.USER_EMAIL = u.EMAIL
     WHERE 1=1
     <if test="word != null or word != ''">
@@ -66,7 +67,7 @@
     <update id="updatePostDelYn" parameterType="com.project.iob.post.dto.PostRequestDto">
     	/*mapper.post.PostMapper.updatePostDelYn */
     	UPDATE posts set DEL_YN = #{delYn},
-    		deleted_id = #{deletedId},
+    		delete_id = #{deletedId},
     		deleted_at = CURRENT_TIMESTAMP
     	WHERE POST_ID = #{postId}
     </update>
