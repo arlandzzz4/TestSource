@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
- 
-<mapper namespace="com.project.iob.common.service.repository.mybatis.PostImageDAO">
- 
+
+<mapper namespace="com.project.iob.photo.service.repository.mybatis.PhotoDAO">
+
     <!-- 이미지 등록 -->
     <insert id="insertImages">
         INSERT INTO post_images (post_id, image_url, sort_order, del_yn, created_at)
@@ -12,5 +12,5 @@
             (#{postId}, #{url}, #{idx}, 'N', NOW())
         </foreach>
     </insert>
- 
+
 </mapper>
