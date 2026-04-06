@@ -70,6 +70,9 @@
 	        , u.UPDATED_AT			AS updatedAt
 	        , u.DELETED_AT			AS deletedAt
 	        , u.LAST_LOGIN_AT		AS lastLoginAt
+	        <if test="offset == null">
+	        , 0 AS postCnt
+	        </if>
 	        <if test="offset != null">
 	        , (SELECT COUNT(*) FROM posts WHERE USER_EMAIL = u.EMAIL) AS postCnt
 	        </if>
