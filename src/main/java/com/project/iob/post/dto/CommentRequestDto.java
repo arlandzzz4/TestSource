@@ -17,7 +17,8 @@ public record CommentRequestDto(
         @Schema(description = "마지막 조회 ID", defaultValue = "0")
         Long lastId,
         @Schema(description = "페이지 크기", defaultValue = "10")
-        Integer size
+        Integer size,
+        Long reportId
 ) {
 	public CommentRequestDto {
         if (lastId == null) lastId = 0L;

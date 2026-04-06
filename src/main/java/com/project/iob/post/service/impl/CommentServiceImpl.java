@@ -20,8 +20,8 @@ public class CommentServiceImpl implements CommentService {
      * [댓글 수]
      */
 	@Override
-	public int searcCommentCount(String today) {
-		return commentDAO.findCommentCount(null, today);
+	public int searchCommentCount(String delYn, String today) {
+		return commentDAO.findCommentCount(null, delYn, today);
 	}
 	@Override
 	public void updateCommentDelYn(CommentRequestDto commentRequestDto) {

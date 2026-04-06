@@ -11,54 +11,40 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.iob.common.service.FileService;
-import com.project.iob.common.service.repository.mybatis.PostImageDAO;
 
-import lombok.RequiredArgsConstructor;
-
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Service
-@Profile({ "local", "dev" }) // 로컬과 dev 프로필에서만 활성화
-@RequiredArgsConstructor
+@Profile({"local", "dev"}) // 로컬과 dev 프로필에서만 활성화
 public class LocalFileServiceImpl implements FileService {
 
-	@Value("${file.upload-path}")
-	private String uploadPath;
+    @Value("${file.upload-path}")
+    private String uploadPath;
 
-	private final PostImageDAO postImageDAO;
+    @Override
+    public String upload(MultipartFile file) throws IOException {
+    	StringBuilder fileName = new StringBuilder();
+    	fileName.append(UUID.randomUUID()).append("_").append(file.getOriginalFilename());
+        
+        File dir = new File(uploadPath);
+        if (!dir.exists()) dir.mkdirs();
+        
+        File target = new File(uploadPath + fileName);
+        file.transferTo(target);
+        
+        return "/images/" + fileName; // 로컬 리소스 핸들러 주소 반환
+    }
+    
+    @Override
+    public void delete(String fileName) {
+        new File(uploadPath, fileName).delete();
+    }
 
-	@Override
-	public String upload(MultipartFile file, Long postId) throws IOException {
-	    StringBuilder fileName = new StringBuilder();
-	    fileName.append(UUID.randomUUID()).append("_").append(file.getOriginalFilename());
-
-	    File dir = new File(uploadPath);
-	    if (!dir.exists()) dir.mkdirs();
-
-	    File target = new File(uploadPath + fileName);
-	    file.transferTo(target);
-
-	    return "/images/" + fileName; // 로컬 리소스 핸들러 주소 반환
-	}
-
-	@Override
-	public List<String> uploadList(List<MultipartFile> files, Long postId) throws IOException {
-		List<String> fileNames = new java.util.ArrayList<>();
-		for (MultipartFile multipartFile : files) {
-			String fileName = upload(multipartFile, postId);
-			fileNames.add(fileName);
-		}
-		log.info("===== uploadList 호출됨 - postId: {}, fileNames: {}", postId, fileNames);
-		if (!fileNames.isEmpty()) {
-			log.info("===== insertImages 호출됨");
-			postImageDAO.insertImages(postId, fileNames);
-		}
-		return fileNames;
-	}
-
-	@Override
-	public void delete(String fileName) {
-		new File(uploadPath, fileName).delete();
-	}
+    @Override
+    public List<String> uploadList(List<MultipartFile> file) throws IOException {
+        List<String> fileNames = new java.util.ArrayList<>();
+        for (MultipartFile multipartFile : file) {
+            String fileName = upload(multipartFile); // 개별 파일 업로드
+            fileNames.add(fileName); // 업로드된 파일의 URL을 리스트에 추가
+        }	
+        return fileNames;
+    }
 }

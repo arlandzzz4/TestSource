@@ -30,6 +30,11 @@
 	        , r.PROCESSED_BY		AS processedBy
 	        , r.CREATED_AT			AS createdAt
 	        , r.PROCESSED_AT		AS processedAt
+	        <if test="offset == null">
+	        , '' AS targetNickname
+	        , '' AS reporterNickname
+	        , '' AS content
+	        </if>
 	        <if test="offset != null">
 	        , CASE WHEN target_code = '01'
 	        	THEN (SELECT u.NICKNAME 
@@ -52,6 +57,7 @@
 	         </if>
 	    FROM reports r
 	    WHERE 1=1
+	    	AND r.REPORT_STATUS_CODE = #{reportStatusCode}
 	    <if test="lastId != 0">
 	        AND r.REPORT_ID &lt; #{lastId}
 	    </if>
@@ -64,5 +70,11 @@
 	    	OFFSET #{offset}
 	    </if>
 	</select>
+	
+	<update id="updateReportStatusCode" parameterType="com.project.iob.report.dto.ReportRequestDto">
+    	/*mapper.user.ReportMapper.updateReportStatusCode */
+    	UPDATE reports set REPORT_STATUS_CODE = #{reportStatusCode}
+    	WHERE REPORT_ID = #{reportId}
+    </update>
 </mapper>
     

@@ -33,7 +33,7 @@ public interface UserService {
 	/**
      * [유저 수 조회]
      */
-	public int searchUserCount(String roleCode, String oneMonthAgo, String today);
+	public int searchUserCount(UserRequestDto userRequestDto);
 	/**
      * [유저 목록 조회]
      */

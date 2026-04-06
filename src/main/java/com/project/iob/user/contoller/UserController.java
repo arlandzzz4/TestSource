@@ -136,8 +136,10 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/search/totalcnt")
-    public ResponseEntity<Integer> searchUserTotalCount() {
-    	int cnt = userService.searchUserCount(Role.USER.getCode(), null, null); // 전체 유저 수 조회 (날짜 조건 없이)
+    public ResponseEntity<Integer> searchUserTotalCount(
+    		@ParameterObject UserRequestDto userRequestDto
+    		) {
+    	int cnt = userService.searchUserCount(userRequestDto); // 전체 유저 수 조회 (날짜 조건 없이)
     	
         return ResponseEntity.ok(cnt); 
 	}
@@ -155,7 +157,9 @@ public class UserController {
     	//한달 전 
     	String oneMonthAgo = java.time.LocalDate.now().minusMonths(1).toString();
     	log.info("today: {}, oneMonthAgo: {}", today, oneMonthAgo);
-    	int cnt = userService.searchUserCount(Role.USER.getCode(), oneMonthAgo, today);
+    	
+    	UserRequestDto userRequestDto = new UserRequestDto(oneMonthAgo, today);
+    	int cnt = userService.searchUserCount(userRequestDto);
     	
         return ResponseEntity.ok(cnt); 
 	}

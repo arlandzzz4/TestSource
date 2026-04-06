@@ -14,6 +14,8 @@ public interface ReportDAO {
 	int findReportCount(@Param("targetCode")String targetCode, @Param("today")String today);
 	
 	List<ReportResponseDto> findReportList(ReportRequestDto reportRequestDto);
+
+	void updateReportStatusCode(ReportRequestDto reportRequestDto);
     
 }
 

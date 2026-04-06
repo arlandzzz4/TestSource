@@ -40,7 +40,7 @@
         WHERE email = #{email}
     </update>
     
-    <select id="findUserCount" resultType="Integer">
+    <select id="findUserCount" parameterType="com.project.iob.user.dto.UserRequestDto" resultType="Integer">
     	/*mapper.user.UserMapper.findUserCount */
         SELECT 
             count(*) AS count
@@ -48,9 +48,12 @@
         WHERE
         	1=1
         	AND ROLE_CODE = '01'
-        <if test="roleCode != null">
-        	AND role_code = #{roleCode}
-        </if>
+        <if test="email != null and email != ''">
+	        AND email like CONCAT('%', #{email}, '%')
+	    </if>
+	    <if test="userStatusCode != null and userStatusCode != ''">
+	        AND user_status_code = #{userStatusCode}
+	    </if>
         <if test="oneMonthAgo != null and today != null">
         	AND created_at between STR_TO_DATE(CONCAT(#{oneMonthAgo},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
         </if>
@@ -70,16 +73,19 @@
 	        , u.UPDATED_AT			AS updatedAt
 	        , u.DELETED_AT			AS deletedAt
 	        , u.LAST_LOGIN_AT		AS lastLoginAt
+	        <if test="offset == null">
+	        , 0 AS postCnt
+	        </if>
 	        <if test="offset != null">
-	        , (SELECT COUNT(*) FROM posts WHERE EMAIL = u.EMAIL) AS postCnt
+	        , (SELECT COUNT(*) FROM posts WHERE USER_EMAIL = u.EMAIL) AS postCnt
 	        </if>
 	    FROM users u
 	    WHERE 1=1
 	    	AND u.ROLE_CODE = '01'
-	    <if test="email != null">
+	    <if test="email != null and email != ''">
 	        AND u.email like CONCAT('%', #{email}, '%')
 	    </if>
-	    <if test="userStatusCode != null">
+	    <if test="userStatusCode != null and userStatusCode != ''">
 	        AND u.user_status_code = #{userStatusCode}
 	    </if>
 	    <if test="lastId != null">

@@ -24,7 +24,8 @@ public record UserResponseDto(
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
     LocalDateTime deletedAt,
-    LocalDateTime lastLoginAt
+    LocalDateTime lastLoginAt,
+    Integer postCnt
 ) {
 
 	public static UserResponseDto from(User user) {
@@ -42,7 +43,8 @@ public record UserResponseDto(
             user.getCreatedAt(),
             user.getUpdatedAt(),
             user.getDeletedAt(),
-            user.getLastLoginAt()
+            user.getLastLoginAt(),
+            null // postCnt는 User 엔티티에 없으므로 null로 설정 (필요 시 별도의 로직으로 계산하여 전달)
         );
     }
 }

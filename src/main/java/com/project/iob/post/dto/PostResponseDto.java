@@ -9,6 +9,7 @@ public record PostResponseDto(
         String title,
         Date createdAt,
         Date updatedAt,
+        Date deletedAt,
         String nickname,
         Integer likes,
         Integer comments,

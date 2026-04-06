@@ -11,28 +11,47 @@
         , p.TITLE             AS title
         , p.CREATED_AT        AS createdAt
         , p.UPDATED_AT        AS updatedAt
+        , p.DELETED_AT        AS deletedAt
         , u.NICKNAME          AS nickname
         , (SELECT COUNT(*) FROM likes WHERE TARGET_ID = p.POST_ID) AS likes
         , (SELECT COUNT(*) FROM comments WHERE POST_ID = p.POST_ID AND DEL_YN = 'N') AS comments
         , (SELECT image_url FROM post_images WHERE post_id = p.POST_ID AND del_yn = 'N' ORDER BY sort_order ASC LIMIT 1) AS thumbnail
         , p.DEL_YN             AS delYn
     FROM posts p JOIN users u ON p.USER_EMAIL = u.EMAIL
-    WHERE p.DEL_YN = 'N'
+    WHERE 1=1
+    <if test="delYn == null or delYn == ''">
+    	AND p.DEL_YN = 'N'
+    </if>
+    <if test="delYn != null and delYn != ''">
+        AND p.DEL_YN = #{delYn}
+    </if>
+    <if test="categoryCode != null and categoryCode != ''">
+        AND p.CATEGORY_CODE = #{categoryCode}
+    </if>
     <if test="lastId != 0">
         AND p.POST_ID &lt; #{lastId}
     </if>
     ORDER BY p.POST_ID DESC
     LIMIT #{size}
+    <if test="offset != null">
+    	OFFSET #{offset}
+    </if>
 </select>
 
-	<select id="findPostCount" resultType="Integer">
+	<select id="findPostCount" parameterType="com.project.iob.post.dto.PostRequestDto" resultType="Integer">
     	/*mapper.post.PostMapper.findPostCount */
         SELECT 
             count(*) AS count
         FROM posts
         WHERE
         	1=1
-        <if test="today != null">
+        <if test="categoryCode != null and categoryCode != ''">
+	        AND CATEGORY_CODE = #{categoryCode}
+	    </if>
+        <if test="delYn != null and delYn != ''">
+	        AND DEL_YN = #{delYn}
+	    </if>
+        <if test="today != null and today != ''">
         	AND created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
         </if>
     </select>

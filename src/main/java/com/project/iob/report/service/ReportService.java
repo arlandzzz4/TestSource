@@ -16,5 +16,9 @@ public interface ReportService {
      * [리포트 조회]
      */
 	public List<ReportResponseDto> searchReports(ReportRequestDto reportRequestDto);
+	/**
+     * [신고 상태 코드 수정]
+     */
+	public void updateReportStatusCode(ReportRequestDto reportRequestDto);
 
 }
