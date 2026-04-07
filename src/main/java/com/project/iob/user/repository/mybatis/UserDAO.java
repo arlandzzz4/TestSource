@@ -25,6 +25,8 @@ public interface UserDAO {
 
 	void updateUserStatusCode(UserRequestDto userRequestDto);
 
+	void unsubscribe(@Param("email") String email);
+
     // 특정 조건의 사용자 리스트 조회 (예시)
     // List<Users> findAllActiveUsers();
 }

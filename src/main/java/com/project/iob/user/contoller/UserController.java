@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.global.enums.Provider;
-import com.project.global.enums.Role;
 import com.project.iob.auth.service.AuthService;
-import com.project.iob.common.controller.CommonController;
 import com.project.iob.user.dto.FcmTokenRequest;
 import com.project.iob.user.dto.UserAuthResponseDto;
 import com.project.iob.user.dto.UserRequestDto;
@@ -44,8 +42,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
-
-    private final CommonController commonController;
 
     private final UserService userService;
     private final AuthService authService;
@@ -81,17 +77,17 @@ public class UserController {
         @RequestBody User user, 
         HttpServletResponse response) {
     	
+    	// FcmToken 등 인증 관련 정보 무효화 (로그아웃 처리)
+    	userService.updateFcmToken(user.getEmail(), null); // FCM 토큰 초기화 (선택적)
+    	 
     	//탈퇴로직
-    	// 1. DB에서 유저 정보 삭제
-    	// userService.deleteUser(user.getId());
-    	
-    	// 2. FcmToken 등 인증 관련 정보 무효화 (로그아웃 처리)
-    	 userService.updateFcmToken(user.getEmail(), null); // FCM 토큰 초기화 (선택적)
+     	// DB에서 유저 정보 삭제
+    	userService.unsubscribe(user.getEmail());
         
-        // 3. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
+        // DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
     	authService.logout(Provider.LOCAL.getKey().equals(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
 
-        // 4. 쿠키 삭제 헤더 생성
+        // 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .path("/")
                 .httpOnly(true)

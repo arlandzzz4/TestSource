@@ -105,5 +105,13 @@
         	, UPDATED_AT = CURRENT_TIMESTAMP
         WHERE email = #{email}
 	</update>
+	
+	<delete id="unsubscribe">
+		/*mapper.user.UserMapper.unsubscribe */
+		UPDATE users
+        SET USER_STATUS_CODE = '03'
+        , UPDATED_AT = CURRENT_TIMESTAMP
+		WHERE email = #{email}
+	</delete>
 </mapper>
     
