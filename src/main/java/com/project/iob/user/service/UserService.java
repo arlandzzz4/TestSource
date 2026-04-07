@@ -43,4 +43,6 @@ public interface UserService {
      */
 	public void updateUserStatusCode(UserRequestDto userRequestDto);
 
+	public void unsubscribe(String email);
+
 }

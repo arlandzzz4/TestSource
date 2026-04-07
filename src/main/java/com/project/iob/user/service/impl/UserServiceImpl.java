@@ -118,4 +118,10 @@ public class UserServiceImpl implements UserService {
 	public void updateUserStatusCode(UserRequestDto userRequestDto) {
 		userDAO.updateUserStatusCode(userRequestDto);
 	}
+
+	@Override
+	public void unsubscribe(String email) {
+		userDAO.unsubscribe(email);
+		
+	}
 }

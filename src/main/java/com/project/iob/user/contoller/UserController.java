@@ -77,17 +77,17 @@ public class UserController {
         @RequestBody User user, 
         HttpServletResponse response) {
     	
+    	// FcmToken 등 인증 관련 정보 무효화 (로그아웃 처리)
+    	userService.updateFcmToken(user.getEmail(), null); // FCM 토큰 초기화 (선택적)
+    	 
     	//탈퇴로직
-    	// 1. DB에서 유저 정보 삭제
-    	// userService.deleteUser(user.getId());
-    	
-    	// 2. FcmToken 등 인증 관련 정보 무효화 (로그아웃 처리)
-    	 userService.updateFcmToken(user.getEmail(), null); // FCM 토큰 초기화 (선택적)
+     	// DB에서 유저 정보 삭제
+    	userService.unsubscribe(user.getEmail());
         
-        // 3. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
+        // DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
     	authService.logout(Provider.LOCAL.getKey().equals(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
 
-        // 4. 쿠키 삭제 헤더 생성
+        // 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .path("/")
                 .httpOnly(true)
