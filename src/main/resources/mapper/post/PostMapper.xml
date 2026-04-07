@@ -17,13 +17,8 @@
         , (SELECT COUNT(*) FROM comments WHERE POST_ID = p.POST_ID AND DEL_YN = 'N') AS comments
         , (SELECT image_url FROM post_images WHERE post_id = p.POST_ID AND del_yn = 'N' ORDER BY sort_order ASC LIMIT 1) AS thumbnail
         , p.DEL_YN             AS delYn
-        , (SELECT report_status_code FROM reports WHERE TARGET_CODE = '01' AND TARGET_ID = p.POST_ID) AS reportStatusCode
-        , (SELECT target_id FROM reports WHERE TARGET_CODE = '01' AND TARGET_ID = p.POST_ID) AS targetId
-    FROM posts p LEFT OUTER JOIN users u ON p.USER_EMAIL = u.EMAIL
+    FROM posts p JOIN users u ON p.USER_EMAIL = u.EMAIL
     WHERE 1=1
-    <if test="word != null and word != ''">
-    	AND (p.title like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
-    </if>
     <if test="delYn == null or delYn == ''">
     	AND p.DEL_YN = 'N'
     </if>
@@ -47,35 +42,25 @@
     	/*mapper.post.PostMapper.findPostCount */
         SELECT 
             count(*) AS count
-        FROM posts p LEFT OUTER JOIN users u ON p.USER_EMAIL = u.EMAIL
+        FROM posts
         WHERE
         	1=1
-        <if test="word != null and word != ''">
-	    	AND (p.title like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
-	    </if>
         <if test="categoryCode != null and categoryCode != ''">
-	        AND p.CATEGORY_CODE = #{categoryCode}
+	        AND CATEGORY_CODE = #{categoryCode}
 	    </if>
         <if test="delYn != null and delYn != ''">
-	        AND p.DEL_YN = #{delYn}
+	        AND DEL_YN = #{delYn}
 	    </if>
         <if test="today != null and today != ''">
-        	AND p.created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
+        	AND created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s') and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
         </if>
     </select>
     
     <update id="updatePostDelYn" parameterType="com.project.iob.post.dto.PostRequestDto">
     	/*mapper.post.PostMapper.updatePostDelYn */
     	UPDATE posts set DEL_YN = #{delYn},
-    		delete_id = #{deletedId},
+    		deleted_id = #{deletedId},
     		deleted_at = CURRENT_TIMESTAMP
-    	WHERE POST_ID = #{postId}
-    </update>
-    
-    <update id="updatePostCommentDelYn" parameterType="com.project.iob.post.dto.PostRequestDto">
-    	/*mapper.post.PostMapper.updateCommentDelYnByPostId */
-    	UPDATE comments set DEL_YN = #{delYn}, 
-    			deleted_at = CURRENT_TIMESTAMP
     	WHERE POST_ID = #{postId}
     </update>
 </mapper>

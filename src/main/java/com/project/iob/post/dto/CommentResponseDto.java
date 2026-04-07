@@ -3,7 +3,7 @@ package com.project.iob.post.dto;
 import java.sql.Date;
 
 public record CommentResponseDto(
-		Long commentId,
+        Long commentId,
         Long postId,
         String userEmail,
         Long parentCommentId,
@@ -13,6 +13,7 @@ public record CommentResponseDto(
         Date deleteAt,
         String delYn,
         String nickname,
-        String title
+        String title,
+        int likeCount
 ) {
 }

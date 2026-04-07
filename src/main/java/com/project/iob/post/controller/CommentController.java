@@ -4,12 +4,7 @@ import java.util.List;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.project.iob.post.dto.CommentRequestDto;
 import com.project.iob.post.dto.CommentResponseDto;
@@ -24,79 +19,83 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Tag(name = "Post API", description = "게시글 API")
+@Tag(name = "Comment API", description = "댓글 API")
 @Slf4j
 @RestController
-@RequestMapping("/api/post/comment")
+@RequestMapping("/api/comment")
 @RequiredArgsConstructor
 public class CommentController {
-	
-	private final CommentService commentService;
-	private final ReportService reportService;
-	
-	
-	@Operation(summary = "총 댓글 검색", description = "전체 댓글 수를 조회합니다. 성공 시 총 댓글 수를 반환합니다.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공 (총 게시글 수 반환)"),
-        @ApiResponse(responseCode = "404", description = "존재하는 유저가 없음"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청")
-    })
+
+    private final CommentService commentService;
+    private final ReportService reportService;
+
+    // 총 댓글 수 조회
+    @Operation(summary = "총 댓글 검색")
     @GetMapping("/search/totalcnt")
     public ResponseEntity<Integer> searchCommentTotalCount(
-    		@ParameterObject CommentRequestDto commentRequestDto
-    		) {
-    	int cnt = commentService.searchCommentCount(commentRequestDto);
-    	
-        return ResponseEntity.ok(cnt); 
-	}
-    
-    @Operation(summary = "오늘 작성된 댓글 수 검색", description = "오늘 작성된 댓글 수를 조회합니다. 성공 시 오늘 작성된 댓글 수를 반환합니다.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공 (오늘 작성된 댓글 수 반환)"),
-        @ApiResponse(responseCode = "404", description = ""),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청")
-    })
+            @ParameterObject CommentRequestDto commentRequestDto) {
+        int cnt = commentService.searchCommentCount(commentRequestDto);
+        return ResponseEntity.ok(cnt);
+    }
+
+    //오늘 댓글 수 조회
+    @Operation(summary = "오늘 작성된 댓글 수 검색")
     @GetMapping("/search/todaycnt")
-    public ResponseEntity<Integer> searchPostTodayCount(
-    		){
-    	//오늘
-    	String today = java.time.LocalDate.now().toString();
-    	CommentRequestDto commentRequestDto = new CommentRequestDto(today);
-    	int cnt = commentService.searchCommentCount(commentRequestDto);
-    	
-        return ResponseEntity.ok(cnt); 
-	}
-    
-    @Operation(summary = "댓글 삭제", description = "댓글 삭제")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "삭제 성공"),
-        @ApiResponse(responseCode = "404", description = "존재하는 댓글 없음"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청")
-    })
+    public ResponseEntity<Integer> searchPostTodayCount() {
+        String today = java.time.LocalDate.now().toString();
+        CommentRequestDto commentRequestDto = new CommentRequestDto(today);
+        int cnt = commentService.searchCommentCount(commentRequestDto);
+        return ResponseEntity.ok(cnt);
+    }
+
+    //댓글 삭제
+    @Operation(summary = "댓글 삭제")
     @PatchMapping("/delete")
     public ResponseEntity<Void> deleteComment(
-    		@RequestBody CommentRequestDto commentRequestDto
-        ){
-    	commentService.updateCommentDelYn(commentRequestDto);
-    	//처리
-    	ReportRequestDto reportRequestDto = new ReportRequestDto(commentRequestDto.reportId(),"02");
-    	reportService.updateReportStatusCode(reportRequestDto);
-    	
-        return ResponseEntity.noContent().build(); 
-	}
-    
-    @Operation(summary = "댓글 조회(페이징)", description = "단순 최신 댓글 조회.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공 (댓글 정보 반환)"),
-        @ApiResponse(responseCode = "404", description = "게시글이 존재하지 않음"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청")
-    })
+            @RequestBody CommentRequestDto commentRequestDto) {
+        commentService.updateCommentDelYn(commentRequestDto);
+        ReportRequestDto reportRequestDto = new ReportRequestDto(commentRequestDto.reportId(), "02");
+        reportService.updateReportStatusCode(reportRequestDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    //댓글 조회(페이징)
+    @Operation(summary = "댓글 조회(페이징)")
     @GetMapping("/search/comment")
     public ResponseEntity<List<CommentResponseDto>> searchComments(
-    		@ParameterObject CommentRequestDto commentRequestDto
-    		){
-    	List<CommentResponseDto> comments = commentService.searchComments(commentRequestDto);
-    	
-        return ResponseEntity.ok(comments); 
-	}
+            @ParameterObject CommentRequestDto commentRequestDto) {
+        List<CommentResponseDto> comments = commentService.searchComments(commentRequestDto);
+        return ResponseEntity.ok(comments);
+    }
+
+    //댓글 목록 조회
+    @GetMapping("/{postId}")
+    public ResponseEntity<List<CommentResponseDto>> getCommentList(
+            @PathVariable("postId") Long postId) {
+        return ResponseEntity.ok(commentService.getCommentList(postId));
+    }
+
+    //댓글 등록
+    @PostMapping
+    public ResponseEntity<Void> insertComment(@RequestBody CommentRequestDto commentRequestDto) {
+        commentService.insertComment(commentRequestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    //댓글 삭제
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Void> deleteCommentById(
+            @PathVariable("commentId") Long commentId) {
+        commentService.deleteComment(commentId);
+        return ResponseEntity.ok().build();
+    }
+
+    //댓글 좋아요 토글
+    @PostMapping("/{commentId}/like")
+    public ResponseEntity<Boolean> toggleCommentLike(
+            @PathVariable("commentId") Long commentId,
+            @RequestParam("userEmail") String userEmail) {
+        boolean liked = commentService.toggleCommentLike(commentId, userEmail);
+        return ResponseEntity.ok(liked);
+    }
 }
