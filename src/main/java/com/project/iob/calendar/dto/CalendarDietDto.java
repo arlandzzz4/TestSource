@@ -1,6 +1,8 @@
 package com.project.iob.calendar.dto;
 
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +39,14 @@ public class CalendarDietDto {
         private String name;
         private Integer kcal;
         private String unit;
+
+        // 추가된 영양소 필드
+        private BigDecimal protein;
+        private BigDecimal carbs;
+        private BigDecimal fat;
+        private BigDecimal servingSize;
     }
+
     
     /** 즐겨먹는 식단 응답 */
     @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
