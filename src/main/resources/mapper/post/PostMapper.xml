@@ -71,4 +71,11 @@
     		deleted_at = CURRENT_TIMESTAMP
     	WHERE POST_ID = #{postId}
     </update>
+    
+    <update id="updatePostCommentDelYn" parameterType="com.project.iob.post.dto.PostRequestDto">
+    	/*mapper.post.PostMapper.updateCommentDelYnByPostId */
+    	UPDATE comments set DEL_YN = #{delYn}, 
+    			deleted_at = CURRENT_TIMESTAMP
+    	WHERE POST_ID = #{postId}
+    </update>
 </mapper>

@@ -15,5 +15,7 @@ public interface PostDAO {
 	int findPostCount(PostRequestDto postRequestDto);
 
 	void updatePostDelYn(PostRequestDto postRequestDto);
+
+	void updateCommentDelYn(PostRequestDto postRequestDto);
     
 }
