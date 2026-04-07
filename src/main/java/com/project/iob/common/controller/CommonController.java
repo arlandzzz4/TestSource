@@ -1,19 +1,21 @@
 package com.project.iob.common.controller;
  
 import java.util.List;
- 
+
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
- 
+
 import com.project.iob.common.dto.CodeDto;
 import com.project.iob.common.dto.CodeGroupsDto;
+import com.project.iob.common.dto.EmailDto;
 import com.project.iob.common.service.CommonService;
 import com.project.iob.common.service.MailService;
- 
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,14 +44,11 @@ public class CommonController {
 	    @ApiResponse(responseCode = "500", description = "메일 서버 통신 오류 또는 전송 권한 없음")
 	})
     @PostMapping("/sendEmail/{email}")
-    public ResponseEntity<Void> sendEmail(@Parameter(
-            description = "메일을 전송할 대상 이메일 주소 (예: email@example.com", 
-            required = true, 
-            example = "email@example.com"
-        ) 
-        @PathVariable(value = "email") String email) {
+    public ResponseEntity<Void> sendEmail(
+    	@ParameterObject EmailDto emailDto 
+    	) {
     	
-    	mailService.sendEmail(email, "TestSubject", "TestText");
+    	mailService.sendEmail(emailDto);
         
     	// 2. 204 No Content 반환 (성공했지만 줄 데이터는 없음)
         return ResponseEntity.noContent().build(); 

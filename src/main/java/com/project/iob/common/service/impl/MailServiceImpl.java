@@ -5,6 +5,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.project.iob.common.dto.EmailDto;
 import com.project.iob.common.service.MailService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,11 @@ public class MailServiceImpl implements MailService {
 	private final JavaMailSender mailSender;
 	
 	@Override
-	public void sendEmail(String to, String subject, String text) {
+	public void sendEmail(EmailDto emailDto) {
 		SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+        message.setTo(emailDto.to());
+        message.setSubject(emailDto.subject());
+        message.setText(emailDto.text());
 
         mailSender.send(message);
 	}
