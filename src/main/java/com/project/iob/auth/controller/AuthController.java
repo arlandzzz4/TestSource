@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.global.enums.Provider;
 import com.project.iob.auth.dto.LoginRequestDto;
 import com.project.iob.auth.dto.LoginResponseDto;
+import com.project.iob.auth.dto.LogoutRequestDto;
 import com.project.iob.auth.dto.TokenDto;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.user.dto.UserAuthRequestDto;
@@ -50,6 +52,7 @@ public class AuthController {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("/login")
+    @Transactional(readOnly = true)
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest, HttpServletResponse response)  {
         // 1. 서비스에서 토큰 발급 (성공 시 TokenDto 반환)
         TokenDto tokenDto = authService.login(loginRequest);
@@ -66,10 +69,10 @@ public class AuthController {
                     .sameSite("Lax")
                     .maxAge(60 * 60 * 24 * 7) // 7일
                     .build();
-            //fcmToken 업데이트 (로그인 시마다 최신화)
-        	if(loginRequest.fcmToken() != null && !loginRequest.fcmToken().isBlank()) {
-        		userService.updateFcmToken(loginRequest.email(), loginRequest.fcmToken());
-    		}
+            //fcmToken 업데이트 (로그인 시마다 최신화) 화면에서 따로 보냄
+//        	if(loginRequest.fcmToken() != null && !loginRequest.fcmToken().isBlank()) {
+//        		userService.updateFcmToken(loginRequest.email(), loginRequest.fcmToken());
+//    		}
 
             // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
             return ResponseEntity.ok()
@@ -125,14 +128,14 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(
         @Parameter(description = "로그아웃할 유저 정보", required = true) 
-        @RequestBody User user, 
+        @RequestBody LogoutRequestDto logout, 
         HttpServletResponse response) {
     	
     	// FCM 토큰 삭제 (비우기)
-        userService.clearFcmToken(user.getEmail());
+        userService.clearFcmToken(logout.email());
         
         // 1. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
-        authService.logout(Provider.LOCAL.getKey().equals(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
+        authService.logout(Provider.LOCAL.getKey().equals(logout.providerCode()) ? logout.email() : logout.providerId(), logout.providerCode());
 
         // 2. 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")

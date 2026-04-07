@@ -33,7 +33,7 @@
         WHERE email = #{email}
 	</update>
 	
-	<update id="clearFcmToken" parameterType="Integer">
+	<update id="clearFcmToken" parameterType="String">
 		/*mapper.user.UserMapper.updateFcmToken */
         UPDATE users
         SET fcm_token = ''

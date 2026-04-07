@@ -100,9 +100,10 @@ public class AuthServiceImpl implements AuthService {
     	String refreshToken = tokenProvider.createRefreshToken(email);
 
     	rt.updateToken(refreshToken);
-    	if (loginRequest.fcmToken() != null) {
-            userDAO.updateFcmToken(email, loginRequest.fcmToken());
-        }
+    	//화면에서 보냄
+//    	if (loginRequest.fcmToken() != null) {
+//            userDAO.updateFcmToken(email, loginRequest.fcmToken());
+//        }
 
     	return new TokenDto(accessToken, refreshToken);
 	}

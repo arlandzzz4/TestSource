@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
      * [FCM 토큰 업데이트 로직]
      */
 	@Override
+	@Transactional
 	public void updateFcmToken(String email, @NotBlank(message = "fcmToken은 필수 입력 값입니다.") String fcmToken) {
 		userDAO.updateFcmToken(email, fcmToken);
 	}
@@ -94,6 +95,7 @@ public class UserServiceImpl implements UserService {
      * [FCM 토큰 클리어 로직]
      */
 	@Override
+	@Transactional
 	public void clearFcmToken(String email) {
 		userDAO.clearFcmToken(email);
 	}
@@ -112,6 +114,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public void updateUserStatusCode(UserRequestDto userRequestDto) {
 		userDAO.updateUserStatusCode(userRequestDto);
 	}
