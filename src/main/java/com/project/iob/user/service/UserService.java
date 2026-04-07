@@ -2,6 +2,7 @@ package com.project.iob.user.service;
 
 import java.util.List;
 
+import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UserAuthRequestDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
@@ -43,6 +44,6 @@ public interface UserService {
      */
 	public void updateUserStatusCode(UserRequestDto userRequestDto);
 
-	public void unsubscribe(String email);
+	public void unsubscribe(UnsubscribeRequestDto unsubscribeRequestDto);
 
 }

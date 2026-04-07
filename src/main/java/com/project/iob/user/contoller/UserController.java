@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.global.enums.Provider;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.user.dto.FcmTokenRequest;
+import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UserAuthResponseDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
@@ -74,18 +75,18 @@ public class UserController {
     @PostMapping("/unsubscribe")
     public ResponseEntity<Map<String, String>> unsubscribe(
         @Parameter(description = "탈퇴할 유저 객체 (보통 현재 로그인된 정보 사용)") 
-        @RequestBody User user, 
+        @RequestBody UnsubscribeRequestDto unsubscribeRequestDto, 
         HttpServletResponse response) {
     	
     	// FcmToken 등 인증 관련 정보 무효화 (로그아웃 처리)
-    	userService.updateFcmToken(user.getEmail(), null); // FCM 토큰 초기화 (선택적)
+    	userService.updateFcmToken(unsubscribeRequestDto.email(), null); // FCM 토큰 초기화 (선택적)
     	 
     	//탈퇴로직
      	// DB에서 유저 정보 삭제
-    	userService.unsubscribe(user.getEmail());
+    	userService.unsubscribe(unsubscribeRequestDto);
         
         // DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
-    	authService.logout(Provider.LOCAL.getKey().equals(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
+    	authService.logout(Provider.LOCAL.getKey().equals(unsubscribeRequestDto.providerCode()) ? unsubscribeRequestDto.email() : unsubscribeRequestDto.providerId(), unsubscribeRequestDto.providerCode());
 
         // 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")

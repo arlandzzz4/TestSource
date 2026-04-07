@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
@@ -25,7 +26,7 @@ public interface UserDAO {
 
 	void updateUserStatusCode(UserRequestDto userRequestDto);
 
-	void unsubscribe(@Param("email") String email);
+	void unsubscribe(UnsubscribeRequestDto unsubscribeRequestDto);
 
     // 특정 조건의 사용자 리스트 조회 (예시)
     // List<Users> findAllActiveUsers();

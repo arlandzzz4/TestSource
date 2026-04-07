@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.project.global.enums.Provider;
 import com.project.global.enums.Role;
 import com.project.global.enums.UserStateCode;
+import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UserAuthRequestDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
@@ -120,8 +121,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void unsubscribe(String email) {
-		userDAO.unsubscribe(email);
+	public void unsubscribe(UnsubscribeRequestDto unsubscribeRequestDto) {
+		userDAO.unsubscribe(unsubscribeRequestDto);
 		
 	}
 }
