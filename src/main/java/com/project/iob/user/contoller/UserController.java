@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.global.enums.Provider;
-import com.project.global.enums.Role;
 import com.project.iob.auth.service.AuthService;
-import com.project.iob.common.controller.CommonController;
 import com.project.iob.user.dto.FcmTokenRequest;
 import com.project.iob.user.dto.UserAuthResponseDto;
 import com.project.iob.user.dto.UserRequestDto;
@@ -44,8 +42,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
-
-    private final CommonController commonController;
 
     private final UserService userService;
     private final AuthService authService;
