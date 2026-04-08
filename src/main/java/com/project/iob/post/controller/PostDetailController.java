@@ -16,8 +16,9 @@ public class PostDetailController {
     // 게시글 상세 조회
     @GetMapping("/{postId}")
     public ResponseEntity<PostDetailDto> getPostDetail(
-            @PathVariable("postId") Long postId) {
-        PostDetailDto post = postDetailService.getPostDetail(postId);
+            @PathVariable("postId") Long postId,
+            @RequestParam(value = "userEmail", required = false, defaultValue = "") String userEmail) {
+        PostDetailDto post = postDetailService.getPostDetail(postId, userEmail);
         return ResponseEntity.ok(post);
     }
     

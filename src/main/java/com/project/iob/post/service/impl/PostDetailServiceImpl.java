@@ -13,8 +13,11 @@ public class PostDetailServiceImpl implements PostDetailService {
     private final PostDetailDAO postDetailDAO;
 
     @Override
-    public PostDetailDto getPostDetail(Long postId) {
-        return postDetailDAO.getPostDetail(postId);
+    public PostDetailDto getPostDetail(Long postId, String userEmail) {
+        PostDetailDto post = postDetailDAO.getPostDetail(postId);
+        int liked = postDetailDAO.checkPostLike(postId, userEmail);
+        post.setLiked(liked > 0);
+        return post;
     }
 
     @Override

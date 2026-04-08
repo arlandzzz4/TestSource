@@ -13,7 +13,7 @@ public interface CommentDAO {
     void updateCommentDelYn(CommentRequestDto commentRequestDto);
     List<CommentResponseDto> findComments(CommentRequestDto commentRequestDto);
 
-    List<CommentResponseDto> getCommentList(@Param("postId") Long postId);
+    List<CommentResponseDto> getCommentList(@Param("postId") Long postId, @Param("userEmail") String userEmail);
     void insertComment(CommentRequestDto commentRequestDto);
     void deleteComment(@Param("commentId") Long commentId);
     void insertCommentLike(@Param("commentId") Long commentId, @Param("userEmail") String userEmail);

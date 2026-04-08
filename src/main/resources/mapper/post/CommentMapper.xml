@@ -2,92 +2,129 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.project.iob.post.service.repository.mybatis.CommentDAO">
+<mapper
+	namespace="com.project.iob.post.service.repository.mybatis.CommentDAO">
 
-    <select id="findCommentCount" resultType="Integer" parameterType="com.project.iob.post.dto.CommentRequestDto">
-        SELECT count(*) AS count
-        FROM comments c LEFT OUTER JOIN users u ON c.USER_EMAIL = u.EMAIL
-        WHERE 1=1
-        <if test="word != null and word != ''">
-	    	AND (c.content like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
-	    </if>
-        <if test="delYn != null and delYn != ''">
-            AND c.DEL_YN = #{delYn}
-        </if>
-        <if test="postId != null and postId != 0">
-            AND c.post_id = #{postId}
-        </if>
-        <if test="today != null">
-            AND c.created_at between #{today}|' 00:00:00' and #{today}|' 23:59:59'
-        </if>
-    </select>
+	<select id="findCommentCount" resultType="Integer"
+		parameterType="com.project.iob.post.dto.CommentRequestDto">
+		SELECT count(*) AS count
+		FROM comments c LEFT OUTER JOIN users u ON
+		c.USER_EMAIL = u.EMAIL
+		WHERE 1=1
+		<if test="word != null and word != ''">
+			AND (c.content like CONCAT('%', #{word}, '%') OR
+			u.nickname like
+			CONCAT('%', #{word}, '%'))
+		</if>
+		<if test="delYn != null and delYn != ''">
+			AND c.DEL_YN = #{delYn}
+		</if>
+		<if test="postId != null and postId != 0">
+			AND c.post_id = #{postId}
+		</if>
+		<if test="today != null">
+			AND c.created_at between #{today}|' 00:00:00' and
+			#{today}|' 23:59:59'
+		</if>
+	</select>
 
-    <select id="findComments" parameterType="com.project.iob.post.dto.CommentRequestDto" resultType="com.project.iob.post.dto.CommentResponseDto">
-    	/*mapper.user.CommentMapper.findComments */
-    	SELECT c.COMMENT_ID			AS commentId
-    		, c.POST_ID				AS postId
-    		, c.USER_EMAIL			AS userEmail
-    		, c.PARENT_COMMENT_ID	AS parentCommentId
-    		, c.CONTENT				AS content
-    		, c.DEL_YN				AS delYn
-    		, c.CREATED_AT			AS createdAt
-    		, c.UPDATED_AT			AS updatedAt
-    		, c.DELETED_AT			AS deletedAt
-    		, u.NICKNAME			AS nickname
-    		, (SELECT title FROM posts WHERE post_id = c.post_id) AS title
-    	FROM comments c LEFT OUTER JOIN users u ON c.USER_EMAIL = u.EMAIL
-    	WHERE
-    	    1=1
-    	    <if test="word != null and word != ''">
-		    	AND (c.content like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
-		    </if>
-    	    <if test="delYn != null and delYn != ''">
-		        AND c.DEL_YN = #{delYn}
-		    </if>
-	        <if test="lastId != 0">
-		        AND c.COMMENT_ID &lt; #{lastId}
-		    </if>
-		    ORDER BY c.COMMENT_ID DESC
-	        LIMIT #{size}
-		    <if test="offset != null">
-		    	OFFSET #{offset}
-		    </if>
-    </select>
+	<select id="findComments"
+		parameterType="com.project.iob.post.dto.CommentRequestDto"
+		resultType="com.project.iob.post.dto.CommentResponseDto">
+		/*mapper.user.CommentMapper.findComments */
+		SELECT c.COMMENT_ID AS
+		commentId
+		, c.POST_ID AS postId
+		, c.USER_EMAIL AS userEmail
+		,
+		c.PARENT_COMMENT_ID AS parentCommentId
+		, c.CONTENT AS content
+		, c.DEL_YN
+		AS delYn
+		, c.CREATED_AT AS createdAt
+		, c.UPDATED_AT AS updatedAt
+		,
+		c.DELETED_AT AS deletedAt
+		, u.NICKNAME AS nickname
+		, (SELECT title FROM
+		posts WHERE post_id = c.post_id) AS title
+		FROM comments c LEFT OUTER
+		JOIN users u ON c.USER_EMAIL = u.EMAIL
+		WHERE
+		1=1
+		<if test="word != null and word != ''">
+			AND (c.content like CONCAT('%', #{word}, '%') OR
+			u.nickname like
+			CONCAT('%', #{word}, '%'))
+		</if>
+		<if test="delYn != null and delYn != ''">
+			AND c.DEL_YN = #{delYn}
+		</if>
+		<if test="lastId != 0">
+			AND c.COMMENT_ID &lt; #{lastId}
+		</if>
+		ORDER BY c.COMMENT_ID DESC
+		LIMIT #{size}
+		<if test="offset != null">
+			OFFSET #{offset}
+		</if>
+	</select>
 
-    <update id="updateCommentDelYn" parameterType="com.project.iob.post.dto.CommentRequestDto">
-        UPDATE comments set DEL_YN = #{delYn}, deleted_at = CURRENT_TIMESTAMP
-        WHERE COMMENT_ID = #{commentId}
-    </update>
+	<update id="updateCommentDelYn"
+		parameterType="com.project.iob.post.dto.CommentRequestDto">
+		UPDATE comments set DEL_YN = #{delYn}, deleted_at =
+		CURRENT_TIMESTAMP
+		WHERE COMMENT_ID = #{commentId}
+	</update>
 
-    <!-- 게시글 상세 -->
-    <select id="getCommentList" parameterType="long" resultType="com.project.iob.post.dto.CommentResponseDto">
-        SELECT c.comment_id, c.post_id, c.user_email, u.nickname, c.parent_comment_id,
-               c.content, c.del_yn, c.created_at,
-               (SELECT COUNT(*) FROM likes l WHERE l.target_code = '02' AND l.target_id = c.comment_id) AS like_count
-        FROM comments c JOIN users u ON c.user_email = u.email
-        WHERE c.post_id = #{postId} AND c.del_yn = 'N'
-        ORDER BY c.created_at ASC
-    </select>
+	<!-- 게시글 상세 -->
+	<select id="getCommentList" parameterType="map"
+		resultType="com.project.iob.post.dto.CommentResponseDto">
+		SELECT c.comment_id, c.post_id, c.user_email, c.parent_comment_id,
+		c.content, c.created_at, c.updated_at, c.deleted_at,
+		c.del_yn, u.nickname,
+		(SELECT title FROM posts WHERE post_id = c.post_id) AS title,
+		(SELECT COUNT(*) FROM likes l WHERE l.target_code = '02' AND l.target_id =
+		c.comment_id) AS like_count,
+		(SELECT COUNT(*) FROM likes l WHERE l.target_code = '02' AND l.target_id =
+		c.comment_id AND l.user_email = #{userEmail}) AS is_liked
+		FROM comments c JOIN users u ON c.user_email = u.email
+		WHERE c.post_id = #{postId} AND c.del_yn = 'N'
+		ORDER BY c.created_at ASC
+	</select>
 
-    <insert id="insertComment">
-        INSERT INTO comments (post_id, user_email, parent_comment_id, content, del_yn, created_at)
-        VALUES (#{postId}, #{userEmail}, #{parent_comment_id}, #{content}, 'N', NOW())
-    </insert>
+	<insert id="insertComment">
+		INSERT INTO comments (post_id, user_email,
+		parent_comment_id, content,
+		del_yn, created_at)
+		VALUES (#{postId},
+		#{userEmail}, #{parent_comment_id}, #{content}, 'N',
+		NOW())
+	</insert>
 
-    <update id="deleteComment">
-        UPDATE comments SET del_yn = 'Y', deleted_at = NOW() WHERE comment_id = #{commentId}
-    </update>
+	<update id="deleteComment">
+		UPDATE comments SET del_yn = 'Y', deleted_at = NOW()
+		WHERE comment_id =
+		#{commentId}
+	</update>
 
-    <insert id="insertCommentLike">
-        INSERT INTO likes (target_code, target_id, user_email) VALUES ('02', #{commentId}, #{userEmail})
-    </insert>
+	<insert id="insertCommentLike">
+		INSERT INTO likes (target_code, target_id,
+		user_email) VALUES ('02',
+		#{commentId}, #{userEmail})
+	</insert>
 
-    <delete id="deleteCommentLike">
-        DELETE FROM likes WHERE target_code = '02' AND target_id = #{commentId} AND user_email = #{userEmail}
-    </delete>
+	<delete id="deleteCommentLike">
+		DELETE FROM likes WHERE target_code = '02' AND
+		target_id = #{commentId} AND
+		user_email = #{userEmail}
+	</delete>
 
-    <select id="checkCommentLike" resultType="int">
-        SELECT COUNT(*) FROM likes WHERE target_code = '02' AND target_id = #{commentId} AND user_email = #{userEmail}
-    </select>
+	<select id="checkCommentLike" resultType="int">
+		SELECT COUNT(*) FROM
+		likes WHERE target_code = '02' AND target_id =
+		#{commentId} AND
+		user_email = #{userEmail}
+	</select>
 
 </mapper>

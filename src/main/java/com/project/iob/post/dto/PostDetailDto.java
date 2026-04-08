@@ -16,4 +16,5 @@ public class PostDetailDto {
     private LocalDateTime updatedAt;
     private int likeCount;          // likes 테이블에서 count
     private int commentCount;       // comments 테이블에서 count
+    private boolean isLiked;
 }
