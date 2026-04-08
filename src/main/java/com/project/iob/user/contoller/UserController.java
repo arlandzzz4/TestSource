@@ -22,6 +22,7 @@ import com.project.global.enums.Provider;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.user.dto.FcmTokenRequest;
 import com.project.iob.user.dto.UnsubscribeRequestDto;
+import com.project.iob.user.dto.UpdateNicknameRequest;
 import com.project.iob.user.dto.UserAuthResponseDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
@@ -188,6 +189,27 @@ public class UserController {
     ) {
         // UserService에서 해당 유저의 fcm_token 필드만 업데이트
         userService.updateUserStatusCode(userRequestDto);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @Operation(summary = "닉네임 변경", description = "사용자의 닉네임을 변경합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "변경 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+    })
+    @PatchMapping("/me/nickname")
+    public ResponseEntity<Void> updateNickname(
+            @RequestBody UpdateNicknameRequest request // 전용 DTO로 변경
+    ) {
+        // 기존 로직을 유지하기 위해 UserRequestDto로 변환하여 서비스 호출
+        // 또는 서비스 인터페이스를 수정하여 파라미터를 최적화할 수 있습니다.
+        UserRequestDto userRequestDto = new UserRequestDto(
+            request.email(), 
+            request.nickname(), 
+            null, null, null, null, null, null, null
+        );
+        userService.updateNickname(userRequestDto);
         return ResponseEntity.noContent().build();
     }
 }
