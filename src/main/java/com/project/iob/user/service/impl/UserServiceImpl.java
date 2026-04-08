@@ -125,4 +125,11 @@ public class UserServiceImpl implements UserService {
 		userDAO.unsubscribe(unsubscribeRequestDto);
 		
 	}
+	
+	//유저 닉네임 변경
+	@Override
+	@Transactional
+	public void updateNickname(UserRequestDto userRequestDto) {
+	    userDAO.updateNickname(userRequestDto);
+	}
 }

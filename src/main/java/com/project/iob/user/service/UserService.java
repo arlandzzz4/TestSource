@@ -45,5 +45,10 @@ public interface UserService {
 	public void updateUserStatusCode(UserRequestDto userRequestDto);
 
 	public void unsubscribe(UnsubscribeRequestDto unsubscribeRequestDto);
+	
+	/**
+	 * [닉네임 변경 로직]
+	 */
+	public void updateNickname(UserRequestDto userRequestDto);
 
 }
