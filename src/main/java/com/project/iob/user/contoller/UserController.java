@@ -80,9 +80,10 @@ public class UserController {
         HttpServletResponse response) {
     	
     	// FcmToken 등 인증 관련 정보 무효화 (로그아웃 처리)
-    	userService.updateFcmToken(unsubscribeRequestDto.email(), null); // FCM 토큰 초기화 (선택적)
+    	//userService.updateFcmToken(unsubscribeRequestDto.email(), null); // FCM 토큰 초기화 (선택적)
+    	// service에서 unscribe와 clearFcmToken을 합쳐놓음 -> 밑에서 알아서 처리 될것임
     	 
-    	//탈퇴로직
+    	//탈퇴로직 (FCM 초기화 + 상태 변경이 한 번에 일어남)
      	// DB에서 유저 정보 삭제
     	userService.unsubscribe(unsubscribeRequestDto);
         
