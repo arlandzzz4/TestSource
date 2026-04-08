@@ -16,8 +16,8 @@ import com.project.iob.user.dto.UserAuthRequestDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
-import com.project.iob.user.querydsl.UserRepository;
 import com.project.iob.user.repository.mybatis.UserDAO;
+import com.project.iob.user.repository.querydsl.UserRepository;
 import com.project.iob.user.service.UserService;
 
 import jakarta.persistence.EntityManager;
