@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.project.iob.post.dto.MyPostRequestDto;
+import com.project.iob.post.dto.MyPostResponseDto;
 import com.project.iob.post.dto.PostRequestDto;
 import com.project.iob.post.dto.PostResponseDto;
 import com.project.iob.post.service.PostService;
@@ -36,6 +38,22 @@ public class PostServiceImpl implements PostService {
 	public void updatePostDelYn(PostRequestDto postRequestDto) {
 		postDAO.updatePostDelYn(postRequestDto);
 		postDAO.updateCommentDelYn(postRequestDto);
+	}
+	
+	/**
+     * [사용자별 게시글 목록]
+     */
+	@Override
+	public List<MyPostResponseDto> searchMyPosts(MyPostRequestDto myPostRequestDto) {
+	    return postDAO.findByUser(myPostRequestDto);
+	}
+	
+	/**
+     * [사용자별 게시글 수]
+     */
+	@Override
+	public int searchMyPostCount(MyPostRequestDto myPostRequestDto) {
+	    return postDAO.findByUserCount(myPostRequestDto);
 	}
 	
 	

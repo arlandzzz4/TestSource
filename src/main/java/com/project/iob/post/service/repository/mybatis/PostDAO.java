@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.project.iob.post.dto.MyPostRequestDto;
+import com.project.iob.post.dto.MyPostResponseDto;
 import com.project.iob.post.dto.PostRequestDto;
 import com.project.iob.post.dto.PostResponseDto;
 
@@ -17,5 +19,9 @@ public interface PostDAO {
 	void updatePostDelYn(PostRequestDto postRequestDto);
 
 	void updateCommentDelYn(PostRequestDto postRequestDto);
+	
+	 List<MyPostResponseDto> findByUser(MyPostRequestDto myPostRequestDto); 
+	 
+	 int findByUserCount(MyPostRequestDto myPostRequestDto);
     
 }
