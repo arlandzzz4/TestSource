@@ -48,9 +48,12 @@
     	/*mapper.post.PostMapper.findPostCount */
         SELECT 
             count(*) AS count
-        FROM posts
+        FROM posts p JOIN users u ON p.USER_EMAIL = u.EMAIL
         WHERE
         	1=1
+        <if test="word != null and word != ''">
+	    	AND (p.title like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
+	    </if>
         <if test="categoryCode != null and categoryCode != ''">
 	        AND CATEGORY_CODE = #{categoryCode}
 	    </if>

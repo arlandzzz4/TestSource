@@ -29,12 +29,13 @@
     		, c.USER_EMAIL			AS userEmail
     		, c.PARENT_COMMENT_ID	AS parentCommentId
     		, c.CONTENT				AS content
-    		, c.DEL_YN				AS delYn
     		, c.CREATED_AT			AS createdAt
     		, c.UPDATED_AT			AS updatedAt
     		, c.DELETED_AT			AS deletedAt
+    		, c.DEL_YN				AS delYn
     		, u.NICKNAME			AS nickname
     		, (SELECT title FROM posts WHERE post_id = c.post_id) AS title
+    		, 0 AS likeCount
     	FROM comments c LEFT OUTER JOIN users u ON c.USER_EMAIL = u.EMAIL
     	WHERE
     	    1=1
