@@ -4,7 +4,7 @@ import com.project.iob.post.dto.PostDetailDto;
 
 public interface PostDetailService {
 	// 게시글 상세 조회
-	PostDetailDto getPostDetail(Long postId);
+	PostDetailDto getPostDetail(Long postId, String userEmail);
 
 	// 게시글 수정
 	void updatePost(Long postId, String title, String content, String categoryCode);

@@ -1,6 +1,6 @@
 package com.project.iob.post.dto;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public record CommentResponseDto(
         Long commentId,
@@ -8,12 +8,13 @@ public record CommentResponseDto(
         String userEmail,
         Long parentCommentId,
         String content,
-        Date createdAt,
-        Date updatedAt,
-        Date deleteAt,
+        Timestamp createdat,
+        Timestamp updatedat,
+        Timestamp deleteat,
         String delYn,
         String nickname,
         String title,
-        int likeCount
+        int likeCount,
+        int isLiked
 ) {
 }

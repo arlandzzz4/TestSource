@@ -13,8 +13,6 @@ import com.project.iob.report.dto.ReportRequestDto;
 import com.project.iob.report.service.ReportService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +27,7 @@ public class CommentController {
     private final CommentService commentService;
     private final ReportService reportService;
 
-    // 총 댓글 수 조회
+    //총 댓글 수 조회
     @Operation(summary = "총 댓글 검색")
     @GetMapping("/search/totalcnt")
     public ResponseEntity<Integer> searchCommentTotalCount(
@@ -48,7 +46,7 @@ public class CommentController {
         return ResponseEntity.ok(cnt);
     }
 
-    //댓글 삭제
+    //댓글 삭제 (관리자용)
     @Operation(summary = "댓글 삭제")
     @PatchMapping("/delete")
     public ResponseEntity<Void> deleteComment(
@@ -69,21 +67,22 @@ public class CommentController {
     }
 
     //댓글 목록 조회
-    @GetMapping("/{postId}")
+    @GetMapping("/list/{postId}")
     public ResponseEntity<List<CommentResponseDto>> getCommentList(
-            @PathVariable("postId") Long postId) {
-        return ResponseEntity.ok(commentService.getCommentList(postId));
+            @PathVariable("postId") Long postId,
+            @RequestParam(value = "userEmail", required = false, defaultValue = "") String userEmail) {
+        return ResponseEntity.ok(commentService.getCommentList(postId, userEmail));
     }
 
     //댓글 등록
-    @PostMapping
+    @PostMapping("/insert")
     public ResponseEntity<Void> insertComment(@RequestBody CommentRequestDto commentRequestDto) {
         commentService.insertComment(commentRequestDto);
         return ResponseEntity.ok().build();
     }
 
     //댓글 삭제
-    @DeleteMapping("/{commentId}")
+    @PatchMapping("/delete/{commentId}")
     public ResponseEntity<Void> deleteCommentById(
             @PathVariable("commentId") Long commentId) {
         commentService.deleteComment(commentId);

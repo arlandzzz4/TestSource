@@ -36,10 +36,9 @@ public class CommentServiceImpl implements CommentService {
         return commentDAO.findComments(commentRequestDto);
     }
 
-    
     @Override
-    public List<CommentResponseDto> getCommentList(Long postId) {
-        return commentDAO.getCommentList(postId);
+    public List<CommentResponseDto> getCommentList(Long postId, String userEmail) {
+        return commentDAO.getCommentList(postId, userEmail);
     }
 
     @Override

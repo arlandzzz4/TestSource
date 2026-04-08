@@ -10,7 +10,7 @@ public interface CommentService {
     public void updateCommentDelYn(CommentRequestDto commentRequestDto);
     public List<CommentResponseDto> searchComments(CommentRequestDto commentRequestDto);
 
-    List<CommentResponseDto> getCommentList(Long postId);
+    List<CommentResponseDto> getCommentList(Long postId, String userEmail);
     void insertComment(CommentRequestDto commentRequestDto);
     void deleteComment(Long commentId);
     boolean toggleCommentLike(Long commentId, String userEmail);
