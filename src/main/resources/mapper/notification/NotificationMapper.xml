@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.iob.notification.repository.NotificationDAO">
+
+    <select id="findByUserEmail" parameterType="String" 
+            resultType="com.project.iob.notification.dto.NotificationResponseDTO">
+        SELECT
+            noti_id,
+            noti_type,
+            sender_email,
+            message,
+            target_id,
+            read_yn,
+            created_at
+        FROM notifications
+        WHERE user_email = #{userEmail}
+        AND deleted_yn = 'N'
+        ORDER BY created_at DESC
+    </select>
+
+    <update id="markAsRead" parameterType="Long">
+        UPDATE notifications
+        SET read_yn = 'Y'
+        WHERE noti_id = #{notiId}
+    </update>
+
+    <update id="markAllRead" parameterType="String">
+        UPDATE notifications
+        SET read_yn = 'Y'
+        WHERE user_email = #{userEmail}
+        AND deleted_yn = 'N'
+    </update>
+
+    <update id="deleteAll" parameterType="String">
+        UPDATE notifications
+        SET deleted_yn = 'Y'
+        WHERE user_email = #{userEmail}
+    </update>
+
+    <insert id="createNotification" 
+            parameterType="com.project.iob.notification.dto.NotificationDTO$CreateRequest">
+        INSERT INTO notifications
+            (user_email, noti_type, sender_email, message, target_id, read_yn, deleted_yn, created_at)
+        VALUES
+            (#{userEmail}, #{notiType}, #{senderEmail}, #{message}, #{targetId}, 'N', 'N', NOW())
+    </insert>
+
+</mapper>
