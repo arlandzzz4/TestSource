@@ -1,18 +1,24 @@
 package com.project.iob.calendar.service;
 
-import com.project.iob.calendar.entity.Food;
-import com.project.iob.calendar.repository.jpa.FoodRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.project.iob.calendar.entity.Food;
+import com.project.iob.calendar.repository.jpa.FoodRepository;
+
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -21,39 +27,43 @@ public class FoodApiService {
 
     private final FoodRepository foodRepository;
     private final RestTemplate restTemplate;
+    private final EntityManager entityManager;
 
     @Value("${food.api.key}")
     private String apiKey;
 
-    @Value("${food.api.key}")
+    @Value("${food.api.url}")
     private String apiUrl;
 
-    private static final int PAGE_SIZE = 500;
+    private static final int PAGE_SIZE = 1000;
 
     public void fetchAndSaveAll() {
     	log.info("API URL: {}", apiUrl);
         int pageNo = 1;
         int totalSaved = 0;
-
+        String url = null;
+        Map response = null;
+        List<Map<String, Object>> items = null;
+        List<Food> foods = null;
+        String apiCd = null;
+        //entityManager.createNativeQuery("TRUNCATE TABLE foods").executeUpdate();
+        
+        Set<String> duplicateChecker = new HashSet<>(foodRepository.findAllApiFoodCds());
         while (true) {
-            String url = UriComponentsBuilder.fromHttpUrl(apiUrl)
-                .queryParam("serviceKey", apiKey)
-                .queryParam("pageNo", pageNo)
-                .queryParam("numOfRows", PAGE_SIZE)
-                .queryParam("type", "json")
-                .build(false)
-                .toUriString();
-
-            Map response = restTemplate.getForObject(url, Map.class);
-            List<Map<String, Object>> items = parseItems(response);
-
+            url = buildUrl(pageNo);
+            response = restTemplate.getForObject(url, Map.class);
+            items = parseItems(response);
+            
             if (items == null || items.isEmpty()) break;
-
-            List<Food> foods = new ArrayList<>();
+            
+            foods = new ArrayList<>();
             for (Map<String, Object> item : items) {
-                String apiCd = str(item, "FOOD_CD");
-                if (foodRepository.existsByApiFoodCd(apiCd)) continue;
-
+                apiCd = str(item, "FOOD_CD");
+                if (!duplicateChecker.add(apiCd)) {
+                    log.warn("중복 데이터 발견(건너뜀): {}", apiCd);
+                    continue;
+                }
+                
                 foods.add(Food.builder()
                 	    .apiFoodCd(apiCd)
                 	    .foodName(str(item, "FOOD_NM_KR"))
@@ -65,16 +75,34 @@ public class FoodApiService {
                 	    .build());
             }
 
-            foodRepository.saveAll(foods);
+            saveChunk(foods);
+        	foodRepository.flush(); // DB 반영
+        	entityManager.clear();
             totalSaved += foods.size();
-            log.info("페이지 {} 저장 완료 - 누적 {}건", pageNo, totalSaved);
+            //log.info("페이지 {} 저장 완료 - 누적 {}건", pageNo, totalSaved);
 
             if (items.size() < PAGE_SIZE) break;
             pageNo++;
         }
-
+        foodRepository.flush();
+        entityManager.clear();
         log.info("식품 데이터 전체 저장 완료 - 총 {}건", totalSaved);
     }
+    
+    @Transactional
+    public void saveChunk(List<Food> foods) {
+    	if(!foods.isEmpty()) foodRepository.saveAll(foods);
+    }
+
+    private String buildUrl(int pageNo) {
+    	return UriComponentsBuilder.fromUriString(apiUrl)
+        .queryParam("serviceKey", apiKey)
+        .queryParam("pageNo", pageNo)
+        .queryParam("numOfRows", PAGE_SIZE)
+        .queryParam("type", "json")
+        .build(false)
+        .toUriString();
+	}
 
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> parseItems(Map response) {

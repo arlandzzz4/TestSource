@@ -60,7 +60,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
             	.requestMatchers("/error", "/favicon.ico").permitAll()
                 // Swagger 및 문서 관련 (누구나)
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/api/admin/food/fetch/**").permitAll()
                 
                 // TODO: 설정을 통해 정적 리소스를 보안 대상에서 제외
                 .requestMatchers("/images/**").permitAll() 
