@@ -39,6 +39,7 @@ public class FoodApiService {
 
     public void fetchAndSaveAll() {
     	log.info("API URL: {}", apiUrl);
+    	log.info("Requesting with Key: {}", apiKey);
         int pageNo = 1;
         int totalSaved = 0;
         String url = null;
