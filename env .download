@@ -1,0 +1,10 @@
+# .env 파일
+DB_URL=jdbc:mysql://localhost:3306/sisa?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+DB_USER=root
+DB_PASSWORD_ENC="ENC(NoLInuIXCZTlwYPVtu+2vA==)"
+DB_PASSWORD_RAW=sisa
+JASYPT_KEY=my-project-key-99
+FRONTEND_PATH=../app-test
+SPRING_PROFILES_ACTIVE=local
+MAIL_USERNAME=arlandzzz4@gmail.com
+MAIL_PASSWORD=uelnzzbdbavwlfww
