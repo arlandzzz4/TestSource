@@ -59,3 +59,9 @@ cloud:
       auto: false # 프로젝트 시작 시 EC2 스택 체크 방지 (속도 향상)
 swagger:
   server-url: https://information-of-balance.xyz
+  
+  
+food:
+  api:
+    key: ${FOOD_API_KEY}
+    url: https://apis.data.go.kr/1471000/FoodNtrCpntDbInfo02/getFoodNtrCpntDbInq02
