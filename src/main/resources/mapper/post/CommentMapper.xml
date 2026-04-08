@@ -42,6 +42,7 @@
     		, u.NICKNAME			AS nickname
     		, (SELECT title FROM posts WHERE post_id = c.post_id) AS title
     		, 0 AS likeCount
+    		, 0 AS isLiked
     	FROM comments c LEFT OUTER JOIN users u ON c.USER_EMAIL = u.EMAIL
     	WHERE
     	    1=1
