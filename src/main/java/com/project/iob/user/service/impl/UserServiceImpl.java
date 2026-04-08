@@ -11,12 +11,13 @@ import org.springframework.web.server.ResponseStatusException;
 import com.project.global.enums.Provider;
 import com.project.global.enums.Role;
 import com.project.global.enums.UserStateCode;
+import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UserAuthRequestDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
-import com.project.iob.user.querydsl.UserRepository;
 import com.project.iob.user.repository.mybatis.UserDAO;
+import com.project.iob.user.repository.querydsl.UserRepository;
 import com.project.iob.user.service.UserService;
 
 import jakarta.persistence.EntityManager;
@@ -117,5 +118,18 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public void updateUserStatusCode(UserRequestDto userRequestDto) {
 		userDAO.updateUserStatusCode(userRequestDto);
+	}
+
+	@Override
+	public void unsubscribe(UnsubscribeRequestDto unsubscribeRequestDto) {
+		userDAO.unsubscribe(unsubscribeRequestDto);
+		
+	}
+	
+	//유저 닉네임 변경
+	@Override
+	@Transactional
+	public void updateNickname(UserRequestDto userRequestDto) {
+	    userDAO.updateNickname(userRequestDto);
 	}
 }

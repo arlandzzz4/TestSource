@@ -10,7 +10,7 @@ import com.google.firebase.messaging.Notification;
 import com.project.iob.admin.usermgmt.dto.FcmRequestDto;
 import com.project.iob.admin.usermgmt.service.FcmAdminService;
 import com.project.iob.user.entity.User;
-import com.project.iob.user.querydsl.UserRepository;
+import com.project.iob.user.repository.querydsl.UserRepository;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

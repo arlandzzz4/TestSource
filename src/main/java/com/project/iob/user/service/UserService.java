@@ -2,6 +2,7 @@ package com.project.iob.user.service;
 
 import java.util.List;
 
+import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UserAuthRequestDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
@@ -42,5 +43,12 @@ public interface UserService {
      * [유저 상태 수정]
      */
 	public void updateUserStatusCode(UserRequestDto userRequestDto);
+
+	public void unsubscribe(UnsubscribeRequestDto unsubscribeRequestDto);
+	
+	/**
+	 * [닉네임 변경 로직]
+	 */
+	public void updateNickname(UserRequestDto userRequestDto);
 
 }

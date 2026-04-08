@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.iob.user.entity.User;
-import com.project.iob.user.querydsl.UserRepository;
+import com.project.iob.user.repository.querydsl.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

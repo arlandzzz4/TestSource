@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.global.enums.Provider;
-import com.project.global.enums.Role;
 import com.project.iob.auth.service.AuthService;
-import com.project.iob.common.controller.CommonController;
 import com.project.iob.user.dto.FcmTokenRequest;
+import com.project.iob.user.dto.UnsubscribeRequestDto;
+import com.project.iob.user.dto.UpdateNicknameRequest;
 import com.project.iob.user.dto.UserAuthResponseDto;
 import com.project.iob.user.dto.UserRequestDto;
 import com.project.iob.user.dto.UserResponseDto;
@@ -44,8 +44,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
-
-    private final CommonController commonController;
 
     private final UserService userService;
     private final AuthService authService;
@@ -78,20 +76,20 @@ public class UserController {
     @PostMapping("/unsubscribe")
     public ResponseEntity<Map<String, String>> unsubscribe(
         @Parameter(description = "탈퇴할 유저 객체 (보통 현재 로그인된 정보 사용)") 
-        @RequestBody User user, 
+        @RequestBody UnsubscribeRequestDto unsubscribeRequestDto, 
         HttpServletResponse response) {
     	
+    	// FcmToken 등 인증 관련 정보 무효화 (로그아웃 처리)
+    	userService.updateFcmToken(unsubscribeRequestDto.email(), null); // FCM 토큰 초기화 (선택적)
+    	 
     	//탈퇴로직
-    	// 1. DB에서 유저 정보 삭제
-    	// userService.deleteUser(user.getId());
-    	
-    	// 2. FcmToken 등 인증 관련 정보 무효화 (로그아웃 처리)
-    	 userService.updateFcmToken(user.getEmail(), null); // FCM 토큰 초기화 (선택적)
+     	// DB에서 유저 정보 삭제
+    	userService.unsubscribe(unsubscribeRequestDto);
         
-        // 3. DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
-    	authService.logout(Provider.LOCAL.getKey().equals(user.getProviderCode()) ? user.getEmail() : user.getProviderId(), user.getProviderCode());
+        // DB에서 리프레시 토큰 무효화 (UserDetails를 통해 유저 식별)
+    	authService.logout(Provider.LOCAL.getKey().equals(unsubscribeRequestDto.providerCode()) ? unsubscribeRequestDto.email() : unsubscribeRequestDto.providerId(), unsubscribeRequestDto.providerCode());
 
-        // 4. 쿠키 삭제 헤더 생성
+        // 쿠키 삭제 헤더 생성
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .path("/")
                 .httpOnly(true)
@@ -191,6 +189,27 @@ public class UserController {
     ) {
         // UserService에서 해당 유저의 fcm_token 필드만 업데이트
         userService.updateUserStatusCode(userRequestDto);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @Operation(summary = "닉네임 변경", description = "사용자의 닉네임을 변경합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "변경 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+    })
+    @PatchMapping("/me/nickname")
+    public ResponseEntity<Void> updateNickname(
+            @RequestBody UpdateNicknameRequest request // 전용 DTO로 변경
+    ) {
+        // 기존 로직을 유지하기 위해 UserRequestDto로 변환하여 서비스 호출
+        // 또는 서비스 인터페이스를 수정하여 파라미터를 최적화할 수 있습니다.
+        UserRequestDto userRequestDto = new UserRequestDto(
+            request.email(), 
+            request.nickname(), 
+            null, null, null, null, null, null, null
+        );
+        userService.updateNickname(userRequestDto);
         return ResponseEntity.noContent().build();
     }
 }

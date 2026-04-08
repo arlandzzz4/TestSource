@@ -52,8 +52,9 @@ public class S3FileServiceImpl implements FileService {
     @Override
     public List<String> uploadList(List<MultipartFile> file) throws IOException {
         List<String> fileNames = new java.util.ArrayList<>();
+        String fileName = null;
         for (MultipartFile multipartFile : file) {
-            String fileName = upload(multipartFile); // 개별 파일 업로드
+            fileName = upload(multipartFile); // 개별 파일 업로드
             fileNames.add(fileName); // 업로드된 파일의 URL을 리스트에 추가
         }	
         return fileNames;

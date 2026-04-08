@@ -25,7 +25,7 @@ public interface CalendarService {
     void saveExercise(String email, CalendarDto.ExerciseRequest req);
 
     /** [음식 검색] */
-    List<CalendarDietDto.FoodSearchResponse> searchFood(String keyword);
+    List<CalendarDietDto.FoodSearchResponse> searchFood(String keyword, int page);
     
     /** [즐겨먹는 식단 조회] */
     List<CalendarDietDto.FavMealResponse> getFavMeals(String email);

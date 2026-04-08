@@ -71,12 +71,13 @@ public class CalendarController {
         return ResponseEntity.ok().build();
     }
 
-    /** [음식 검색] GET /api/calendar/food/search?q=닭가슴살 */
+    /** [음식 검색] GET /api/calendar/food/search?q=닭가슴살&page=0 */
     @GetMapping("/food/search")
     public ResponseEntity<List<CalendarDietDto.FoodSearchResponse>> searchFood(
-        @RequestParam("q") String q
+        @RequestParam("q") String q,
+        @RequestParam(value = "page", defaultValue = "0") int page
     ) {
-        return ResponseEntity.ok(calendarService.searchFood(q));
+        return ResponseEntity.ok(calendarService.searchFood(q, page));
     }
     
     /** [즐겨먹는 식단 조회] GET /api/calendar/fav-meals */

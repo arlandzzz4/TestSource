@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.iob.post.dto.MyPostRequestDto;
+import com.project.iob.post.dto.MyPostResponseDto;
 import com.project.iob.post.dto.PostRequestDto;
 import com.project.iob.post.dto.PostResponseDto;
 import com.project.iob.post.service.CommentService;
@@ -100,4 +102,30 @@ public class PostController {
     	
         return ResponseEntity.noContent().build(); 
 	}
+    
+    
+    @Operation(summary = "내 게시글 조회", description = "로그인된 사용자의 삭제되지 않은 게시글 목록을 최신순으로 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @GetMapping("/my")
+    public ResponseEntity<List<MyPostResponseDto>> searchMyPosts(
+            @ParameterObject MyPostRequestDto myPostRequestDto
+    ) {
+        List<MyPostResponseDto> posts = postService.searchMyPosts(myPostRequestDto);
+        return ResponseEntity.ok(posts);
+    }
+    
+    @Operation(summary = "내 게시글 수 조회", description = "로그인된 사용자의 삭제되지 않은 게시글 목록 수를 조회합니다")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @GetMapping("/my/count")
+    public ResponseEntity<Integer> searchMyPostCount(
+            @ParameterObject MyPostRequestDto myPostRequestDto
+    ) {
+        return ResponseEntity.ok(postService.searchMyPostCount(myPostRequestDto));
+    }
 }

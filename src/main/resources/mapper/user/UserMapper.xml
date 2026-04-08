@@ -105,5 +105,22 @@
         	, UPDATED_AT = CURRENT_TIMESTAMP
         WHERE email = #{email}
 	</update>
+	
+	<delete id="unsubscribe" parameterType="com.project.iob.user.dto.UnsubscribeRequestDto">
+		/*mapper.user.UserMapper.unsubscribe */
+		UPDATE users
+        SET USER_STATUS_CODE = '03'
+        , UPDATED_AT = CURRENT_TIMESTAMP
+        , DELETED_REASON = #{reason}
+		WHERE email = #{email}
+	</delete>
+	
+	<update id="updateNickname" parameterType="com.project.iob.user.dto.UserRequestDto">
+	    /*mapper.user.UserMapper.updateNickname */
+	    UPDATE users
+	    SET nickname = #{nickname},
+	        updated_at = CURRENT_TIMESTAMP
+	    WHERE email = #{email}
+	</update>
 </mapper>
     

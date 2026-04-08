@@ -50,8 +50,8 @@ public class Post {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
     
-    @Column(name = "delete_id")
-    private String deleteId;
+    @Column(name = "deleted_id")
+    private String deletedId;
     
     public static Post createEmpty() {
         return new Post();
