@@ -5,6 +5,9 @@ spring:
       local: "local,common"
       dev: "dev,common"
       prod: "prod,common"
+  jpa:
+    hibernate:
+      ddl-auto: none
 
 # --- 여기서부터는 모든 환경 공통 설정 ---
   application:

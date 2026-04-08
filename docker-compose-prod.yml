@@ -73,6 +73,7 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - FOOD_API_KEY=${FOOD_API_KEY}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
   frontend:
     image: arlandzzz4/react-frontend:latest
     container_name: react-frontend
