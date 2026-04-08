@@ -69,4 +69,26 @@
     		deleted_at = CURRENT_TIMESTAMP
     	WHERE POST_ID = #{postId}
     </update>
+    
+    
+    <select id="findByUser" parameterType="com.project.iob.post.dto.MyPostRequestDto"
+	        resultType="com.project.iob.post.dto.MyPostResponseDto">
+	    SELECT
+	        post_id     AS postId,
+	        title,
+	        created_at  AS createdAt
+	    FROM posts
+	    WHERE user_email = #{userEmail}
+	      AND del_yn = 'N'
+	    ORDER BY created_at DESC
+	    LIMIT #{size} OFFSET #{offset}
+	</select>
+	
+	<select id="findByUserCount" parameterType="com.project.iob.post.dto.MyPostRequestDto"
+        resultType="Integer">
+	    SELECT COUNT(*)
+	    FROM posts
+	    WHERE user_email = #{userEmail}
+	      AND del_yn = 'N'
+	</select>
 </mapper>

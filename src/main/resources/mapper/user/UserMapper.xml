@@ -114,5 +114,13 @@
         , DELETED_REASON = #{reason}
 		WHERE email = #{email}
 	</delete>
+	
+	<update id="updateNickname" parameterType="com.project.iob.user.dto.UserRequestDto">
+	    /*mapper.user.UserMapper.updateNickname */
+	    UPDATE users
+	    SET nickname = #{nickname},
+	        updated_at = CURRENT_TIMESTAMP
+	    WHERE email = #{email}
+	</update>
 </mapper>
     

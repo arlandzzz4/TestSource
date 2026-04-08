@@ -151,8 +151,10 @@ public class CalendarServiceImpl implements CalendarService {
     /** [음식 검색 — MyBatis] */
     @Override
     @Transactional(readOnly = true)
-    public List<CalendarDietDto.FoodSearchResponse> searchFood(String keyword) {
-        return calendarDAO.searchFood(keyword);
+    public List<CalendarDietDto.FoodSearchResponse> searchFood(String keyword, int page) {
+        int size = 30;
+        int offset = page * size;
+        return calendarDAO.searchFood(keyword, offset, size);
     }
 
     // "2026-3-1" → LocalDate

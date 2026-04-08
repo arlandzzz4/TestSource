@@ -18,7 +18,7 @@
     FROM foods
     WHERE food_name LIKE CONCAT('%', #{keyword}, '%')
     ORDER BY food_name ASC
-    LIMIT 30
+    LIMIT #{size} OFFSET #{offset}
 </select>
 
 </mapper>

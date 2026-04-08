@@ -25,7 +25,7 @@ public class FoodApiService {
     @Value("${food.api.key}")
     private String apiKey;
 
-    @Value("${food.api.url}")
+    @Value("${food.api.key}")
     private String apiUrl;
 
     private static final int PAGE_SIZE = 500;

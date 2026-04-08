@@ -1,4 +1,4 @@
-package com.project.iob.user.querydsl;
+package com.project.iob.user.repository.querydsl;
 
 import java.util.Optional;
 

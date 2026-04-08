@@ -10,5 +10,8 @@ import java.util.List;
 public interface CalendarDAO {
 
     /** [음식 이름 검색] */
-    List<CalendarDietDto.FoodSearchResponse> searchFood(@Param("keyword") String keyword);
+    List<CalendarDietDto.FoodSearchResponse> searchFood(
+    		@Param("keyword") String keyword,
+    	    @Param("offset") int offset,
+    	    @Param("size") int size);
 }
