@@ -1,29 +1,16 @@
 package com.project.iob.map.service;
 
 import com.project.iob.map.dto.MapPinDto;
-import com.project.iob.map.repository.MapPinMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class MapPinService {
-
-    private final MapPinMapper mapPinMapper;
+public interface MapPinService {
 
     // 전체 핀 조회
-    public List<MapPinDto> getAllPins() {
-        return mapPinMapper.getAllPins();
-    }
+    List<MapPinDto> getAllPins();
 
     // 핀 등록
-    public int createPin(MapPinDto mapPinDto) {
-        return mapPinMapper.insertPin(mapPinDto);
-    }
+    int createPin(MapPinDto mapPinDto);
 
     // 핀 삭제
-    public int deletePin(Long pinId) {
-        return mapPinMapper.deletePin(pinId);
-    }
+    int deletePin(Long pinId);
 }
