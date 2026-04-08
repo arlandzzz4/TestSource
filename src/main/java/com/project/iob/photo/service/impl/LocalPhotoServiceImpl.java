@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.project.iob.common.service.FileService;
 import com.project.iob.photo.service.PhotoService;
 import com.project.iob.photo.service.repository.mybatis.PhotoDAO;
 
@@ -27,9 +28,11 @@ public class LocalPhotoServiceImpl implements PhotoService {
     private String uploadPath;
 
     private final PhotoDAO photoDAO;
+    private final FileService fileService;
 
     @Override
     public String upload(MultipartFile file, Long postId) throws IOException {
+    	String s = fileService.upload(null);
         StringBuilder fileName = new StringBuilder();
         fileName.append(UUID.randomUUID()).append("_").append(file.getOriginalFilename());
 
