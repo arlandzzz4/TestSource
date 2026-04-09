@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.project.global.enums.Provider;
 import com.project.global.enums.Role;
 import com.project.global.enums.UserStateCode;
+import com.project.iob.user.dto.PasswordChangeRequestDto;
 import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UserAuthRequestDto;
 import com.project.iob.user.dto.UserRequestDto;
@@ -159,5 +160,19 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public void updateNickname(UserRequestDto userRequestDto) {
 	    userDAO.updateNickname(userRequestDto);
+	}
+	
+	//비번 변경
+	@Override
+	@Transactional
+	public void updatePassword(PasswordChangeRequestDto dto) {
+	    User user = userDAO.findByEmail(dto.email())
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
+
+	    if (!Provider.LOCAL.getKey().equals(user.getProviderCode())) {
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "소셜 로그인 회원은 비밀번호를 변경할 수 없습니다.");
+	    }
+
+	    userDAO.updatePassword(dto.email(), passwordEncoder.encode(dto.newPassword()));
 	}
 }

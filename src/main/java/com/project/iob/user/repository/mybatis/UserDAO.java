@@ -31,6 +31,9 @@ public interface UserDAO {
     // 특정 조건의 사용자 리스트 조회 (예시)
     // List<Users> findAllActiveUsers();
 	
+	// 비번 변경
+	void updatePassword(@Param("email") String email, @Param("password") String password);
+	
 	// 닉네임 업데이트
 	void updateNickname(UserRequestDto userRequestDto);
 }

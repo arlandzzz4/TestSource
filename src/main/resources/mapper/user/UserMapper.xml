@@ -122,5 +122,13 @@
 	        updated_at = CURRENT_TIMESTAMP
 	    WHERE email = #{email}
 	</update>
+	
+	<update id="updatePassword">
+	    /*mapper.user.UserMapper.updatePassword */
+	    UPDATE users
+	    SET password = #{password},
+	        updated_at = CURRENT_TIMESTAMP
+	    WHERE email = #{email}
+	</update>
 </mapper>
     

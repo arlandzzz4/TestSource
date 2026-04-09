@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.global.enums.Provider;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.user.dto.FcmTokenRequest;
+import com.project.iob.user.dto.PasswordChangeRequestDto;
 import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UpdateNicknameRequest;
 import com.project.iob.user.dto.UserAuthResponseDto;
@@ -211,6 +212,21 @@ public class UserController {
             null, null, null, null, null, null, null
         );
         userService.updateNickname(userRequestDto);
+        return ResponseEntity.noContent().build();
+    }
+    
+    //비번 변경
+    @Operation(summary = "비밀번호 변경", description = "Firebase 재인증 완료 후 DB 비밀번호를 동기화합니다. 일반 회원(LOCAL)만 가능합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "변경 성공"),
+        @ApiResponse(responseCode = "400", description = "소셜 로그인 회원은 변경 불가"),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저")
+    })
+    @PatchMapping("/me/password")
+    public ResponseEntity<Void> updatePassword(
+            @RequestBody PasswordChangeRequestDto dto
+    ) {
+        userService.updatePassword(dto);
         return ResponseEntity.noContent().build();
     }
 }
