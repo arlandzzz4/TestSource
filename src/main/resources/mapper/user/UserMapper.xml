@@ -15,11 +15,15 @@
             user_status_code,
             role_code,
             fcm_token,
+            '' AS refreshToken,
             terms_agreed_yn,
             privacy_agreed_yn,
+            token_rotated_at	AS tokenRotatedAt,
             terms_agreed_at		AS termsAgreedAt,
             created_at			AS createdAt,
+            updated_at			AS updatedAt,
             deleted_at			AS deletedAt,
+            deleted_reason		AS deletedReason,
             last_login_at	    AS lastLoginAt
         FROM users
         WHERE email = #{email}

@@ -2,15 +2,22 @@ package com.project.iob.user.entity;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.domain.Persistable;
+
 import com.project.global.enums.Provider;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "users")
-public class User {
+public class User implements Persistable<String>{
 
 	@Id
     @Column(length = 100, unique = true)
@@ -74,8 +81,14 @@ public class User {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
     
+    @Column(name = "deleted_reason")
+    private String deletedReason;
+    
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
+    
+    @Transient // DB 컬럼으로 만들지 않음
+    private boolean isNew = true;
     
     public static User createEmpty() {
         return new User();
@@ -96,6 +109,7 @@ public class User {
 		this.fcmToken = fcmToken;
 		this.termsAgreedYn = termsAgreedYn;
 		this.privacyAgreedYn = privacyAgreedYn;
+		this.isNew = true;
 		this.termsAgreedAt = LocalDateTime.now();
         this.createdAt = LocalDateTime.now(); // 생성 시 시간 자동 입력 예시
         this.updatedAt = LocalDateTime.now();
@@ -116,5 +130,15 @@ public class User {
     public void preDelete() {
         this.deletedAt = LocalDateTime.now();
     }
+
+    @Override
+    public String getId() { return this.email; }
+
+    @Override
+    public boolean isNew() { return this.isNew; }
+
+    @PostLoad
+    @PostPersist
+    public void markNotNew() { this.isNew = false; }
     
 }
