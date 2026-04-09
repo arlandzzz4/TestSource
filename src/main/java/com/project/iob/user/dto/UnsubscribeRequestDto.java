@@ -4,5 +4,6 @@ public record UnsubscribeRequestDto(
 	    String email,
 	    String providerCode,
 	    String providerId,
-	    String reason
+	    String reason,
+	    String currentPassword
 	) {}

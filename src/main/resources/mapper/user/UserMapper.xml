@@ -111,6 +111,7 @@
 		UPDATE users
         SET USER_STATUS_CODE = '03'
         , UPDATED_AT = CURRENT_TIMESTAMP
+        , DELETED_AT = CURRENT_TIMESTAMP
         , DELETED_REASON = #{reason}
 		WHERE email = #{email}
 	</delete>
