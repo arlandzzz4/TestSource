@@ -32,7 +32,7 @@ public class LocalPhotoServiceImpl implements PhotoService {
 
     @Override
     public String upload(MultipartFile file, Long postId) throws IOException {
-    	String s = fileService.upload(null);
+    	//String s = fileService.upload(null);
         StringBuilder fileName = new StringBuilder();
         fileName.append(UUID.randomUUID()).append("_").append(file.getOriginalFilename());
 
