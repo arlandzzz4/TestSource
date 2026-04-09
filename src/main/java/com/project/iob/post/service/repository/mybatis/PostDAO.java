@@ -3,6 +3,7 @@ package com.project.iob.post.service.repository.mybatis;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.project.iob.post.dto.MyPostRequestDto;
 import com.project.iob.post.dto.MyPostResponseDto;
@@ -23,5 +24,7 @@ public interface PostDAO {
 	 List<MyPostResponseDto> findByUser(MyPostRequestDto myPostRequestDto); 
 	 
 	 int findByUserCount(MyPostRequestDto myPostRequestDto);
+	 
+	 String findAuthorEmailByPostId(@Param("postId") Long postId);
     
 }
