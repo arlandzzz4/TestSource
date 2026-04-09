@@ -1,6 +1,6 @@
 package com.project.iob.user.dto;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -23,7 +23,7 @@ public record UserRequestDto(
     
     String privacyAgreedYn,
     @Schema(description = "마지막 조회 ID")
-    Date lastId,
+    LocalDateTime lastId,
     @Schema(description = "페이지 크기", defaultValue = "10")
     Integer size,
     Integer offset

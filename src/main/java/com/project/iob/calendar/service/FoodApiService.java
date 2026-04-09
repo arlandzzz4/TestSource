@@ -80,9 +80,12 @@ public class FoodApiService {
             }
 
             saveChunk(foods);
-        	foodRepository.flush(); // DB 반영
-        	entityManager.clear();
             totalSaved += foods.size();
+            //5천건당 한번으로 수정
+            if(totalSaved % 10 == 0) {
+	            foodRepository.flush(); // DB 반영
+	        	entityManager.clear();
+            }
             //log.info("페이지 {} 저장 완료 - 누적 {}건", pageNo, totalSaved);
 
             if (items.size() < PAGE_SIZE) break;

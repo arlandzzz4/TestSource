@@ -1,6 +1,6 @@
 package com.project.iob.post.dto;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -10,9 +10,9 @@ public record CommentRequestDto(
         String userEmail,
         Long parent_comment_id,
         String content,
-        Date createdAt,
-        Date updatedAt,
-        Date deleteAt,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        LocalDateTime deleteAt,
         String delYn,
         @Schema(description = "마지막 조회 ID", defaultValue = "0")
         Long lastId,

@@ -1,6 +1,6 @@
 package com.project.iob.common.dto;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 public record CodeDto(
 		String code, 
@@ -9,9 +9,9 @@ public record CodeDto(
 		String description,
 		String useYn, 
 		int sortOrder, 
-		Date createdAt, 
+		LocalDateTime createdAt, 
 		String createdId, 
-		Date updatedAt, 
+		LocalDateTime updatedAt, 
 		String updatedId
 		) 
 {

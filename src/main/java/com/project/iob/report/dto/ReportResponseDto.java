@@ -1,6 +1,6 @@
 package com.project.iob.report.dto;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 public record ReportResponseDto(
         Long reportId,
@@ -11,8 +11,8 @@ public record ReportResponseDto(
         String detail,
         String reportStatusCode,
         String processedBy,
-        Date createdAt,
-        Date processedAt,
+        LocalDateTime createdAt,
+        LocalDateTime processedAt,
         String targetNickname,
         String reporterNickname,
         String content

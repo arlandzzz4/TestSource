@@ -1,15 +1,15 @@
 package com.project.iob.post.dto;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 public record PostResponseDto(
         Long postId,
         String userEmail,
         String categoryCode,
         String title,
-        Date createdAt,
-        Date updatedAt,
-        Date deletedAt,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        LocalDateTime deletedAt,
         String nickname,
         Integer likes,
         Integer comments,
