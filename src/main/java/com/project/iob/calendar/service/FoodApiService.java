@@ -35,7 +35,7 @@ public class FoodApiService {
     @Value("${food.api.url}")
     private String apiUrl;
 
-    private static final int PAGE_SIZE = 1000;
+    private static final int PAGE_SIZE = 500;
 
     public void fetchAndSaveAll() {
     	//log.info("API URL: {}", apiUrl);
