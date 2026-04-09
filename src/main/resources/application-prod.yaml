@@ -65,3 +65,5 @@ food:
   api:
     key: ${FOOD_API_KEY}
     url: https://apis.data.go.kr/1471000/FoodNtrCpntDbInfo02/getFoodNtrCpntDbInq02
+app:
+  client-url: https://information-of-balance.xyz/

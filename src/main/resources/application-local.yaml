@@ -64,4 +64,6 @@ swagger:
 food:
   api:
     key: 73e4653c8ac39f5ec20624cfeb3778e5703b9f7d5907116ffef5ba6f5afe8b4f
-    url: https://apis.data.go.kr/1471000/FoodNtrCpntDbInfo02/getFoodNtrCpntDbInq02   
+    url: https://apis.data.go.kr/1471000/FoodNtrCpntDbInfo02/getFoodNtrCpntDbInq02
+app:
+  client-url: http://localhost:3000/
