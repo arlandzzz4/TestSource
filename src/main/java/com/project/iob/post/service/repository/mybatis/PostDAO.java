@@ -26,5 +26,7 @@ public interface PostDAO {
 	 int findByUserCount(MyPostRequestDto myPostRequestDto);
 	 
 	 String findAuthorEmailByPostId(@Param("postId") Long postId);
+	 
+	 String findTitleByPostId(@Param("postId") Long postId);
     
 }

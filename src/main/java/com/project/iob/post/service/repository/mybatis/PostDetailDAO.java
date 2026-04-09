@@ -35,4 +35,7 @@ public interface PostDetailDAO {
                       @Param("reasonCode") String reasonCode);
     //좋아요 알림
     String findAuthorEmailByPostId(@Param("postId") Long postId);
+    
+    // 게시글 제목 조회
+    String getTitleByPostId(@Param("postId") Long postId);
 }
