@@ -10,7 +10,7 @@ public record CommentResponseDto(
         String content,
         Timestamp createdAt,
         Timestamp updatedAt,
-        Timestamp deleteAt,
+        Timestamp deletedAt,
         String delYn,
         String nickname,
         String title,

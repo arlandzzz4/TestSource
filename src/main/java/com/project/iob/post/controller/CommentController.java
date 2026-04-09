@@ -24,77 +24,72 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CommentController {
 
-    private final CommentService commentService;
-    private final ReportService reportService;
+	private final CommentService commentService;
+	private final ReportService reportService;
 
-    //총 댓글 수 조회
-    @Operation(summary = "총 댓글 검색")
-    @GetMapping("/search/totalcnt")
-    public ResponseEntity<Integer> searchCommentTotalCount(
-            @ParameterObject CommentRequestDto commentRequestDto) {
-        int cnt = commentService.searchCommentCount(commentRequestDto);
-        return ResponseEntity.ok(cnt);
-    }
+	// 총 댓글 수 조회
+	@Operation(summary = "총 댓글 검색")
+	@GetMapping("/search/totalcnt")
+	public ResponseEntity<Integer> searchCommentTotalCount(@ParameterObject CommentRequestDto commentRequestDto) {
+		int cnt = commentService.searchCommentCount(commentRequestDto);
+		return ResponseEntity.ok(cnt);
+	}
 
-    //오늘 댓글 수 조회
-    @Operation(summary = "오늘 작성된 댓글 수 검색")
-    @GetMapping("/search/todaycnt")
-    public ResponseEntity<Integer> searchPostTodayCount() {
-        String today = java.time.LocalDate.now().toString();
-        CommentRequestDto commentRequestDto = new CommentRequestDto(today);
-        int cnt = commentService.searchCommentCount(commentRequestDto);
-        return ResponseEntity.ok(cnt);
-    }
+	// 오늘 댓글 수 조회
+	@Operation(summary = "오늘 작성된 댓글 수 검색")
+	@GetMapping("/search/todaycnt")
+	public ResponseEntity<Integer> searchPostTodayCount() {
+		String today = java.time.LocalDate.now().toString();
+		CommentRequestDto commentRequestDto = new CommentRequestDto(today);
+		int cnt = commentService.searchCommentCount(commentRequestDto);
+		return ResponseEntity.ok(cnt);
+	}
 
-    //댓글 삭제 (관리자용)
-    @Operation(summary = "댓글 삭제")
-    @PatchMapping("/delete")
-    public ResponseEntity<Void> deleteComment(
-            @RequestBody CommentRequestDto commentRequestDto) {
-        commentService.updateCommentDelYn(commentRequestDto);
-        ReportRequestDto reportRequestDto = new ReportRequestDto(commentRequestDto.reportId(), "02");
-        reportService.updateReportStatusCode(reportRequestDto);
-        return ResponseEntity.noContent().build();
-    }
+	// 댓글 삭제 (관리자용)
+	@Operation(summary = "댓글 삭제")
+	@PatchMapping("/delete")
+	public ResponseEntity<Void> deleteComment(@RequestBody CommentRequestDto commentRequestDto) {
+		commentService.updateCommentDelYn(commentRequestDto);
+		ReportRequestDto reportRequestDto = new ReportRequestDto(commentRequestDto.reportId(), "02");
+		reportService.updateReportStatusCode(reportRequestDto);
+		return ResponseEntity.noContent().build();
+	}
 
-    //댓글 조회(페이징)
-    @Operation(summary = "댓글 조회(페이징)")
-    @GetMapping("/search/comment")
-    public ResponseEntity<List<CommentResponseDto>> searchComments(
-            @ParameterObject CommentRequestDto commentRequestDto) {
-        List<CommentResponseDto> comments = commentService.searchComments(commentRequestDto);
-        return ResponseEntity.ok(comments);
-    }
+	// 댓글 조회(페이징)
+	@Operation(summary = "댓글 조회(페이징)")
+	@GetMapping("/search/comment")
+	public ResponseEntity<List<CommentResponseDto>> searchComments(
+			@ParameterObject CommentRequestDto commentRequestDto) {
+		List<CommentResponseDto> comments = commentService.searchComments(commentRequestDto);
+		return ResponseEntity.ok(comments);
+	}
 
-    //댓글 목록 조회
-    @GetMapping("/list/{postId}")
-    public ResponseEntity<List<CommentResponseDto>> getCommentList(
-            @PathVariable("postId") Long postId,
-            @RequestParam(value = "userEmail", required = false, defaultValue = "") String userEmail) {
-        return ResponseEntity.ok(commentService.getCommentList(postId, userEmail));
-    }
+	// 댓글 목록 조회
+	@GetMapping("/list")
+	public ResponseEntity<List<CommentResponseDto>> getCommentList(@RequestParam("postId") Long postId,
+			@RequestParam(value = "userEmail", required = false, defaultValue = "") String userEmail) {
+		return ResponseEntity.ok(commentService.getCommentList(postId, userEmail));
+	}
 
-    //댓글 등록
-    @PostMapping("/insert")
-    public ResponseEntity<Void> insertComment(@RequestBody CommentRequestDto commentRequestDto) {
-        commentService.insertComment(commentRequestDto);
-        return ResponseEntity.ok().build();
-    }
+	// 댓글 등록
+	@PostMapping("/insert")
+	public ResponseEntity<Void> insertComment(@RequestBody CommentRequestDto commentRequestDto) {
+		commentService.insertComment(commentRequestDto);
+		return ResponseEntity.ok().build();
+	}
 
-    //댓글 삭제
-    @PatchMapping("/delete/{commentId}")
-    public ResponseEntity<Void> deleteCommentById(
-            @PathVariable("commentId") Long commentId) {
-        commentService.deleteComment(commentId);
-        return ResponseEntity.ok().build();
-    }
+	// 댓글 삭제
+	@PatchMapping("/delete/detail")
+	public ResponseEntity<Void> deleteCommentById(@RequestParam("commentId") Long commentId) {
+		commentService.deleteComment(commentId);
+		return ResponseEntity.ok().build();
+	}
 
-    //댓글 좋아요 토글
-    @PostMapping("/{commentId}/like")
-    public ResponseEntity<Boolean> toggleCommentLike(
-            @PathVariable("commentId") Long commentId,
-            @RequestParam("userEmail") String userEmail) {
-        boolean liked = commentService.toggleCommentLike(commentId, userEmail);
-        return ResponseEntity.ok(liked);
-    }
+	// 댓글 좋아요 토글
+	@PostMapping("/like")
+	public ResponseEntity<Boolean> toggleCommentLike(@RequestParam("commentId") Long commentId,
+			@RequestParam("userEmail") String userEmail) {
+		boolean liked = commentService.toggleCommentLike(commentId, userEmail);
+		return ResponseEntity.ok(liked);
+	}
 }

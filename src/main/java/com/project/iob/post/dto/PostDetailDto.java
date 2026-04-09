@@ -17,4 +17,5 @@ public class PostDetailDto {
     private int likeCount;          // likes 테이블에서 count
     private int commentCount;       // comments 테이블에서 count
     private boolean isLiked;
+    //private List<String> imageUrls; // // 게시글 이미지 URL목록 (post_images테이블에서 가져옴)
 }

@@ -14,18 +14,18 @@ public class PostDetailController {
     private final PostDetailService postDetailService;
 
     // 게시글 상세 조회
-    @GetMapping("/{postId}")
+    @GetMapping("/detail")
     public ResponseEntity<PostDetailDto> getPostDetail(
-            @PathVariable("postId") Long postId,
+            @RequestParam("postId") Long postId,
             @RequestParam(value = "userEmail", required = false, defaultValue = "") String userEmail) {
         PostDetailDto post = postDetailService.getPostDetail(postId, userEmail);
         return ResponseEntity.ok(post);
     }
-    
- // 게시글 수정
-    @PutMapping("/{postId}")
+
+    // 게시글 수정
+    @PutMapping("/update")
     public ResponseEntity<Void> updatePost(
-            @PathVariable("postId") Long postId,
+            @RequestParam("postId") Long postId,
             @RequestBody PostDetailDto postDetailDto) {
         postDetailService.updatePost(
             postId,
@@ -37,23 +37,23 @@ public class PostDetailController {
     }
 
     // 게시글 삭제
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/delete")
     public ResponseEntity<Void> deletePost(
-            @PathVariable("postId") Long postId,
+            @RequestParam("postId") Long postId,
             @RequestParam("userEmail") String userEmail) {
         postDetailService.deletePost(postId, userEmail);
         return ResponseEntity.ok().build();
     }
-    
+
     // 게시글 좋아요 토글
-    @PostMapping("/{postId}/like")
+    @PostMapping("/like")
     public ResponseEntity<Boolean> togglePostLike(
-            @PathVariable("postId") Long postId,
+            @RequestParam("postId") Long postId,
             @RequestParam("userEmail") String userEmail) {
         boolean liked = postDetailService.togglePostLike(postId, userEmail);
         return ResponseEntity.ok(liked);
     }
-    
+
     // 신고 등록
     @PostMapping("/report")
     public ResponseEntity<Void> insertReport(
