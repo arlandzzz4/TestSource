@@ -52,8 +52,10 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(
             @RequestBody CommentRequestDto commentRequestDto) {
         commentService.updateCommentDelYn(commentRequestDto);
-        ReportRequestDto reportRequestDto = new ReportRequestDto(commentRequestDto.reportId(), "02");
-        reportService.updateReportStatusCode(reportRequestDto);
+        if(commentRequestDto != null && commentRequestDto.reportId() != null) {
+        	ReportRequestDto reportRequestDto = new ReportRequestDto(commentRequestDto.reportId(), "02");
+        	reportService.updateReportStatusCode(reportRequestDto);
+        }
         return ResponseEntity.noContent().build();
     }
 
