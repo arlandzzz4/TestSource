@@ -1,15 +1,21 @@
 package com.project.iob.notification.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import com.project.iob.admin.usermgmt.dto.FcmUserDto;
 import com.project.iob.notification.dto.NotificationDTO;
 import com.project.iob.notification.dto.NotificationResponseDTO;
 import com.project.iob.notification.repository.NotificationDAO;
 import com.project.iob.notification.service.NotificationService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -65,5 +71,15 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public String getLikeYn(String userEmail) {
 	    return notificationDAO.findLikeYn(userEmail);
+	}
+
+	@Override
+	public Page<FcmUserDto> findAllByNotificationEnabledTrue(PageRequest pageable) {
+		List<FcmUserDto> content = notificationDAO.findAllByNotificationEnabledTrue(pageable.getOffset(), pageable.getPageSize());
+		    
+	    // 2. 전체 개수 가져오기
+	    long total = notificationDAO.countAllByNotificationEnabledTrue();
+	    
+	    return new PageImpl<>(content, pageable, total);
 	}
 }

@@ -11,5 +11,7 @@ public interface FcmAdminService {
      * @param notification title, body가 들어 있음
      */
     public void sendMessage(String token, String url, Notification notification);
+    
+    public void sendNoticeNotifications(Long postId, String title, String content);
 
 }

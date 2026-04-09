@@ -79,5 +79,32 @@
 		notice_yn = #{noticeYn}
 		WHERE user_email = #{userEmail}
 	</update>
+	
+	<select id="findAllByNotificationEnabledTrue" resultType="com.project.iob.admin.usermgmt.dto.FcmUserDto">
+		/*mapper.notification.NotificationMapper.findAllByNotificationEnabledTrue */
+		SELECT
+			u.fcm_token,
+			u.email
+		FROM
+			users u LEFT OUTTER JOIN notification_settings n
+			ON u.email = n.user_email
+		WHERE
+			n.notice_yn = 'Y'
+			OR n.notice_yn IS NULL
+		ORDER BY u.email DESC
+		LIMIT #{pageSize} OFFSET #{offset}
+	</select>
+	
+	<select id="countAllByNotificationEnabledTrue" parameterType="Integer">
+		/*mapper.notification.NotificationMapper.countAllByNotificationEnabledTrue */
+		SELECT
+			count(*)
+		FROM
+			users u LEFT OUTTER JOIN notification_settings n
+			ON u.email = n.user_email
+		WHERE
+			n.notice_yn = 'Y'
+			OR n.notice_yn IS NULL
+	</select>
 
 </mapper>

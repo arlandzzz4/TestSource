@@ -1,8 +1,12 @@
 package com.project.iob.notification.repository;
+import com.project.iob.admin.usermgmt.dto.FcmUserDto;
 import com.project.iob.notification.dto.NotificationDTO;
 import com.project.iob.notification.dto.NotificationResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,4 +24,6 @@ public interface NotificationDAO {
                        @Param("likeYn") String likeYn,
                        @Param("commentYn") String commentYn,
                        @Param("noticeYn") String noticeYn);
+	List<FcmUserDto> findAllByNotificationEnabledTrue(@Param("offset")long offset, @Param("pageSize")int pageSize);
+	long countAllByNotificationEnabledTrue();
 }

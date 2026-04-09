@@ -1,9 +1,13 @@
 package com.project.iob.notification.service;
 
+import com.project.iob.admin.usermgmt.dto.FcmUserDto;
 import com.project.iob.notification.dto.NotificationDTO;
 import com.project.iob.notification.dto.NotificationResponseDTO;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 public interface NotificationService {
 
@@ -33,4 +37,6 @@ public interface NotificationService {
 	
 	// 좋아요 알림 수신 설정 조회 (Y: 알림 받음, N: 알림 안 받음)
 	String getLikeYn(String userEmail);
+
+	Page<FcmUserDto> findAllByNotificationEnabledTrue(PageRequest of);
 }
