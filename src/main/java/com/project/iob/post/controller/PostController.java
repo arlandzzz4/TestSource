@@ -95,7 +95,7 @@ public class PostController {
         ){
     	postService.updatePostDelYn(postRequestDto);
     	//처리
-    	if(postRequestDto.reportId() != null) {
+    	if(postRequestDto != null && postRequestDto.reportId() != null) {
 	    	ReportRequestDto reportRequestDto = new ReportRequestDto(postRequestDto.reportId(),"02");
 	    	reportService.updateReportStatusCode(reportRequestDto);
     	}
