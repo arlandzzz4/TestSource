@@ -37,8 +37,7 @@ public class S3FileServiceImpl implements FileService {
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
         // 3. S3 업로드 실행
-        amazonS3.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead)); // 외부에서 읽기 가능하도록 설정
+        amazonS3.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata));
         // 4. 저장된 파일의 URL 반환
         return amazonS3.getUrl(bucket, fileName).toString();
     }

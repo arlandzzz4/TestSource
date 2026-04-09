@@ -38,8 +38,8 @@ public class FoodApiService {
     private static final int PAGE_SIZE = 1000;
 
     public void fetchAndSaveAll() {
-    	log.info("API URL: {}", apiUrl);
-    	log.info("Requesting with Key: {}", apiKey);
+    	//log.info("API URL: {}", apiUrl);
+    	//log.info("Requesting with Key: {}", apiKey);
         int pageNo = 1;
         int totalSaved = 0;
         String url = null;
@@ -55,7 +55,10 @@ public class FoodApiService {
             response = restTemplate.getForObject(url, Map.class);
             items = parseItems(response);
             
-            if (items == null || items.isEmpty()) break;
+            if (items == null || items.isEmpty()) {
+            	log.info("items is null");
+            	break;
+            }
             
             foods = new ArrayList<>();
             for (Map<String, Object> item : items) {

@@ -33,4 +33,6 @@ public interface PostDetailDAO {
                       @Param("targetId") Long targetId,
                       @Param("reporterEmail") String reporterEmail,
                       @Param("reasonCode") String reasonCode);
+    //좋아요 알림
+    String findAuthorEmailByPostId(@Param("postId") Long postId);
 }

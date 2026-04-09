@@ -3,10 +3,15 @@ package com.project.iob.post.service.impl;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.project.iob.notification.dto.NotificationDTO;
+import com.project.iob.notification.service.NotificationService;
 import com.project.iob.post.dto.CommentRequestDto;
 import com.project.iob.post.dto.CommentResponseDto;
 import com.project.iob.post.service.CommentService;
 import com.project.iob.post.service.repository.mybatis.CommentDAO;
+import com.project.iob.post.service.repository.mybatis.PostDAO;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentDAO commentDAO;
+    private final PostDAO postDAO;
+    private final NotificationService notificationService;
     /**
      * [댓글 수]
      */
@@ -44,7 +51,28 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void insertComment(CommentRequestDto commentRequestDto) {
         commentDAO.insertComment(commentRequestDto);
+        
+        
+     // ✅ 댓글 알림 생성
+        try {
+            String postAuthorEmail = postDAO.findAuthorEmailByPostId(commentRequestDto.postId());
+
+            if (postAuthorEmail != null && !postAuthorEmail.equals(commentRequestDto.userEmail())) {
+                NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
+                notiRequest.setUserEmail(postAuthorEmail);       // 알림 받을 사람 (게시글 작성자)
+                notiRequest.setNotiType("comment");
+                notiRequest.setSenderEmail(commentRequestDto.userEmail()); // 댓글 단 사람
+                notiRequest.setMessage("님이 댓글을 달았습니다.");
+                notiRequest.setTargetId(commentRequestDto.postId());
+                notificationService.createNotification(notiRequest);
+            }
+        } catch (Exception e) {
+            log.warn("댓글 알림 생성 실패: {}", e.getMessage());
+        }
     }
+
+
+    
 
     @Override
     public void deleteComment(Long commentId) {
