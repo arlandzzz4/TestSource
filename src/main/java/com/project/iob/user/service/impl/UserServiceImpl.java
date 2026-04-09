@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.project.global.enums.Provider;
 import com.project.global.enums.Role;
 import com.project.global.enums.UserStateCode;
+import com.project.iob.user.dto.PasswordChangeRequestDto;
 import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UserAuthRequestDto;
 import com.project.iob.user.dto.UserRequestDto;
@@ -24,6 +25,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserRecord;
 
 @Slf4j
 @Service
@@ -94,12 +98,17 @@ public class UserServiceImpl implements UserService {
 
 	/**
      * [FCM 토큰 클리어 로직]
+     * 
+     * 해당 로직을 탈퇴 로직안에 넣어서 api 하나로 관리하도록 변경함
+     * 
+     * 
      */
 	@Override
 	@Transactional
 	public void clearFcmToken(String email) {
 		userDAO.clearFcmToken(email);
 	}
+	
 
 	/**
      * [날짜별 사용자 조회. 날짜 없을 경우 총 사용자 조회]
@@ -120,10 +129,30 @@ public class UserServiceImpl implements UserService {
 		userDAO.updateUserStatusCode(userRequestDto);
 	}
 
+	//탈퇴할 때 FCM 토큰 비우기와 DB의 유저 상태 변경을 한번에 하도록 변경
 	@Override
+	@Transactional
 	public void unsubscribe(UnsubscribeRequestDto unsubscribeRequestDto) {
-		userDAO.unsubscribe(unsubscribeRequestDto);
-		
+	    // 1. FCM 토큰 비우기 먼저 실행
+	    userDAO.clearFcmToken(unsubscribeRequestDto.email()); 
+	    
+	    // 2. 유저 상태 변경 (03으로 변경 및 사유 업데이트)
+	    userDAO.unsubscribe(unsubscribeRequestDto);
+	    
+	 // 3. 파이어베이스(Firebase Auth): 계정 삭제 요청 추가
+	    try {
+	        // DB에 저장된 이메일을 통해 파이어베이스 유저의 고유 ID(UID)를 조회
+	        UserRecord userRecord = FirebaseAuth.getInstance().getUserByEmail(unsubscribeRequestDto.email());
+	        
+	        // 조회된 UID를 사용하여 파이어베이스 인증 서버에서 계정 삭제
+	        FirebaseAuth.getInstance().deleteUser(userRecord.getUid());
+	        
+	        log.info("파이어베이스 계정 삭제 완료: {}", unsubscribeRequestDto.email());
+	    } catch (Exception e) {
+	        // 이미 계정이 삭제되었거나 파이어베이스 서버 통신 오류 발생 시 
+	        // 전체 탈퇴 로직이 실패(Rollback)하지 않도록 로그만 남기고 예외 처리
+	        log.error("파이어베이스 계정 삭제 중 오류 발생: {}", e.getMessage());
+	    }
 	}
 	
 	//유저 닉네임 변경
@@ -131,5 +160,19 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public void updateNickname(UserRequestDto userRequestDto) {
 	    userDAO.updateNickname(userRequestDto);
+	}
+	
+	//비번 변경
+	@Override
+	@Transactional
+	public void updatePassword(PasswordChangeRequestDto dto) {
+	    User user = userDAO.findByEmail(dto.email())
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
+
+	    if (!Provider.LOCAL.getKey().equals(user.getProviderCode())) {
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "소셜 로그인 회원은 비밀번호를 변경할 수 없습니다.");
+	    }
+
+	    userDAO.updatePassword(dto.email(), passwordEncoder.encode(dto.newPassword()));
 	}
 }

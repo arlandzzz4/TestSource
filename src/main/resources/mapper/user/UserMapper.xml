@@ -111,6 +111,7 @@
 		UPDATE users
         SET USER_STATUS_CODE = '03'
         , UPDATED_AT = CURRENT_TIMESTAMP
+        , DELETED_AT = CURRENT_TIMESTAMP
         , DELETED_REASON = #{reason}
 		WHERE email = #{email}
 	</delete>
@@ -119,6 +120,14 @@
 	    /*mapper.user.UserMapper.updateNickname */
 	    UPDATE users
 	    SET nickname = #{nickname},
+	        updated_at = CURRENT_TIMESTAMP
+	    WHERE email = #{email}
+	</update>
+	
+	<update id="updatePassword">
+	    /*mapper.user.UserMapper.updatePassword */
+	    UPDATE users
+	    SET password = #{password},
 	        updated_at = CURRENT_TIMESTAMP
 	    WHERE email = #{email}
 	</update>
