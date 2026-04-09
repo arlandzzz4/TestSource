@@ -21,73 +21,108 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class CommentServiceImpl implements CommentService {
 
-    private final CommentDAO commentDAO;
-    private final PostDAO postDAO;
-    private final NotificationService notificationService;
-    /**
-     * [댓글 수]
-     */
-    
-    @Override
-    public int searchCommentCount(CommentRequestDto commentRequestDto) {
-        return commentDAO.findCommentCount(commentRequestDto);
-    }
+	private final CommentDAO commentDAO;
+	private final PostDAO postDAO;
+	private final NotificationService notificationService;
 
-    @Override
-    public void updateCommentDelYn(CommentRequestDto commentRequestDto) {
-        commentDAO.updateCommentDelYn(commentRequestDto);
-    }
+	/**
+	 * [댓글 수]
+	 */
 
-    @Override
-    public List<CommentResponseDto> searchComments(CommentRequestDto commentRequestDto) {
-        return commentDAO.findComments(commentRequestDto);
-    }
+	@Override
+	public int searchCommentCount(CommentRequestDto commentRequestDto) {
+		return commentDAO.findCommentCount(commentRequestDto);
+	}
 
-    @Override
-    public List<CommentResponseDto> getCommentList(Long postId, String userEmail) {
-        return commentDAO.getCommentList(postId, userEmail);
-    }
+	@Override
+	public void updateCommentDelYn(CommentRequestDto commentRequestDto) {
+		commentDAO.updateCommentDelYn(commentRequestDto);
+	}
 
-    @Override
-    public void insertComment(CommentRequestDto commentRequestDto) {
-        commentDAO.insertComment(commentRequestDto);
-        
-        
-     // ✅ 댓글 알림 생성
-        try {
-            String postAuthorEmail = postDAO.findAuthorEmailByPostId(commentRequestDto.postId());
+	@Override
+	public List<CommentResponseDto> searchComments(CommentRequestDto commentRequestDto) {
+		return commentDAO.findComments(commentRequestDto);
+	}
 
-            if (postAuthorEmail != null && !postAuthorEmail.equals(commentRequestDto.userEmail())) {
-                NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
-                notiRequest.setUserEmail(postAuthorEmail);       // 알림 받을 사람 (게시글 작성자)
-                notiRequest.setNotiType("comment");
-                notiRequest.setSenderEmail(commentRequestDto.userEmail()); // 댓글 단 사람
-                notiRequest.setMessage("님이 댓글을 달았습니다.");
-                notiRequest.setTargetId(commentRequestDto.postId());
-                notificationService.createNotification(notiRequest);
-            }
-        } catch (Exception e) {
-            log.warn("댓글 알림 생성 실패: {}", e.getMessage());
-        }
-    }
+	@Override
+	public List<CommentResponseDto> getCommentList(Long postId, String userEmail) {
+		return commentDAO.getCommentList(postId, userEmail);
+	}
 
+	@Override
+	public void insertComment(CommentRequestDto commentRequestDto) {
+	    commentDAO.insertComment(commentRequestDto);
+	    try {
+	        // 대댓글인 경우
+	        if (commentRequestDto.parent_comment_id() != null) {
+	            String commentAuthorEmail = commentDAO.findAuthorEmailByCommentId(commentRequestDto.parent_comment_id());
+	            if (commentAuthorEmail != null && !commentAuthorEmail.equals(commentRequestDto.userEmail())) {
+	                String commentYn = notificationService.getCommentYn(commentAuthorEmail);
+	                if ("Y".equals(commentYn)) {
+	                    NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
+	                    notiRequest.setUserEmail(commentAuthorEmail);
+	                    notiRequest.setNotiType("comment");
+	                    notiRequest.setSenderEmail(commentRequestDto.userEmail());
+	                    notiRequest.setMessage("님이 대댓글을 달았습니다.");
+	                    notiRequest.setTargetId(commentRequestDto.postId());
+	                    notificationService.createNotification(notiRequest);
+	                }
+	            }
+	        } else {
+	            // 일반 댓글인 경우
+	            String postAuthorEmail = postDAO.findAuthorEmailByPostId(commentRequestDto.postId());
+	            if (postAuthorEmail != null && !postAuthorEmail.equals(commentRequestDto.userEmail())) {
+	                String commentYn = notificationService.getCommentYn(postAuthorEmail);
+	                if ("Y".equals(commentYn)) {
+	                    NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
+	                    notiRequest.setUserEmail(postAuthorEmail);
+	                    notiRequest.setNotiType("comment");
+	                    notiRequest.setSenderEmail(commentRequestDto.userEmail());
+	                    notiRequest.setMessage("님이 댓글을 달았습니다.");
+	                    notiRequest.setTargetId(commentRequestDto.postId());
+	                    notificationService.createNotification(notiRequest);
+	                }
+	            }
+	        }
+	    } catch (Exception e) {
+	        log.warn("댓글 알림 생성 실패: {}", e.getMessage());
+	    }
+	}
+	
+	@Override
+	public void deleteComment(Long commentId) {
+		commentDAO.deleteComment(commentId);
+	}
 
-    
+	@Override
+	public boolean toggleCommentLike(Long commentId, String userEmail) {
+	    int count = commentDAO.checkCommentLike(commentId, userEmail);
+	    if (count > 0) {
+	        commentDAO.deleteCommentLike(commentId, userEmail);
+	        return false;
+	    } else {
+	        commentDAO.insertCommentLike(commentId, userEmail);
 
-    @Override
-    public void deleteComment(Long commentId) {
-        commentDAO.deleteComment(commentId);
-    }
+	        // ✅ 댓글 좋아요 알림 생성
+	        try {
+	            String commentAuthorEmail = commentDAO.findAuthorEmailByCommentId(commentId);
+	            if (commentAuthorEmail != null && !commentAuthorEmail.equals(userEmail)) {
+	                String likeYn = notificationService.getLikeYn(commentAuthorEmail);
+	                if ("Y".equals(likeYn)) {
+	                    NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
+	                    notiRequest.setUserEmail(commentAuthorEmail);
+	                    notiRequest.setNotiType("like");
+	                    notiRequest.setSenderEmail(userEmail);
+	                    notiRequest.setMessage("님이 댓글에 좋아요를 눌렀습니다.");
+	                    notiRequest.setTargetId(commentId);
+	                    notificationService.createNotification(notiRequest);
+	                }
+	            }
+	        } catch (Exception e) {
+	            log.warn("댓글 좋아요 알림 생성 실패: {}", e.getMessage());
+	        }
 
-    @Override
-    public boolean toggleCommentLike(Long commentId, String userEmail) {
-        int count = commentDAO.checkCommentLike(commentId, userEmail);
-        if (count > 0) {
-            commentDAO.deleteCommentLike(commentId, userEmail);
-            return false;
-        } else {
-            commentDAO.insertCommentLike(commentId, userEmail);
-            return true;
-        }
-    }
+	        return true;
+	    }
+	}
 }

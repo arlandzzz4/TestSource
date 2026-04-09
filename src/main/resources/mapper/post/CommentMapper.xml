@@ -119,5 +119,12 @@
 		#{commentId} AND
 		user_email = #{userEmail}
 	</select>
+	
+	<select id="findAuthorEmailByCommentId" parameterType="Long" resultType="String">
+		SELECT user_email
+		FROM comments
+		WHERE comment_id = #{commentId}
+		AND del_yn = 'N'
+	</select>
 
 </mapper>

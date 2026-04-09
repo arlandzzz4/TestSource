@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Notification API", description = "알림 API")
 @Slf4j
@@ -26,59 +27,60 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationService notificationService;
+	private final NotificationService notificationService;
 
-    @Operation(summary = "알림 목록 조회")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청")
-    })
-    @GetMapping
-    public ResponseEntity<List<NotificationResponseDTO>> getNotifications(
-    	    @RequestParam(value = "userEmail") String userEmail
-    	) {
-    	    List<NotificationResponseDTO> result = notificationService.getNotifications(userEmail);
-    	    log.info("~~~~~~~~~~~~~~~~~" + result.size());
-    	    
-    	    return ResponseEntity.ok(result);
-    	}
+	@Operation(summary = "알림 목록 조회")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "조회 성공"),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청") })
+	@GetMapping
+	public ResponseEntity<List<NotificationResponseDTO>> getNotifications(
+			@RequestParam(value = "userEmail") String userEmail) {
+		List<NotificationResponseDTO> result = notificationService.getNotifications(userEmail);
+		log.info("~~~~~~~~~~~~~~~~~" + result.size());
 
-    @Operation(summary = "단일 알림 읽음 처리")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "읽음 처리 성공"),
-        @ApiResponse(responseCode = "404", description = "알림을 찾을 수 없음")
-    })
-    @PatchMapping("/{notiId}/read")
-    public ResponseEntity<Void> markAsRead(
-        @PathVariable(value = "notiId") Long notiId
-    ) {
-        notificationService.markAsRead(notiId);
-        return ResponseEntity.noContent().build();
-    }
+		return ResponseEntity.ok(result);
+	}
 
-    @Operation(summary = "전체 알림 읽음 처리")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "전체 읽음 처리 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청")
-    })
-    @PatchMapping("/read-all")
-    public ResponseEntity<Void> markAllRead(
-        @RequestParam(value = "userEmail") String userEmail
-    ) {
-        notificationService.markAllRead(userEmail);
-        return ResponseEntity.noContent().build();
-    }
+	@Operation(summary = "단일 알림 읽음 처리")
+	@ApiResponses(value = { @ApiResponse(responseCode = "204", description = "읽음 처리 성공"),
+			@ApiResponse(responseCode = "404", description = "알림을 찾을 수 없음") })
+	@PatchMapping("/{notiId}/read")
+	public ResponseEntity<Void> markAsRead(@PathVariable(value = "notiId") Long notiId) {
+		notificationService.markAsRead(notiId);
+		return ResponseEntity.noContent().build();
+	}
 
-    @Operation(summary = "전체 알림 삭제")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "전체 삭제 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청")
-    })
-    @DeleteMapping
-    public ResponseEntity<Void> deleteAll(
-        @RequestParam(value = "userEmail") String userEmail
-    ) {
-        notificationService.deleteAll(userEmail);
-        return ResponseEntity.noContent().build();
-    }
+	@Operation(summary = "전체 알림 읽음 처리")
+	@ApiResponses(value = { @ApiResponse(responseCode = "204", description = "전체 읽음 처리 성공"),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청") })
+	@PatchMapping("/read-all")
+	public ResponseEntity<Void> markAllRead(@RequestParam(value = "userEmail") String userEmail) {
+		notificationService.markAllRead(userEmail);
+		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(summary = "전체 알림 삭제")
+	@ApiResponses(value = { @ApiResponse(responseCode = "204", description = "전체 삭제 성공"),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청") })
+	@DeleteMapping
+	public ResponseEntity<Void> deleteAll(@RequestParam(value = "userEmail") String userEmail) {
+		notificationService.deleteAll(userEmail);
+		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(summary = "알림 설정 조회")
+	@GetMapping("/settings")
+	public ResponseEntity<Map<String, String>> getSettings(@RequestParam(value = "userEmail") String userEmail) {
+		Map<String, String> settings = notificationService.getAllSettings(userEmail);
+		return ResponseEntity.ok(settings);
+	}
+
+	@Operation(summary = "알림 설정 수정")
+	@PatchMapping("/settings")
+	public ResponseEntity<Void> updateSettings(@RequestParam(value = "userEmail") String userEmail,
+			@RequestParam(value = "likeYn") String likeYn, @RequestParam(value = "commentYn") String commentYn,
+			@RequestParam(value = "noticeYn") String noticeYn) {
+		notificationService.updateNotificationSetting(userEmail, likeYn, commentYn, noticeYn);
+		return ResponseEntity.noContent().build();
+	}
 }

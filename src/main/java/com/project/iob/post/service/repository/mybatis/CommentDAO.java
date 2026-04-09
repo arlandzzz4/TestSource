@@ -19,4 +19,5 @@ public interface CommentDAO {
     void insertCommentLike(@Param("commentId") Long commentId, @Param("userEmail") String userEmail);
     void deleteCommentLike(@Param("commentId") Long commentId, @Param("userEmail") String userEmail);
     int checkCommentLike(@Param("commentId") Long commentId, @Param("userEmail") String userEmail);
+    String findAuthorEmailByCommentId(@Param("commentId") Long commentId);
 }

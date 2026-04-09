@@ -44,25 +44,29 @@ public class PostDetailServiceImpl implements PostDetailService {
             return false; // 좋아요 취소
         } else {
             postDetailDAO.insertPostLike(postId, userEmail);
-         // 좋아요 알림 생성 추가
             try {
                 String postAuthorEmail = postDetailDAO.findAuthorEmailByPostId(postId);
                 if (postAuthorEmail != null && !postAuthorEmail.equals(userEmail)) {
-                    NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
-                    notiRequest.setUserEmail(postAuthorEmail);
-                    notiRequest.setNotiType("like");
-                    notiRequest.setSenderEmail(userEmail);
-                    notiRequest.setMessage("님이 좋아요를 눌렀습니다.");
-                    notiRequest.setTargetId(postId);
-                    notificationService.createNotification(notiRequest);
+                    
+                    // 좋아요 알림 설정 체크
+                    String likeYn = notificationService.getLikeYn(postAuthorEmail);
+                    if ("Y".equals(likeYn)) {
+                        NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
+                        notiRequest.setUserEmail(postAuthorEmail);
+                        notiRequest.setNotiType("like");
+                        notiRequest.setSenderEmail(userEmail);
+                        notiRequest.setMessage("님이 좋아요를 눌렀습니다.");
+                        notiRequest.setTargetId(postId);
+                        notificationService.createNotification(notiRequest);
+                    }
                 }
             } catch (Exception e) {
                 log.warn("좋아요 알림 생성 실패: {}", e.getMessage());
             }
-            return true; // 좋아요 추가
+            return true;
         }
     }
-
+    
     @Override
     public void insertReport(String targetCode, Long targetId, String reporterEmail, String reasonCode) {
         postDetailDAO.insertReport(targetCode, targetId, reporterEmail, reasonCode);

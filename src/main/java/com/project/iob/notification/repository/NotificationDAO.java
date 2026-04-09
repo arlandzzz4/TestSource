@@ -13,4 +13,11 @@ public interface NotificationDAO {
     void markAllRead(@Param("userEmail") String userEmail);
     void deleteAll(@Param("userEmail") String userEmail);
     void createNotification(NotificationDTO.CreateRequest request);
+    String findCommentYn(@Param("userEmail") String userEmail);
+    String findLikeYn(@Param("userEmail") String userEmail);
+    Map<String, String> findAllSettingByUserEmail(@Param("userEmail") String userEmail);
+    void updateSetting(@Param("userEmail") String userEmail,
+                       @Param("likeYn") String likeYn,
+                       @Param("commentYn") String commentYn,
+                       @Param("noticeYn") String noticeYn);
 }
