@@ -4,6 +4,7 @@
 <mapper namespace="com.project.iob.post.service.repository.mybatis.PostDAO">
 
     <select id="find" parameterType="com.project.iob.post.dto.PostRequestDto" resultType="com.project.iob.post.dto.PostResponseDto">
+
         /*mapper.post.PostMapper.find */
         SELECT p.POST_ID          AS postId
              , p.USER_EMAIL       AS userEmail
@@ -27,6 +28,7 @@
         <if test="delYn == null or delYn == ''">
             AND p.DEL_YN = 'N'
         </if>
+
         <if test="delYn != null and delYn != ''">
             AND p.DEL_YN = #{delYn}
         </if>
