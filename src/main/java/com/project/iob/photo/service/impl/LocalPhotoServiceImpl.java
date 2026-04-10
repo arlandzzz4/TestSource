@@ -1,12 +1,8 @@
 package com.project.iob.photo.service.impl;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,50 +16,32 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Profile({"local", "dev"}) // 로컬과 dev 프로필에서만 활성화
+@Profile({"local", "dev"})
 @RequiredArgsConstructor
 public class LocalPhotoServiceImpl implements PhotoService {
 
-    @Value("${file.upload-path}")
-    private String uploadPath;
-
-    private final PhotoDAO photoDAO;
-    private final FileService fileService;
+    private final FileService fileService;  // 파일 저장/삭제는 FileService에 위임
+    private final PhotoDAO photoDAO;        // DB 처리만 담당
 
     @Override
     public String upload(MultipartFile file, Long postId) throws IOException {
-    	//String s = fileService.upload(null);
-        StringBuilder fileName = new StringBuilder();
-        fileName.append(UUID.randomUUID()).append("_").append(file.getOriginalFilename());
-
-        File dir = new File(uploadPath);
-        if (!dir.exists()) dir.mkdirs();
-
-        File target = new File(uploadPath + fileName);
-        file.transferTo(target);
-
-        log.info("===== upload 호출됨 - postId: {}, fileName: {}", postId, fileName);
-
-        return "/images/" + fileName; // 로컬 리소스 핸들러 주소 반환
+        String url = fileService.upload(file);
+        log.info("===== upload 호출됨 - postId: {}, url: {}", postId, url);
+        return url;
     }
 
     @Override
     public List<String> uploadList(List<MultipartFile> files, Long postId) throws IOException {
-        List<String> fileNames = new ArrayList<>();
-        for (MultipartFile multipartFile : files) {
-            String fileName = upload(multipartFile, postId); // 개별 파일 업로드
-            fileNames.add(fileName); // 업로드된 파일의 URL을 리스트에 추가
+        List<String> urls = fileService.uploadList(files);
+        log.info("===== uploadList 호출됨 - postId: {}, urls: {}", postId, urls);
+        if (!urls.isEmpty()) {
+            photoDAO.insertImages(postId, urls);
         }
-        log.info("===== uploadList 호출됨 - postId: {}, fileNames: {}", postId, fileNames);
-        // post_images 테이블에 INSERT
-        if (!fileNames.isEmpty()) {
-            photoDAO.insertImages(postId, fileNames);
-        }
-        return fileNames;
+        return urls;
     }
 
     @Override
     public void delete(String fileName) {
-        new File(uploadPath, fileName).delete();
+        fileService.delete(fileName);
     }
 }
