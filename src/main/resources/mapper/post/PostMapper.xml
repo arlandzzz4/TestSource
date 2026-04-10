@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.project.iob.post.service.repository.mybatis.PostDAO">
+<mapper
+	namespace="com.project.iob.post.service.repository.mybatis.PostDAO">
+
 
     <select id="find" parameterType="com.project.iob.post.dto.PostRequestDto" resultType="com.project.iob.post.dto.PostResponseDto">
 
@@ -45,59 +47,76 @@
         </if>
     </select>
 
-    <select id="findPostCount" parameterType="com.project.iob.post.dto.PostRequestDto" resultType="Integer">
-        /*mapper.post.PostMapper.findPostCount */
-        SELECT count(*) AS count
-        FROM posts p JOIN users u ON p.USER_EMAIL = u.EMAIL
-        WHERE 1=1
-        <if test="word != null and word != ''">
-            AND (p.title like CONCAT('%', #{word}, '%') OR u.nickname like CONCAT('%', #{word}, '%'))
-        </if>
-        <if test="categoryCode != null and categoryCode != ''">
-            AND p.CATEGORY_CODE = #{categoryCode}
-        </if>
-        <if test="delYn != null and delYn != ''">
-            AND p.DEL_YN = #{delYn}
-        </if>
-        <if test="today != null and today != ''">
-            AND p.created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'), '%Y-%m-%d %H:%i:%s')
-                                 and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
-        </if>
-    </select>
+	<select id="findPostCount"
+		parameterType="com.project.iob.post.dto.PostRequestDto"
+		resultType="Integer">
+		/*mapper.post.PostMapper.findPostCount */
+		SELECT count(*) AS count
+		FROM posts p JOIN users u ON p.USER_EMAIL = u.EMAIL
+		WHERE 1=1
+		<if test="word != null and word != ''">
+			AND (p.title like CONCAT('%', #{word}, '%') OR u.nickname like
+			CONCAT('%', #{word}, '%'))
+		</if>
+		<if test="categoryCode != null and categoryCode != ''">
+			AND p.CATEGORY_CODE = #{categoryCode}
+		</if>
+		<if test="delYn != null and delYn != ''">
+			AND p.DEL_YN = #{delYn}
+		</if>
+		<if test="today != null and today != ''">
+			AND p.created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'),
+			'%Y-%m-%d %H:%i:%s')
+			and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
+		</if>
+	</select>
 
-    <update id="updatePostDelYn" parameterType="com.project.iob.post.dto.PostRequestDto">
-        /*mapper.post.PostMapper.updatePostDelYn */
-        UPDATE posts set DEL_YN = #{delYn},
-            deleted_id = #{deletedId},
-            deleted_at = CURRENT_TIMESTAMP
-        WHERE POST_ID = #{postId}
-    </update>
+	<update id="updatePostDelYn"
+		parameterType="com.project.iob.post.dto.PostRequestDto">
+		/*mapper.post.PostMapper.updatePostDelYn */
+		UPDATE posts set DEL_YN = #{delYn},
+		deleted_id = #{deletedId},
+		deleted_at = CURRENT_TIMESTAMP
+		WHERE POST_ID = #{postId}
+	</update>
 
-    <select id="findByUser" parameterType="com.project.iob.post.dto.MyPostRequestDto"
-            resultType="com.project.iob.post.dto.MyPostResponseDto">
-        SELECT
-            post_id    AS postId,
-            title,
-            created_at AS createdAt
-        FROM posts
-        WHERE user_email = #{userEmail}
-          AND del_yn = 'N'
-        ORDER BY created_at DESC
-        LIMIT #{size} OFFSET #{offset}
-    </select>
+	<select id="findByUser"
+		parameterType="com.project.iob.post.dto.MyPostRequestDto"
+		resultType="com.project.iob.post.dto.MyPostResponseDto">
+		SELECT
+		post_id AS postId,
+		title,
+		created_at AS createdAt
+		FROM posts
+		WHERE user_email = #{userEmail}
+		AND del_yn = 'N'
+		ORDER BY created_at DESC
+		LIMIT #{size} OFFSET #{offset}
+	</select>
 
-    <select id="findByUserCount" parameterType="com.project.iob.post.dto.MyPostRequestDto" resultType="Integer">
-        SELECT COUNT(*)
-        FROM posts
-        WHERE user_email = #{userEmail}
-          AND del_yn = 'N'
-    </select>
+	<select id="findByUserCount"
+		parameterType="com.project.iob.post.dto.MyPostRequestDto"
+		resultType="Integer">
+		SELECT COUNT(*)
+		FROM posts
+		WHERE user_email = #{userEmail}
+		AND del_yn = 'N'
+	</select>
 
-    <select id="findAuthorEmailByPostId" parameterType="Long" resultType="String">
-        SELECT USER_EMAIL
-        FROM posts
-        WHERE POST_ID = #{postId}
-          AND DEL_YN = 'N'
-    </select>
+	<select id="findAuthorEmailByPostId" parameterType="Long"
+		resultType="String">
+		SELECT USER_EMAIL
+		FROM posts
+		WHERE POST_ID = #{postId}
+		AND DEL_YN = 'N'
+	</select>
+
+	<select id="findTitleByPostId" parameterType="Long"
+		resultType="String">
+		SELECT TITLE
+		FROM posts
+		WHERE POST_ID = #{postId}
+		AND DEL_YN = 'N'
+	</select>
 
 </mapper>
