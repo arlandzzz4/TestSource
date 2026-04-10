@@ -26,6 +26,7 @@ spring:
             scope:
               - email
               - profile
+              - openid
             redirect-uri: "https://information-of-balance.xyz/login/oauth2/code/google"
 decorator:
   datasource:
