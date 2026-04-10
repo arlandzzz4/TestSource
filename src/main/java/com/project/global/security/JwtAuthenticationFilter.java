@@ -58,4 +58,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+    
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        // 재발급 경로는 JWT 필터 검사를 건너뜁니다.
+        return path.startsWith("/api/auth/reissue");
+    }
 }
