@@ -80,7 +80,9 @@
 	         </if>
 	    FROM reports r
 	    WHERE 1=1
+	    <if test="reportStatusCode != null and reportStatusCode != ''">
 	    	AND r.REPORT_STATUS_CODE = #{reportStatusCode}
+	    </if>
 	    <if test="lastId != 0">
 	        AND r.REPORT_ID &lt; #{lastId}
 	    </if>

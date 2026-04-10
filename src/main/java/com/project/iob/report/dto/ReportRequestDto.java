@@ -26,7 +26,7 @@ public record ReportRequestDto(
 	public ReportRequestDto {
         if (lastId == null) lastId = 0L;
         if (size == null) size = 10;
-        if (reportStatusCode == null) reportStatusCode = "01";
+        //if (reportStatusCode == null) reportStatusCode = "01";
     }
 
 	public ReportRequestDto(Long reportId, String reportStatusCode) {
