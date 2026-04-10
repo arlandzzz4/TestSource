@@ -10,10 +10,10 @@
         FROM reports
         WHERE
         	1=1
-        <if test="reportStatusCode != null or reportStatusCode != ''">
+        <if test="reportStatusCode != null and reportStatusCode != ''">
         	AND REPORT_STATUS_CODE = #{reportStatusCode}
         </if>
-        <if test="targetCode != null or targetCode != ''">
+        <if test="targetCode != null and targetCode != ''">
         	AND TARGET_CODE = #{targetCode}
         </if>
         <if test="today != null">
@@ -84,7 +84,7 @@
 	    <if test="lastId != 0">
 	        AND r.REPORT_ID &lt; #{lastId}
 	    </if>
-	    <if test="targetCode != null or targetCode != ''">
+	    <if test="targetCode != null and targetCode != ''">
 	    	AND r.TARGET_CODE = #{targetCode}
 	    </if>
 	    ORDER BY r.REPORT_ID DESC
