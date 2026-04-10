@@ -50,67 +50,56 @@ public class CommentServiceImpl implements CommentService {
         return commentDAO.getCommentList(postId, userEmail);
     }
 
+    // ✅ 알림 생성 + FCM 전송 공통 메서드
+    private void sendNotification(String toEmail, String senderEmail,
+                                   String notiType, String message,
+                                   Long targetId, String fcmTitle, String fcmBody) {
+        // DB 알림 저장
+        NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
+        notiRequest.setUserEmail(toEmail);
+        notiRequest.setNotiType(notiType);
+        notiRequest.setSenderEmail(senderEmail);
+        notiRequest.setMessage(message);
+        notiRequest.setTargetId(targetId);
+        notificationService.createNotification(notiRequest);
+
+        // FCM 푸시 알림 전송
+        String postLink = fcmAdminService.createPostLink(targetId, "/post/{id}");
+        userRepository.findById(toEmail).ifPresent(user -> {
+            if (user.getFcmToken() != null) {
+                Notification fcmNotification = Notification.builder()
+                    .setTitle(fcmTitle)
+                    .setBody(fcmBody)
+                    .build();
+                fcmAdminService.sendMessage(user.getFcmToken(), postLink, fcmNotification);
+            }
+        });
+    }
+
     @Override
     public void insertComment(CommentRequestDto commentRequestDto) {
         commentDAO.insertComment(commentRequestDto);
         try {
-            // 게시글 제목 조회
             String postTitle = postDAO.findTitleByPostId(commentRequestDto.postId());
 
             if (commentRequestDto.parent_comment_id() != null) {
                 // 대댓글인 경우
                 String commentAuthorEmail = commentDAO.findAuthorEmailByCommentId(commentRequestDto.parent_comment_id());
                 if (commentAuthorEmail != null && !commentAuthorEmail.equals(commentRequestDto.userEmail())) {
-                    String commentYn = notificationService.getCommentYn(commentAuthorEmail);
-                    if ("Y".equals(commentYn)) {
-                        // DB 알림 저장
-                        NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
-                        notiRequest.setUserEmail(commentAuthorEmail);
-                        notiRequest.setNotiType("comment");
-                        notiRequest.setSenderEmail(commentRequestDto.userEmail());
-                        notiRequest.setMessage("님이 '" + postTitle + "'에 대댓글을 달았습니다.");
-                        notiRequest.setTargetId(commentRequestDto.postId());
-                        notificationService.createNotification(notiRequest);
-
-                        // FCM 푸시 알림 전송
-                        final String targetEmail = commentAuthorEmail;
-                        userRepository.findById(targetEmail).ifPresent(user -> {
-                            if (user.getFcmToken() != null) {
-                                Notification fcmNotification = Notification.builder()
-                                    .setTitle(postTitle)
-                                    .setBody(commentRequestDto.content())
-                                    .build();
-                                fcmAdminService.sendMessage(user.getFcmToken(), "/notifications", fcmNotification);
-                            }
-                        });
+                    if ("Y".equals(notificationService.getCommentYn(commentAuthorEmail))) {
+                        sendNotification(commentAuthorEmail, commentRequestDto.userEmail(),
+                            "comment", "님이 '" + postTitle + "'에 대댓글을 달았습니다.",
+                            commentRequestDto.postId(), postTitle, commentRequestDto.content());
                     }
                 }
             } else {
                 // 일반 댓글인 경우
                 String postAuthorEmail = postDAO.findAuthorEmailByPostId(commentRequestDto.postId());
                 if (postAuthorEmail != null && !postAuthorEmail.equals(commentRequestDto.userEmail())) {
-                    String commentYn = notificationService.getCommentYn(postAuthorEmail);
-                    if ("Y".equals(commentYn)) {
-                        // DB 알림 저장
-                        NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
-                        notiRequest.setUserEmail(postAuthorEmail);
-                        notiRequest.setNotiType("comment");
-                        notiRequest.setSenderEmail(commentRequestDto.userEmail());
-                        notiRequest.setMessage("님이 '" + postTitle + "'에 댓글을 달았습니다.");
-                        notiRequest.setTargetId(commentRequestDto.postId());
-                        notificationService.createNotification(notiRequest);
-
-                        // FCM 푸시 알림 전송
-                        final String targetEmail = postAuthorEmail;
-                        userRepository.findById(targetEmail).ifPresent(user -> {
-                            if (user.getFcmToken() != null) {
-                                Notification fcmNotification = Notification.builder()
-                                    .setTitle(postTitle)
-                                    .setBody(commentRequestDto.content())
-                                    .build();
-                                fcmAdminService.sendMessage(user.getFcmToken(), "/notifications", fcmNotification);
-                            }
-                        });
+                    if ("Y".equals(notificationService.getCommentYn(postAuthorEmail))) {
+                        sendNotification(postAuthorEmail, commentRequestDto.userEmail(),
+                            "comment", "님이 '" + postTitle + "'에 댓글을 달았습니다.",
+                            commentRequestDto.postId(), postTitle, commentRequestDto.content());
                     }
                 }
             }
@@ -135,28 +124,11 @@ public class CommentServiceImpl implements CommentService {
             try {
                 String commentAuthorEmail = commentDAO.findAuthorEmailByCommentId(commentId);
                 if (commentAuthorEmail != null && !commentAuthorEmail.equals(userEmail)) {
-                    String likeYn = notificationService.getLikeYn(commentAuthorEmail);
-                    if ("Y".equals(likeYn)) {
-                        // DB 알림 저장
-                        NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
-                        notiRequest.setUserEmail(commentAuthorEmail);
-                        notiRequest.setNotiType("like");
-                        notiRequest.setSenderEmail(userEmail);
-                        notiRequest.setMessage("님이 댓글에 좋아요를 눌렀습니다.");
-                        notiRequest.setTargetId(commentId);
-                        notificationService.createNotification(notiRequest);
-
-                        // FCM 푸시 알림 전송
-                        final String targetEmail = commentAuthorEmail;
-                        userRepository.findById(targetEmail).ifPresent(user -> {
-                            if (user.getFcmToken() != null) {
-                                Notification fcmNotification = Notification.builder()
-                                    .setTitle("좋아요 알림")
-                                    .setBody(userEmail.split("@")[0] + "님이 댓글에 좋아요를 눌렀습니다.")
-                                    .build();
-                                fcmAdminService.sendMessage(user.getFcmToken(), "/notifications", fcmNotification);
-                            }
-                        });
+                    if ("Y".equals(notificationService.getLikeYn(commentAuthorEmail))) {
+                        sendNotification(commentAuthorEmail, userEmail,
+                            "like", "님이 댓글에 좋아요를 눌렀습니다.",
+                            commentId, "좋아요 알림",
+                            userEmail.split("@")[0] + "님이 댓글에 좋아요를 눌렀습니다.");
                     }
                 }
             } catch (Exception e) {
