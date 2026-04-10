@@ -19,7 +19,7 @@ public interface PostDAO {
 
 	void updatePostDelYn(PostRequestDto postRequestDto);
 
-	void updateCommentDelYn(PostRequestDto postRequestDto);
+	void updatePostCommentDelYn(PostRequestDto postRequestDto);
 	
 	 List<MyPostResponseDto> findByUser(MyPostRequestDto myPostRequestDto); 
 	 

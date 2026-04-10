@@ -37,7 +37,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void updatePostDelYn(PostRequestDto postRequestDto) {
 		postDAO.updatePostDelYn(postRequestDto);
-		postDAO.updateCommentDelYn(postRequestDto);
+		postDAO.updatePostCommentDelYn(postRequestDto);
 	}
 	
 	/**

@@ -14,7 +14,6 @@ import com.project.iob.post.dto.MyPostRequestDto;
 import com.project.iob.post.dto.MyPostResponseDto;
 import com.project.iob.post.dto.PostRequestDto;
 import com.project.iob.post.dto.PostResponseDto;
-import com.project.iob.post.service.CommentService;
 import com.project.iob.post.service.PostService;
 import com.project.iob.report.dto.ReportRequestDto;
 import com.project.iob.report.service.ReportService;

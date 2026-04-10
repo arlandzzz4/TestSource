@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -14,6 +15,7 @@ import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.Notification;
 import com.project.iob.admin.usermgmt.dto.FcmUserDto;
 import com.project.iob.admin.usermgmt.service.FcmAdminService;
+import com.project.iob.notification.dto.NotificationDTO;
 import com.project.iob.notification.service.NotificationService;
 
 import lombok.RequiredArgsConstructor;
@@ -56,12 +58,13 @@ public class FcmAdminServiceImpl implements FcmAdminService {
     }
     
 	@Override
+	@Transactional
     @Async("notificationExecutor")
     public void sendNoticeNotifications(Long postId, String title, String content) {
         int pageSize = 100;
         int pageNumber = 0;
         int totalSentInBatch = 0;
-        String url = createPostLink(postId);
+        String url = createPostLink(postId, "/posts/{id}");
         Notification notification = Notification.builder()
 				.setTitle(title)
 				.setBody(content)
@@ -72,6 +75,14 @@ public class FcmAdminServiceImpl implements FcmAdminService {
             
             for (FcmUserDto user : userPage.getContent()) {
                 this.sendMessage(user.getFcmToken(), url, notification);
+                
+                NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
+                notiRequest.setUserEmail(user.getEmail());
+                notiRequest.setNotiType("notice");
+                notiRequest.setSenderEmail("");
+                notiRequest.setMessage(title);
+                notiRequest.setTargetId(postId);
+                notificationService.createNotification(notiRequest);
                 totalSentInBatch++;
 
                 // 2,000건을 채웠을 때
@@ -102,9 +113,9 @@ public class FcmAdminServiceImpl implements FcmAdminService {
         }
     }
     
-    public String createPostLink(Long postId) {
+    public String createPostLink(Long postId, String path) {
         return UriComponentsBuilder.fromUriString(clientUrl)
-                .path("/posts/{id}")
+                .path(path)
                 .buildAndExpand(postId)
                 .toUriString();
     }
