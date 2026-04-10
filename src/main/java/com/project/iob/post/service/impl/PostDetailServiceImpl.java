@@ -10,6 +10,9 @@ import com.project.iob.post.service.repository.mybatis.PostDetailDAO;
 import com.project.iob.user.repository.querydsl.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -19,14 +22,16 @@ public class PostDetailServiceImpl implements PostDetailService {
 
 	private final PostDetailDAO postDetailDAO;
 	private final NotificationService notificationService;
-	private final FcmAdminService fcmAdminService; // ✅ 추가
-	private final UserRepository userRepository; // ✅ 추가
+	private final FcmAdminService fcmAdminService;
+	private final UserRepository userRepository;
 
 	@Override
 	public PostDetailDto getPostDetail(Long postId, String userEmail) {
 		PostDetailDto post = postDetailDAO.getPostDetail(postId);
 		int liked = postDetailDAO.checkPostLike(postId, userEmail);
 		post.setLiked(liked > 0);
+		List<String> imageUrls = postDetailDAO.getImageUrls(postId);
+	    post.setImageUrls(imageUrls);
 		return post;
 	}
 
