@@ -2,15 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.project.iob.photo.service.repository.mybatis.PhotoDAO">
+<mapper
+	namespace="com.project.iob.photo.service.repository.mybatis.PhotoDAO">
 
-    <!-- 이미지 등록 -->
-    <insert id="insertImages">
-        INSERT INTO post_images (post_id, image_url, sort_order, del_yn, created_at)
-        VALUES
-        <foreach collection="imageUrls" item="url" index="idx" separator=",">
-            (#{postId}, #{url}, #{idx}, 'N', NOW())
-        </foreach>
-    </insert>
+	<!-- 이미지 등록 -->
+	<insert id="insertImages">
+		INSERT INTO post_images (post_id, image_url, sort_order, del_yn,
+		created_at)
+		VALUES
+		<foreach collection="imageUrls" item="url" index="idx"
+			separator=",">
+			(#{postId}, #{url}, #{idx}, 'N', NOW())
+		</foreach>
+	</insert>
 
+	<!-- 이미지 삭제 (DB에서 완전삭제가 되는 게 아니고, del_yn으로 저장되는 소프트삭제) -->
+	<update id="deleteImage">
+		UPDATE post_images
+		SET del_yn = 'Y'
+		WHERE image_url LIKE CONCAT('%', #{fileName}, '%')
+	</update>
 </mapper>

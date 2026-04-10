@@ -120,7 +120,8 @@
 		SELECT image_url
 		FROM post_images
 		WHERE post_id = #{postId}
-		ORDER BY sort_order ASC
+		AND del_yn = 'N'
+    	ORDER BY sort_order ASC
 	</select>
 
 </mapper>
