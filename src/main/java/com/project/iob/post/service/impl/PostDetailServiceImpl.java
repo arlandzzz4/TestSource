@@ -20,77 +20,85 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PostDetailServiceImpl implements PostDetailService {
 
-	private final PostDetailDAO postDetailDAO;
-	private final NotificationService notificationService;
-	private final FcmAdminService fcmAdminService;
-	private final UserRepository userRepository;
+    private final PostDetailDAO postDetailDAO;
+    private final NotificationService notificationService;
+    private final FcmAdminService fcmAdminService;
+    private final UserRepository userRepository;
 
-	@Override
-	public PostDetailDto getPostDetail(Long postId, String userEmail) {
-		PostDetailDto post = postDetailDAO.getPostDetail(postId);
-		int liked = postDetailDAO.checkPostLike(postId, userEmail);
-		post.setLiked(liked > 0);
-		List<String> imageUrls = postDetailDAO.getImageUrls(postId);
-	    post.setImageUrls(imageUrls);
-		return post;
-	}
+    // ✅ 알림 생성 + FCM 전송 공통 메서드
+    private void sendNotification(String toEmail, String senderEmail,
+                                   String notiType, String message,
+                                   Long targetId, String fcmTitle, String fcmBody) {
+        // DB 알림 저장
+        NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
+        notiRequest.setUserEmail(toEmail);
+        notiRequest.setNotiType(notiType);
+        notiRequest.setSenderEmail(senderEmail);
+        notiRequest.setMessage(message);
+        notiRequest.setTargetId(targetId);
+        notificationService.createNotification(notiRequest);
 
-	@Override
-	public void updatePost(Long postId, String title, String content, String categoryCode) {
-		postDetailDAO.updatePost(postId, title, content, categoryCode);
-	}
+        // FCM 푸시 알림 전송
+        String postLink = fcmAdminService.createPostLink(targetId, "/post/{id}");
+        userRepository.findById(toEmail).ifPresent(user -> {
+            if (user.getFcmToken() != null) {
+                Notification fcmNotification = Notification.builder()
+                    .setTitle(fcmTitle)
+                    .setBody(fcmBody)
+                    .build();
+                fcmAdminService.sendMessage(user.getFcmToken(), postLink, fcmNotification);
+            }
+        });
+    }
 
-	@Override
-	public void deletePost(Long postId, String userEmail) {
-		postDetailDAO.deletePost(postId, userEmail);
-	}
+    @Override
+    public PostDetailDto getPostDetail(Long postId, String userEmail) {
+        PostDetailDto post = postDetailDAO.getPostDetail(postId);
+        int liked = postDetailDAO.checkPostLike(postId, userEmail);
+        post.setLiked(liked > 0);
+        List<String> imageUrls = postDetailDAO.getImageUrls(postId);
+        post.setImageUrls(imageUrls);
+        return post;
+    }
 
-	@Override
-	public boolean togglePostLike(Long postId, String userEmail) {
-		int count = postDetailDAO.checkPostLike(postId, userEmail);
-		if (count > 0) {
-			postDetailDAO.deletePostLike(postId, userEmail);
-			return false;
-		} else {
-			postDetailDAO.insertPostLike(postId, userEmail);
-			try {
-				String postAuthorEmail = postDetailDAO.findAuthorEmailByPostId(postId);
-				if (postAuthorEmail != null && !postAuthorEmail.equals(userEmail)) {
+    @Override
+    public void updatePost(Long postId, String title, String content, String categoryCode) {
+        postDetailDAO.updatePost(postId, title, content, categoryCode);
+    }
 
-					// 좋아요 알림 설정 체크
-					String likeYn = notificationService.getLikeYn(postAuthorEmail);
-					if ("Y".equals(likeYn)) {
-						// DB 알림 저장
-						NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
-						notiRequest.setUserEmail(postAuthorEmail);
-						notiRequest.setNotiType("like");
-						notiRequest.setSenderEmail(userEmail);
-						notiRequest.setMessage("님이 좋아요를 눌렀습니다.");
-						notiRequest.setTargetId(postId);
-						notificationService.createNotification(notiRequest);
+    @Override
+    public void deletePost(Long postId, String userEmail) {
+        postDetailDAO.deletePost(postId, userEmail);
+    }
 
-						// FCM 푸시 알림 전송
-						final String targetEmail = postAuthorEmail;
-						userRepository.findById(targetEmail).ifPresent(user -> {
-							if (user.getFcmToken() != null) {
-								// 게시글 제목 조회
-								String postTitle = postDetailDAO.getTitleByPostId(postId);
-								Notification fcmNotification = Notification.builder().setTitle(postTitle)
-										.setBody(userEmail.split("@")[0] + "님이 좋아요를 눌렀습니다.").build();
-								fcmAdminService.sendMessage(user.getFcmToken(), "/notifications", fcmNotification);
-							}
-						});
-					}
-				}
-			} catch (Exception e) {
-				log.warn("좋아요 알림 생성 실패: {}", e.getMessage());
-			}
-			return true;
-		}
-	}
+    @Override
+    public boolean togglePostLike(Long postId, String userEmail) {
+        int count = postDetailDAO.checkPostLike(postId, userEmail);
+        if (count > 0) {
+            postDetailDAO.deletePostLike(postId, userEmail);
+            return false;
+        } else {
+            postDetailDAO.insertPostLike(postId, userEmail);
+            try {
+                String postAuthorEmail = postDetailDAO.findAuthorEmailByPostId(postId);
+                if (postAuthorEmail != null && !postAuthorEmail.equals(userEmail)) {
+                    if ("Y".equals(notificationService.getLikeYn(postAuthorEmail))) {
+                        String postTitle = postDetailDAO.getTitleByPostId(postId);
+                        sendNotification(postAuthorEmail, userEmail,
+                            "like", "님이 좋아요를 눌렀습니다.",
+                            postId, postTitle,
+                            userEmail.split("@")[0] + "님이 좋아요를 눌렀습니다.");
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("좋아요 알림 생성 실패: {}", e.getMessage());
+            }
+            return true;
+        }
+    }
 
-	@Override
-	public void insertReport(String targetCode, Long targetId, String reporterEmail, String reasonCode) {
-		postDetailDAO.insertReport(targetCode, targetId, reporterEmail, reasonCode);
-	}
+    @Override
+    public void insertReport(String targetCode, Long targetId, String reporterEmail, String reasonCode) {
+        postDetailDAO.insertReport(targetCode, targetId, reporterEmail, reasonCode);
+    }
 }

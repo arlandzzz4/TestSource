@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
-@Profile("prod")
+//@Profile("prod")
 public class FirebaseConfig {
 	@Value("${FIREBASE_CONFIG_PATH:fcm-key.json}")///app/config/
 	private String configPath;

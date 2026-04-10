@@ -25,98 +25,77 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class FcmAdminServiceImpl implements FcmAdminService {
-	
+
 	private final NotificationService notificationService;
-	
+
 	@Value("${app.client-url}")
-    private String clientUrl;
+	private String clientUrl;
 
-    /**
-     * 특정 토큰을 가진 디바이스로 알림 전송
-     * @param token 유저의 FCM 토큰 (DB에서 가져옴)
-     * @param title 알림 제목
-     * @param body 알림 내용
-     * @param path 클릭 시 이동할 상세 경로 (예: /challenge/1)
-     */
 	@Override
-    public void sendMessage(String token, String url, Notification notification) {
-        // 1. 메시지 구성 (Notification + Data)
-        Message message = Message.builder()
-                .setToken(token)
-                .setNotification(notification)
-                .putData("link_url", url)
-                .build();
+	public void sendMessage(String token, String url, Notification notification) {
+		Message message = Message.builder().setToken(token).setNotification(notification).putData("link_url", url)
+				.build();
 
-        // 2. 전송 요청
-        try {
-            String response = FirebaseMessaging.getInstance().send(message);
-            System.out.println("Successfully sent message: " + response);
-        } catch (FirebaseMessagingException e) {
-            // 전송 실패 시 토큰 관리 로직 포함
-            handleFcmException(e, token);
-        }
-    }
-    
+		try {
+			String response = FirebaseMessaging.getInstance().send(message);
+			System.out.println("Successfully sent message: " + response);
+		} catch (FirebaseMessagingException e) {
+			handleFcmException(e, token);
+		}
+	}
+
 	@Override
 	@Transactional
-    @Async("notificationExecutor")
-    public void sendNoticeNotifications(Long postId, String title, String content) {
-        int pageSize = 100;
-        int pageNumber = 0;
-        int totalSentInBatch = 0;
-        String url = createPostLink(postId, "/posts/{id}");
-        Notification notification = Notification.builder()
-				.setTitle(title)
-				.setBody(content)
-				.build();
-        Page<FcmUserDto> userPage;
-        do {
-            userPage = notificationService.findAllByNotificationEnabledTrue(PageRequest.of(pageNumber, pageSize));
-            
-            for (FcmUserDto user : userPage.getContent()) {
-                this.sendMessage(user.getFcmToken(), url, notification);
-                
-                NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
-                notiRequest.setUserEmail(user.getEmail());
-                notiRequest.setNotiType("notice");
-                notiRequest.setSenderEmail("");
-                notiRequest.setMessage(title);
-                notiRequest.setTargetId(postId);
-                notificationService.createNotification(notiRequest);
-                totalSentInBatch++;
+	@Async("notificationExecutor")
+	public void sendNoticeNotifications(Long postId, String title, String content) {
+		int pageSize = 100;
+		int pageNumber = 0;
+		int totalSentInBatch = 0;
+		String url = createPostLink(postId, "/post/{id}");
+		Notification notification = Notification.builder().setTitle(title).setBody(content).build();
+		Page<FcmUserDto> userPage;
+		do {
+			userPage = notificationService.findAllByNotificationEnabledTrue(PageRequest.of(pageNumber, pageSize));
 
-                // 2,000건을 채웠을 때
-                if (totalSentInBatch >= 2000) {
-                    log.info("2,000건 전송 완료. 1시간 휴식에 들어갑니다.");
-                    try {
-                        // 1시간
-                        Thread.sleep(3600000); 
-                    } catch (InterruptedException e) {
-                        log.error("휴식 중 인터럽트 발생", e);
-                        Thread.currentThread().interrupt();
-                        return;
-                    }
-                    totalSentInBatch = 0; // 카운트 초기화
-                }
-            }
-            
-            pageNumber++;
-        } while (userPage.hasNext());
-        
-        log.info("모든 알림 전송 완료!");
-    }
+			for (FcmUserDto user : userPage.getContent()) {
+				this.sendMessage(user.getFcmToken(), url, notification);
 
-    private void handleFcmException(FirebaseMessagingException e, String token) {
-        if (e.getMessagingErrorCode() == MessagingErrorCode.UNREGISTERED 
-            || e.getMessagingErrorCode() == MessagingErrorCode.INVALID_ARGUMENT) {
-            System.err.println("유효하지 않은 토큰 발견. DB에서 삭제 처리가 필요합니다: " + token);
-        }
-    }
-    
-    public String createPostLink(Long postId, String path) {
-        return UriComponentsBuilder.fromUriString(clientUrl)
-                .path(path)
-                .buildAndExpand(postId)
-                .toUriString();
-    }
+				NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
+				notiRequest.setUserEmail(user.getEmail());
+				notiRequest.setNotiType("notice");
+				notiRequest.setSenderEmail("");
+				notiRequest.setMessage(title);
+				notiRequest.setTargetId(postId);
+				notificationService.createNotification(notiRequest);
+				totalSentInBatch++;
+
+				if (totalSentInBatch >= 2000) {
+					log.info("2,000건 전송 완료. 1시간 휴식에 들어갑니다.");
+					try {
+						Thread.sleep(3600000);
+					} catch (InterruptedException e) {
+						log.error("휴식 중 인터럽트 발생", e);
+						Thread.currentThread().interrupt();
+						return;
+					}
+					totalSentInBatch = 0;
+				}
+			}
+
+			pageNumber++;
+		} while (userPage.hasNext());
+
+		log.info("모든 알림 전송 완료!");
+	}
+
+	private void handleFcmException(FirebaseMessagingException e, String token) {
+		if (e.getMessagingErrorCode() == MessagingErrorCode.UNREGISTERED
+				|| e.getMessagingErrorCode() == MessagingErrorCode.INVALID_ARGUMENT) {
+			System.err.println("유효하지 않은 토큰 발견. DB에서 삭제 처리가 필요합니다: " + token);
+		}
+	}
+
+	public String createPostLink(Long postId, String path) {
+		return UriComponentsBuilder.fromUriString(clientUrl).path(path).buildAndExpand(postId).toUriString();
+	}
 }

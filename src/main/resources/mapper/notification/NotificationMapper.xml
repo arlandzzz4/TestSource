@@ -86,7 +86,7 @@
 			u.fcm_token,
 			u.email
 		FROM
-			users u LEFT OUTTER JOIN notification_settings n
+			users u LEFT OUTER JOIN notification_settings n
 			ON u.email = n.user_email
 		WHERE
 			n.notice_yn = 'Y'
@@ -100,7 +100,7 @@
 		SELECT
 			count(*)
 		FROM
-			users u LEFT OUTTER JOIN notification_settings n
+			users u LEFT OUTER JOIN notification_settings n
 			ON u.email = n.user_email
 		WHERE
 			n.notice_yn = 'Y'
