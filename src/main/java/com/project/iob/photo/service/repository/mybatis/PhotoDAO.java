@@ -10,4 +10,8 @@ public interface PhotoDAO {
     // 이미지 등록
     void insertImages(@Param("postId") Long postId,
                       @Param("imageUrls") List<String> imageUrls);
+    
+    // 이미지 삭제
+    void deleteImage(@Param("fileName") String fileName);
 }
+

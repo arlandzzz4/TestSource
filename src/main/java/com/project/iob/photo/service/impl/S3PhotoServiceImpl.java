@@ -39,6 +39,7 @@ public class S3PhotoServiceImpl implements PhotoService {
 
     @Override
     public void delete(String fileName) {
-        fileService.delete(fileName);
+//        fileService.delete(fileName);
+        photoDAO.deleteImage(fileName); //DB에서도 삭제
     }
 }
