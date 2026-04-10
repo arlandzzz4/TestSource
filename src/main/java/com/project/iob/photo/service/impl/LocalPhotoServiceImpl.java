@@ -16,32 +16,33 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Profile({"local", "dev"})
+@Profile({ "local", "dev" })
 @RequiredArgsConstructor
 public class LocalPhotoServiceImpl implements PhotoService {
 
-    private final FileService fileService;  // 파일 저장/삭제는 FileService에 위임
-    private final PhotoDAO photoDAO;        // DB 처리만 담당
+	private final FileService fileService; // 파일 저장/삭제는 FileService에 위임
+	private final PhotoDAO photoDAO; // DB 처리만 담당
 
-    @Override
-    public String upload(MultipartFile file, Long postId) throws IOException {
-        String url = fileService.upload(file);
-        log.info("===== upload 호출됨 - postId: {}, url: {}", postId, url);
-        return url;
-    }
+	@Override
+	public String upload(MultipartFile file, Long postId) throws IOException {
+		String url = fileService.upload(file);
+		log.info("===== upload 호출됨 - postId: {}, url: {}", postId, url);
+		return url;
+	}
 
-    @Override
-    public List<String> uploadList(List<MultipartFile> files, Long postId) throws IOException {
-        List<String> urls = fileService.uploadList(files);
-        log.info("===== uploadList 호출됨 - postId: {}, urls: {}", postId, urls);
-        if (!urls.isEmpty()) {
-            photoDAO.insertImages(postId, urls);
-        }
-        return urls;
-    }
+	@Override
+	public List<String> uploadList(List<MultipartFile> files, Long postId) throws IOException {
+		List<String> urls = fileService.uploadList(files);
+		log.info("===== uploadList 호출됨 - postId: {}, urls: {}", postId, urls);
+		if (!urls.isEmpty()) {
+			photoDAO.insertImages(postId, urls);
+		}
+		return urls;
+	}
 
-    @Override
-    public void delete(String fileName) {
-        fileService.delete(fileName);
-    }
+	@Override
+	public void delete(String fileName) {
+//		fileService.delete(fileName);
+		photoDAO.deleteImage(fileName); // DB에서도 삭제
+	}
 }
