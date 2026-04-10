@@ -10,7 +10,10 @@
         FROM reports
         WHERE
         	1=1
-        <if test="targetCode != null">
+        <if test="reportStatusCode != null or reportStatusCode != ''">
+        	AND REPORT_STATUS_CODE = #{reportStatusCode}
+        </if>
+        <if test="targetCode != null or targetCode != ''">
         	AND TARGET_CODE = #{targetCode}
         </if>
         <if test="today != null">
@@ -34,6 +37,8 @@
 	        , '' AS targetNickname
 	        , '' AS reporterNickname
 	        , '' AS content
+	        , '' AS postId
+	        , '' AS delYn
 	        </if>
 	        <if test="offset != null">
 	        , CASE WHEN target_code = '01'
@@ -54,6 +59,24 @@
 	        	ELSE (SELECT content FROM comments WHERE comment_id = r.TARGET_ID)
 	        	END
 	         AS content
+	         , CASE WHEN target_code = '01'
+	        	THEN (r.TARGET_ID
+	        		)
+	        	ELSE (SELECT c.POST_ID 
+			           FROM comments c  
+			           WHERE c.parent_comment_id = r.TARGET_ID
+	        		)
+	        	END AS postId
+	         , CASE WHEN target_code = '01'
+	        	THEN (SELECT p.del_yn 
+			           FROM posts p  
+			           WHERE p.post_id = r.TARGET_ID
+	        		)
+	        	ELSE (SELECT c.del_yn 
+			           FROM comments c  
+			           WHERE c.parent_comment_id = r.TARGET_ID
+	        		)
+	        	END AS delYn
 	         </if>
 	    FROM reports r
 	    WHERE 1=1
@@ -61,7 +84,7 @@
 	    <if test="lastId != 0">
 	        AND r.REPORT_ID &lt; #{lastId}
 	    </if>
-	    <if test="targetCode != null">
+	    <if test="targetCode != null or targetCode != ''">
 	    	AND r.TARGET_CODE = #{targetCode}
 	    </if>
 	    ORDER BY r.REPORT_ID DESC

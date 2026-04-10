@@ -11,7 +11,7 @@ import com.project.iob.report.dto.ReportResponseDto;
 @Mapper
 public interface ReportDAO {
 
-	int findReportCount(@Param("targetCode")String targetCode, @Param("today")String today);
+	int findReportCount(@Param("targetCode")String targetCode, @Param("today")String today, @Param("reportStatusCode")String reportStatusCode);
 	
 	List<ReportResponseDto> findReportList(ReportRequestDto reportRequestDto);
 

@@ -24,8 +24,8 @@ public class ReportServiceImpl implements ReportService {
      * [신고수 조회]
      */
 	@Override
-	public int searchReportCount(String targetCode, String today) {
-		return reportDAO.findReportCount(targetCode, today);
+	public int searchReportCount(String targetCode, String today, String reportStatusCode) {
+		return reportDAO.findReportCount(targetCode, today, reportStatusCode);
 	}
 	/**
      * [신고 조회]
