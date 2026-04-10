@@ -110,7 +110,17 @@
 		SELECT TITLE
 		FROM posts
 		WHERE POST_ID = #{postId}
-		AND DEL_YN = 'N'
+		AND DEL_YN =
+		'N'
+	</select>
+
+	<!-- 게시글 이미지 URL 목록 조회 -->
+	<select id="getImageUrls" parameterType="long"
+		resultType="String">
+		SELECT image_url
+		FROM post_images
+		WHERE post_id = #{postId}
+		ORDER BY sort_order ASC
 	</select>
 
 </mapper>
