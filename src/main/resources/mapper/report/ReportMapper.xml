@@ -58,7 +58,8 @@
 	        		)
 	        	ELSE (SELECT c.POST_ID 
 			           FROM comments c  
-			           WHERE c.parent_comment_id = r.TARGET_ID
+			           WHERE c.comment_id = r.TARGET_ID
+			           limit 1
 	        		)
 	        	END AS postId
 	         , CASE WHEN target_code = '01'
@@ -69,6 +70,7 @@
 	        	ELSE (SELECT c.del_yn 
 			           FROM comments c  
 			           WHERE c.comment_id = r.TARGET_ID
+			           limit 1
 	        		)
 	        	END AS delYn
 	         </if>
