@@ -60,11 +60,12 @@ public class ReportController {
     })
     @GetMapping("/search/todaycnt")
     public ResponseEntity<Integer> searchReportTodayCount(
-    		@RequestParam(name = "targetCode") String targetCode
+    		@RequestParam(name = "targetCode") String targetCode,
+    		@RequestParam(name = "reportStatusCode") String reportStatusCode
     		){
     	//오늘
     	String today = java.time.LocalDate.now().toString();
-    	int cnt = reportService.searchReportCount(targetCode, today, null);
+    	int cnt = reportService.searchReportCount(targetCode, today, reportStatusCode);
     	
         return ResponseEntity.ok(cnt); 
 	}

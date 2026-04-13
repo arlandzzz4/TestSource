@@ -54,13 +54,14 @@ public class FcmAdminServiceImpl implements FcmAdminService {
 		String url = createPostLink(postId, "/post/{id}");
 		Notification notification = Notification.builder().setTitle(title).setBody(content).build();
 		Page<FcmUserDto> userPage;
+		NotificationDTO.CreateRequest notiRequest = null;
 		do {
 			userPage = notificationService.findAllByNotificationEnabledTrue(PageRequest.of(pageNumber, pageSize));
 
 			for (FcmUserDto user : userPage.getContent()) {
 				this.sendMessage(user.getFcmToken(), url, notification);
 
-				NotificationDTO.CreateRequest notiRequest = new NotificationDTO.CreateRequest();
+				notiRequest = new NotificationDTO.CreateRequest();
 				notiRequest.setUserEmail(user.getEmail());
 				notiRequest.setNotiType("notice");
 				notiRequest.setSenderEmail("");
