@@ -52,7 +52,7 @@ public class AuthController {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("/login")
-    @Transactional(readOnly = true)
+    @Transactional
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest, HttpServletResponse response)  {
         // 1. 서비스에서 토큰 발급 (성공 시 TokenDto 반환)
         TokenDto tokenDto = authService.login(loginRequest);

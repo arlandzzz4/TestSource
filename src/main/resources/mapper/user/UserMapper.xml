@@ -135,5 +135,13 @@
 	        updated_at = CURRENT_TIMESTAMP
 	    WHERE email = #{email}
 	</update>
+	
+	<update id="updateProvider" >
+    	/*mapper.user.UserMapper.updateProvider */
+        UPDATE users
+        SET PROVIDER_CODE = #{providerCode}
+        	, provider_id = #{providerId}
+        WHERE email = #{email}
+	</update>
 </mapper>
     

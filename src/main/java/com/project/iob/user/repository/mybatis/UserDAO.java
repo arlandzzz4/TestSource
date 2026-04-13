@@ -36,5 +36,7 @@ public interface UserDAO {
 	
 	// 닉네임 업데이트
 	void updateNickname(UserRequestDto userRequestDto);
+
+	void updateProvider(@Param("email") String email, @Param("providerCode") String providerCode, @Param("providerId") String  providerId);
 }
 

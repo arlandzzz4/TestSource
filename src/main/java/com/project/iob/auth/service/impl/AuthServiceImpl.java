@@ -86,6 +86,8 @@ public class AuthServiceImpl implements AuthService {
 
         if (Provider.GOOGLE.getKey().equals(providerCode) && Provider.LOCAL.getKey().equals(rt.getProviderCode())) {
             rt.updateProvider(Provider.GOOGLE.getKey(), loginRequest.providerId());
+            //패스워드로 로그인 하던 사용자라도 구글 로그인을 하게 되면 패스워드로 로그인을 못하게 됨. 그래서 상태값 변경
+            userDAO.updateProvider(email, Provider.GOOGLE.getKey(), loginRequest.providerId());
         } 
         else if (Provider.LOCAL.getKey().equals(providerCode)) {
         	if (!Provider.LOCAL.getKey().equals(rt.getProviderCode())) {
