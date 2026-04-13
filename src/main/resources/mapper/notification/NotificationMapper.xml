@@ -88,14 +88,13 @@
 		/*mapper.notification.NotificationMapper.findAllByNotificationEnabledTrue
 		*/
 		SELECT
-		u.fcm_token,
-		u.email
+			u.fcm_token,
+			u.email
 		FROM
-		users u LEFT OUTER JOIN notification_settings n
-		ON u.email = n.user_email
+			notification_settings n JOIN users u 
+			ON u.email = n.user_email
 		WHERE
-		n.notice_yn = 'Y'
-		OR n.notice_yn IS NULL
+			n.notice_yn = 'Y'
 		ORDER BY u.email DESC
 		LIMIT #{pageSize} OFFSET
 		#{offset}
@@ -106,13 +105,12 @@
 		/*mapper.notification.NotificationMapper.countAllByNotificationEnabledTrue
 		*/
 		SELECT
-		count(*)
+			count(*)
 		FROM
-		users u LEFT OUTER JOIN notification_settings n
-		ON u.email = n.user_email
+			users u JOIN notification_settings n
+			ON u.email = n.user_email
 		WHERE
-		n.notice_yn = 'Y'
-		OR n.notice_yn IS NULL
+			n.notice_yn = 'Y'
 	</select>
 
 	<insert id="insertDefaultSettings">
