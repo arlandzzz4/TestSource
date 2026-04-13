@@ -17,6 +17,7 @@ public class FavMeal {
     @Column(name = "user_email")
     private String userEmail;
 
+    @Column(name = "`name`")
     private String name;
 
     @Column(columnDefinition = "JSON")
