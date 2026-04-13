@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.project.global.enums.Provider;
 import com.project.global.enums.Role;
 import com.project.global.enums.UserStateCode;
+import com.project.iob.notification.repository.NotificationDAO;
 import com.project.iob.user.dto.PasswordChangeRequestDto;
 import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UserAuthRequestDto;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final UserDAO userDAO; // MyBatis 매퍼 주입
     private final UserRepository userRepository;
     private final EntityManager em;
+    private final NotificationDAO notificationDAO;
 	
 	/**
      * [회원가입 로직]
@@ -74,6 +76,10 @@ public class UserServiceImpl implements UserService {
 		user = userRepository.save(user);
 		em.flush(); // 영속성 컨텍스트의 변경 내용을 DB에 반영
 		//리턴
+		
+		// 알림 설정 기본값 INSERT
+		notificationDAO.insertDefaultSettings(user.getEmail());
+
 		return user;
 	}
 	

@@ -25,7 +25,7 @@ public class PostDetailServiceImpl implements PostDetailService {
     private final FcmAdminService fcmAdminService;
     private final UserRepository userRepository;
 
-    // ✅ 알림 생성 + FCM 전송 공통 메서드
+    // 알림 생성 + FCM 전송 공통 메서드
     private void sendNotification(String toEmail, String senderEmail,
                                    String notiType, String message,
                                    Long targetId, String fcmTitle, String fcmBody) {
@@ -82,7 +82,8 @@ public class PostDetailServiceImpl implements PostDetailService {
             try {
                 String postAuthorEmail = postDetailDAO.findAuthorEmailByPostId(postId);
                 if (postAuthorEmail != null && !postAuthorEmail.equals(userEmail)) {
-                    if ("Y".equals(notificationService.getLikeYn(postAuthorEmail))) {
+                    String likeYn = notificationService.getLikeYn(postAuthorEmail);
+                    if (likeYn == null || "Y".equals(likeYn)) {
                         String postTitle = postDetailDAO.getTitleByPostId(postId);
                         sendNotification(postAuthorEmail, userEmail,
                             "like", "님이 좋아요를 눌렀습니다.",

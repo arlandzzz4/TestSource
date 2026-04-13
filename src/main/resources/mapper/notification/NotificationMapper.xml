@@ -67,9 +67,11 @@
 	</select>
 
 	<select id="findAllSettingByUserEmail" resultType="map">
-		SELECT like_yn, comment_yn, notice_yn
+		SELECT
+		like_yn, comment_yn, notice_yn
 		FROM notification_settings
-		WHERE user_email = #{userEmail}
+		WHERE
+		user_email = #{userEmail}
 	</select>
 
 	<update id="updateSetting">
@@ -77,34 +79,46 @@
 		SET like_yn = #{likeYn},
 		comment_yn = #{commentYn},
 		notice_yn = #{noticeYn}
-		WHERE user_email = #{userEmail}
+		WHERE user_email =
+		#{userEmail}
 	</update>
-	
-	<select id="findAllByNotificationEnabledTrue" resultType="com.project.iob.admin.usermgmt.dto.FcmUserDto">
-		/*mapper.notification.NotificationMapper.findAllByNotificationEnabledTrue */
+
+	<select id="findAllByNotificationEnabledTrue"
+		resultType="com.project.iob.admin.usermgmt.dto.FcmUserDto">
+		/*mapper.notification.NotificationMapper.findAllByNotificationEnabledTrue
+		*/
 		SELECT
-			u.fcm_token,
-			u.email
+		u.fcm_token,
+		u.email
 		FROM
-			users u LEFT OUTER JOIN notification_settings n
-			ON u.email = n.user_email
+		users u LEFT OUTER JOIN notification_settings n
+		ON u.email = n.user_email
 		WHERE
-			n.notice_yn = 'Y'
-			OR n.notice_yn IS NULL
+		n.notice_yn = 'Y'
+		OR n.notice_yn IS NULL
 		ORDER BY u.email DESC
-		LIMIT #{pageSize} OFFSET #{offset}
+		LIMIT #{pageSize} OFFSET
+		#{offset}
 	</select>
-	
-	<select id="countAllByNotificationEnabledTrue" parameterType="Integer">
-		/*mapper.notification.NotificationMapper.countAllByNotificationEnabledTrue */
+
+	<select id="countAllByNotificationEnabledTrue"
+		parameterType="Integer">
+		/*mapper.notification.NotificationMapper.countAllByNotificationEnabledTrue
+		*/
 		SELECT
-			count(*)
+		count(*)
 		FROM
-			users u LEFT OUTER JOIN notification_settings n
-			ON u.email = n.user_email
+		users u LEFT OUTER JOIN notification_settings n
+		ON u.email = n.user_email
 		WHERE
-			n.notice_yn = 'Y'
-			OR n.notice_yn IS NULL
+		n.notice_yn = 'Y'
+		OR n.notice_yn IS NULL
 	</select>
+
+	<insert id="insertDefaultSettings">
+		INSERT INTO notification_settings (user_email, like_yn, comment_yn,
+		notice_yn)
+		VALUES (#{userEmail}, 'Y', 'Y', 'Y')
+	</insert>
 
 </mapper>

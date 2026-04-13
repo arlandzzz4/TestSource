@@ -26,4 +26,5 @@ public interface NotificationDAO {
                        @Param("noticeYn") String noticeYn);
 	List<FcmUserDto> findAllByNotificationEnabledTrue(@Param("offset")long offset, @Param("pageSize")int pageSize);
 	long countAllByNotificationEnabledTrue();
+	void insertDefaultSettings(@Param("userEmail") String userEmail);
 }
