@@ -50,7 +50,7 @@ public class CommentServiceImpl implements CommentService {
         return commentDAO.getCommentList(postId, userEmail);
     }
 
-    // ✅ 알림 생성 + FCM 전송 공통 메서드
+    // 알림 생성 + FCM 전송 공통 메서드
     private void sendNotification(String toEmail, String senderEmail,
                                    String notiType, String message,
                                    Long targetId, String fcmTitle, String fcmBody) {
@@ -86,7 +86,8 @@ public class CommentServiceImpl implements CommentService {
                 // 대댓글인 경우
                 String commentAuthorEmail = commentDAO.findAuthorEmailByCommentId(commentRequestDto.parent_comment_id());
                 if (commentAuthorEmail != null && !commentAuthorEmail.equals(commentRequestDto.userEmail())) {
-                    if ("Y".equals(notificationService.getCommentYn(commentAuthorEmail))) {
+                    String commentYn = notificationService.getCommentYn(commentAuthorEmail);
+                    if (commentYn == null || "Y".equals(commentYn)) {
                         sendNotification(commentAuthorEmail, commentRequestDto.userEmail(),
                             "comment", "님이 '" + postTitle + "'에 대댓글을 달았습니다.",
                             commentRequestDto.postId(), postTitle, commentRequestDto.content());
@@ -96,7 +97,8 @@ public class CommentServiceImpl implements CommentService {
                 // 일반 댓글인 경우
                 String postAuthorEmail = postDAO.findAuthorEmailByPostId(commentRequestDto.postId());
                 if (postAuthorEmail != null && !postAuthorEmail.equals(commentRequestDto.userEmail())) {
-                    if ("Y".equals(notificationService.getCommentYn(postAuthorEmail))) {
+                    String commentYn = notificationService.getCommentYn(postAuthorEmail);
+                    if (commentYn == null || "Y".equals(commentYn)) {
                         sendNotification(postAuthorEmail, commentRequestDto.userEmail(),
                             "comment", "님이 '" + postTitle + "'에 댓글을 달았습니다.",
                             commentRequestDto.postId(), postTitle, commentRequestDto.content());
@@ -124,7 +126,8 @@ public class CommentServiceImpl implements CommentService {
             try {
                 String commentAuthorEmail = commentDAO.findAuthorEmailByCommentId(commentId);
                 if (commentAuthorEmail != null && !commentAuthorEmail.equals(userEmail)) {
-                    if ("Y".equals(notificationService.getLikeYn(commentAuthorEmail))) {
+                    String likeYn = notificationService.getLikeYn(commentAuthorEmail);
+                    if (likeYn == null || "Y".equals(likeYn)) {
                         sendNotification(commentAuthorEmail, userEmail,
                             "like", "님이 댓글에 좋아요를 눌렀습니다.",
                             commentId, "좋아요 알림",

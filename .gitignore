@@ -32,3 +32,5 @@ bin/
 !**/src/test/**/bin/
 
 .metadata/
+
+fcm-key.json
