@@ -15,8 +15,8 @@ public record ReportResponseDto(
         LocalDateTime processedAt,
         String targetNickname,
         String reporterNickname,
-        String content,
         String postId,
-        String delYn
+        String delYn,
+        String content
 ) {
 }

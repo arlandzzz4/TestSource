@@ -36,7 +36,6 @@
 	        <if test="offset == null">
 	        , '' AS targetNickname
 	        , '' AS reporterNickname
-	        , '' AS content
 	        , '' AS postId
 	        , '' AS delYn
 	        </if>
@@ -54,11 +53,6 @@
 	        		)
 	        	END AS targetNickname
 	        , (SELECT NICKNAME FROM users WHERE EMAIL = r.REPORTER_EMAIL) AS reporterNickname
-	        , CASE WHEN target_code = '01'
-	        	THEN (SELECT title FROM posts WHERE post_id = r.TARGET_ID)
-	        	ELSE (SELECT content FROM comments WHERE comment_id = r.TARGET_ID)
-	        	END
-	         AS content
 	         , CASE WHEN target_code = '01'
 	        	THEN (r.TARGET_ID
 	        		)
@@ -78,6 +72,11 @@
 	        		)
 	        	END AS delYn
 	         </if>
+	         , CASE WHEN target_code = '01'
+	        	THEN (SELECT title FROM posts WHERE post_id = r.TARGET_ID)
+	        	ELSE (SELECT content FROM comments WHERE comment_id = r.TARGET_ID)
+	        	END
+	         AS content
 	    FROM reports r
 	    WHERE 1=1
 	    <if test="reportStatusCode != null and reportStatusCode != ''">
