@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.global.enums.Provider;
@@ -227,4 +228,18 @@ public class UserController {
         userService.updatePassword(dto);
         return ResponseEntity.noContent().build();
     }
+    
+    @Operation(summary = "이메일로 유저 검색", description = "입력한 이메일과 일치하는 유저 정보를 조회합니다. 존재하지 않을 경우 404를 반환합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공 (유저 정보 반환)"),
+        @ApiResponse(responseCode = "404", description = "해당 이메일을 가진 유저가 없음"),
+        @ApiResponse(responseCode = "400", description = "잘못된 이메일 형식")
+    })
+    @GetMapping("/search/nickname")
+    public ResponseEntity<Integer> searchNickname( 
+        @RequestParam(value = "nickname") String nickname) {
+    	int cnt = userService.searchNickname(nickname);
+    	
+    	return ResponseEntity.ok(cnt); 
+	}
 }

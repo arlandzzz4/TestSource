@@ -181,4 +181,9 @@ public class UserServiceImpl implements UserService {
 
 	    userDAO.updatePassword(dto.email(), passwordEncoder.encode(dto.newPassword()));
 	}
+
+	@Override
+	public int searchNickname(String nickname) {
+		return userDAO.findByNickname(nickname);
+	}
 }
