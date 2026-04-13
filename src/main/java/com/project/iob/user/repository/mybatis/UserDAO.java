@@ -38,5 +38,7 @@ public interface UserDAO {
 	void updateNickname(UserRequestDto userRequestDto);
 
 	void updateProvider(@Param("email") String email, @Param("providerCode") String providerCode, @Param("providerId") String  providerId);
+
+	int findByNickname(String nickname);
 }
 

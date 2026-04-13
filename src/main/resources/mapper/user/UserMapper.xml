@@ -143,5 +143,13 @@
         	, provider_id = #{providerId}
         WHERE email = #{email}
 	</update>
+	
+	<select id="findByNickname" parameterType="java.lang.String" resultType="Integer">
+    	/*mapper.user.UserMapper.findByNickname */
+        SELECT 
+            count(*)
+        FROM users
+        WHERE nickname = #{nickname}
+    </select>
 </mapper>
     

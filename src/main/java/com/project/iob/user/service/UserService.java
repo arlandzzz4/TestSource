@@ -57,4 +57,6 @@ public interface UserService {
 	 */
 	public void updatePassword(PasswordChangeRequestDto dto);
 
+	public int searchNickname(String nickname);
+
 }
