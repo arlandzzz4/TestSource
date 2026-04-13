@@ -35,6 +35,7 @@ public class User implements Persistable<String>{
     
     private String nickname;
     
+    @Column(name = "password", updatable = false) // ◀ JPA를 통한 UPDATE 문에서 제외
     private String password;
     
     @Column(name = "provider_code")
