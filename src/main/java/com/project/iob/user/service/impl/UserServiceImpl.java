@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
 				.build();
 		//등록
 		user = userRepository.save(user);
-		em.flush(); // 영속성 컨텍스트의 변경 내용을 DB에 반영
+		userRepository.flush(); // 영속성 컨텍스트의 변경 내용을 DB에 반영
 		//리턴
 		
 		// 알림 설정 기본값 INSERT
