@@ -41,7 +41,7 @@ public class FcmAdminServiceImpl implements FcmAdminService {
 			String response = FirebaseMessaging.getInstance().send(message);
 			log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~Successfully sent message: " + response);
 		} catch (FirebaseMessagingException e) {
-			log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " + e.getMessage());
+			log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " + e.getMessage());
 			handleFcmException(e, token);
 		}
 	}
