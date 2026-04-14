@@ -131,7 +131,7 @@ public class AuthServiceImpl implements AuthService {
 	public void logout(String email, String providerCode) {
         // DB에서 해당 유저의 리프레시 토큰을 삭제하여 재발급을 원천 차단
         refreshTokenRepository.deleteRefreshTokenById(email, providerCode);
-        em.flush(); // 영속성 컨텍스트의 변경 내용을 DB에 반영
+        refreshTokenRepository.flush(); // 영속성 컨텍스트의 변경 내용을 DB에 반영
     }
 	
 }
