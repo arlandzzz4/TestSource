@@ -65,10 +65,11 @@ public class CommentServiceImpl implements CommentService {
         notiRequest.setMessage(message);
         notiRequest.setTargetId(targetId);
         notificationService.createNotification(notiRequest);
-
+        log.info("toEmail ~~~~~~~~~~~~~~~~~~~~~~~~~~ " + toEmail);
         // FCM 푸시 알림 전송
         String postLink = fcmAdminService.createPostLink(targetId, "/post/{id}");
         userRepository.findById(toEmail).ifPresent(user -> {
+        	log.info("FcmToken ~~~~~~~~~~~~~~~~~~~~~~~~~~ " + user.getFcmToken());
             if (user.getFcmToken() != null) {
                 Notification fcmNotification = Notification.builder()
                     .setTitle(fcmTitle)
