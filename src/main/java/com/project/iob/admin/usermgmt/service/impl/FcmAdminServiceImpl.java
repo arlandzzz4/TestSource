@@ -35,10 +35,10 @@ public class FcmAdminServiceImpl implements FcmAdminService {
 	public void sendMessage(String token, String url, Notification notification) {
 		Message message = Message.builder().setToken(token).setNotification(notification).putData("link_url", url)
 				.build();
-
+		log.info("token ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~: " + token);
 		try {
 			String response = FirebaseMessaging.getInstance().send(message);
-			System.out.println("Successfully sent message: " + response);
+			log.info("Successfully sent message: " + response);
 		} catch (FirebaseMessagingException e) {
 			handleFcmException(e, token);
 		}
