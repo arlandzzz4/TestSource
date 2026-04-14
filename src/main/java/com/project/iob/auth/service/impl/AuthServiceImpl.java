@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.global.enums.Provider;
+import com.project.global.enums.UserStateCode;
 import com.project.global.error.NeedRegistrationException;
 import com.project.global.security.JwtTokenProvider;
 import com.project.iob.auth.dto.LoginRequestDto;
@@ -82,6 +83,10 @@ public class AuthServiceImpl implements AuthService {
         RefreshToken rt = refreshTokenRepository.findByEmail(email).orElse(null);
         if (rt == null) {
             return new TokenDto("해당 계정으로 가입된 사용자가 없습니다. 회원가입이 필요합니다.");
+        }
+        
+        if (!UserStateCode.ACTIVE.getKey().equals(rt.getUserStatusCode())) {
+            return new TokenDto("해당 계정은 정지되었거나 탈퇴된 계정입니다.");
         }
 
         if (Provider.GOOGLE.getKey().equals(providerCode) && Provider.LOCAL.getKey().equals(rt.getProviderCode())) {

@@ -37,6 +37,9 @@ public class RefreshToken {
     
     @Column(nullable = true, name = "provider_id")
     private String providerId;
+    
+    @Column(nullable = true, name = "user_status_code")
+    private String userStatusCode;
 
     // 토큰 값 업데이트 (로그인 시마다 갱신)
     public void updateToken(String newToken) {
@@ -50,11 +53,12 @@ public class RefreshToken {
     }
     
     @Builder
-    public RefreshToken(String email, String token, String password) {
+    public RefreshToken(String email, String token, String password, String userStatusCode) {
         this.email = email;
         this.password = password;
         this.refreshToken = token;
         this.tokenRotatedAt = LocalDateTime.now();
+        this.userStatusCode = userStatusCode;
     }
 
 	public void updateProvider(String providerCode, String providerId) {
