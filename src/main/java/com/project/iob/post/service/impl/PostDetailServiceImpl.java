@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -62,16 +63,19 @@ public class PostDetailServiceImpl implements PostDetailService {
     }
 
     @Override
+    @PreAuthorize("@authService.isActiveUser()")
     public void updatePost(Long postId, String title, String content, String categoryCode) {
         postDetailDAO.updatePost(postId, title, content, categoryCode);
     }
 
     @Override
+    @PreAuthorize("@authService.isActiveUser()")
     public void deletePost(Long postId, String userEmail) {
         postDetailDAO.deletePost(postId, userEmail);
     }
 
     @Override
+    @PreAuthorize("@authService.isActiveUser()")
     public boolean togglePostLike(Long postId, String userEmail) {
         int count = postDetailDAO.checkPostLike(postId, userEmail);
         if (count > 0) {
@@ -99,6 +103,7 @@ public class PostDetailServiceImpl implements PostDetailService {
     }
 
     @Override
+    @PreAuthorize("@authService.isActiveUser()")
     public void insertReport(String targetCode, Long targetId, String reporterEmail, String reasonCode) {
         postDetailDAO.insertReport(targetCode, targetId, reporterEmail, reasonCode);
     }

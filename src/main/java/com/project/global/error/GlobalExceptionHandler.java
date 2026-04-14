@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -114,4 +115,10 @@ public class GlobalExceptionHandler {
         log.debug("정적 리소스를 찾을 수 없습니다: {}", e.getResourcePath());
     }
     
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<com.project.global.dto.ErrorResponse> handleAuthorizationDenied(AuthorizationDeniedException e) {
+        // 500이 아닌 403(Forbidden)을 명시적으로 리턴
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new com.project.global.dto.ErrorResponse("AUTH_001","활동이 정지되었거나 탈퇴한 계정입니다."));
+    }
 }

@@ -1,5 +1,6 @@
 package com.project.iob.post.service.impl;
  
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ public class PostWriteServiceImpl implements PostWriteService {
      * [게시글 작성]
      */
     @Override
+    @PreAuthorize("@authService.isActiveUser()")
     public void createPost(PostWriteDto postWriteDto) {
         postWriteDAO.insert(postWriteDto);
     }

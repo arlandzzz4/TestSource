@@ -2,6 +2,8 @@ package com.project.iob.auth.service.impl;
 
 import java.time.LocalDateTime;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +19,11 @@ import com.project.iob.auth.repository.querydsl.RefreshTokenRepository;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.user.repository.mybatis.UserDAO;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+@Service("authService")
 @RequiredArgsConstructor
 @Transactional
 public class AuthServiceImpl implements AuthService {
@@ -30,7 +31,6 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserDAO userDAO;
-    private final EntityManager em;
 
     /**
      * [토큰 재발급 로직]
@@ -47,6 +47,11 @@ public class AuthServiceImpl implements AuthService {
         // DB 조회 (id를 username으로 쓰고 있으므로 findById 가능)
         var savedToken = refreshTokenRepository.findByEmail(identifier)
                 .orElseThrow(() -> new IllegalArgumentException("로그아웃된 사용자입니다."));
+        
+        if (!UserStateCode.ACTIVE.getKey().equals(savedToken.getUserStatusCode())) {
+        	refreshTokenRepository.delete(savedToken);
+        	throw new IllegalStateException("해당 계정은 정지되었거나 탈퇴된 계정입니다.");
+        }
 
         // 토큰 재사용 탐지 및 Race Condition 방어
         if (oldRefreshToken != null && !oldRefreshToken.equals(savedToken.getRefreshToken())) {
@@ -139,4 +144,16 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository.flush(); // 영속성 컨텍스트의 변경 내용을 DB에 반영
     }
 	
+	public boolean isActiveUser() {
+        // 1. 현재 인증된 사용자의 이메일 가져오기
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) return false;
+        
+        String email = auth.getName();
+        
+        // 2. DB에서 실시간 상태 조회 (또는 Redis)
+        return refreshTokenRepository.findByEmail(email)
+                .map(user -> UserStateCode.ACTIVE.getKey().equals(user.getUserStatusCode()))
+                .orElse(false);
+    }
 }

@@ -2,6 +2,7 @@ package com.project.iob.post.service.impl;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@PreAuthorize("@authService.isActiveUser()")
 	public void updatePostDelYn(PostRequestDto postRequestDto) {
 		postDAO.updatePostDelYn(postRequestDto);
 		postDAO.updatePostCommentDelYn(postRequestDto);

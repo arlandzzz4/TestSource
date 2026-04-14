@@ -1,6 +1,8 @@
 package com.project.iob.post.service.impl;
 
 import java.util.List;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PreAuthorize("@authService.isActiveUser()")
     public void updateCommentDelYn(CommentRequestDto commentRequestDto) {
         commentDAO.updateCommentDelYn(commentRequestDto);
     }
@@ -77,6 +80,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PreAuthorize("@authService.isActiveUser()")
     public void insertComment(CommentRequestDto commentRequestDto) {
         commentDAO.insertComment(commentRequestDto);
         try {
@@ -111,11 +115,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PreAuthorize("@authService.isActiveUser()")
     public void deleteComment(Long commentId) {
         commentDAO.deleteComment(commentId);
     }
 
     @Override
+    @PreAuthorize("@authService.isActiveUser()")
     public boolean toggleCommentLike(Long commentId, String userEmail) {
         int count = commentDAO.checkCommentLike(commentId, userEmail);
         if (count > 0) {
