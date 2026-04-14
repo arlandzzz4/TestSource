@@ -4,8 +4,8 @@
 
 <mapper namespace="com.project.iob.map.repository.MapPinMapper">
 
-    <!-- 전체 핀 조회 (삭제된 것 제외) -->
-    <select id="getAllPins" resultType="com.project.iob.map.dto.MapPinDto">
+    <!-- 전체 핀 조회 (삭제된 것 제외 & 정상사용자 핀만 나오도록) -->
+       <select id="getAllPins" resultType="com.project.iob.map.dto.MapPinDto">
         SELECT
             p.pin_id,
             p.user_email,
@@ -19,7 +19,7 @@
             p.created_at
         FROM map_pins p
         LEFT JOIN users u ON p.user_email = u.email
-        WHERE p.del_yn = 'N'
+        WHERE p.del_yn = 'N' AND u.user_status_code = '01'
         ORDER BY p.created_at DESC
     </select>
 
