@@ -37,12 +37,11 @@ public class FcmAdminServiceImpl implements FcmAdminService {
 				.build();
 		log.info("token ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~: " + token);
 		log.info("url ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~: " + url);
-		log.info("notification ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~: " + notification.toString());
-		log.info("message ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~: " + message);
 		try {
 			String response = FirebaseMessaging.getInstance().send(message);
 			log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~Successfully sent message: " + response);
 		} catch (FirebaseMessagingException e) {
+			log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " + e.getMessage());
 			handleFcmException(e, token);
 		}
 	}
