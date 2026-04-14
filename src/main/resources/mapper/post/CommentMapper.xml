@@ -22,9 +22,10 @@
 		<if test="postId != null and postId != 0">
 			AND c.post_id = #{postId}
 		</if>
-		<if test="today != null">
-			AND c.created_at between #{today}|' 00:00:00' and
-			#{today}|' 23:59:59'
+		<if test="today != null and today != ''">
+			AND c.created_at between STR_TO_DATE(CONCAT(#{today},' 00:00:00'),
+			'%Y-%m-%d %H:%i:%s')
+			and STR_TO_DATE(CONCAT(#{today},' 23:59:59'), '%Y-%m-%d %H:%i:%s')
 		</if>
 	</select>
 
