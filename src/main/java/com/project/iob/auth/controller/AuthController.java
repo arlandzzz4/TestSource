@@ -162,13 +162,37 @@ public class AuthController {
         @ApiResponse(responseCode = "409", description = "이미 존재하는 이메일 또는 소셜 계정")
     })
     @PostMapping("/regist")
-    public ResponseEntity<UserResponseDto> regist(@RequestBody UserAuthRequestDto UserRequest) {
-    	User savedUser = userService.regist(UserRequest);
+    public ResponseEntity<LoginResponseDto> regist(@RequestBody UserAuthRequestDto UserRequest) {
+    	TokenDto tokenDto = userService.regist(UserRequest);
     	
-    	// 엔티티 -> DTO 변환 (비밀번호 제외)
-    	UserResponseDto response = UserResponseDto.from(savedUser);
-        
-        return ResponseEntity.ok(response);
+    	if(tokenDto.isSuccess()) {
+        	User user = userService.searchUserByEmail(UserRequest.email());
+        	
+            // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
+            ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenDto.refreshToken())
+                    .path("/")
+                    .httpOnly(true)
+                    .secure(true)
+                    //.sameSite("Strict")
+                    .sameSite("Lax")
+                    .maxAge(60 * 60 * 24 * 7) // 7일
+                    .build();
+
+            // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(LoginResponseDto.builder()
+                            .accessToken(tokenDto.accessToken()) // ★ 수정: refreshToken 넣지 않도록 주의
+                            .user(user)
+                            .isSuccess(true)
+                            .build());
+        }else {
+        	// 로그인 실패 시 적절한 에러 메시지와 상태 코드 반환 (예: 401 Unauthorized)
+			return ResponseEntity.ok().body(LoginResponseDto.builder()
+					.isSuccess(tokenDto.isSuccess())
+					.message(tokenDto.message())
+					.build());
+        }
 	}
     
 }

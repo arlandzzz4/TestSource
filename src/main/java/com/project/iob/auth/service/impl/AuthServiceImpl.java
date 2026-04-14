@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
 	public TokenDto login(LoginRequestDto loginRequest) throws NeedRegistrationException {
     	String email = loginRequest.email();
         String providerCode = loginRequest.providerCode();
-
+        log.info("2~~~~~~~~~~~~~~~~~~~~~~~~~~~" + email );
         RefreshToken rt = refreshTokenRepository.findByEmail(email).orElse(null);
         if (rt == null) {
             return new TokenDto("해당 계정으로 가입된 사용자가 없습니다. 회원가입이 필요합니다.");
@@ -144,13 +144,14 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository.flush(); // 영속성 컨텍스트의 변경 내용을 DB에 반영
     }
 	
+	@Transactional(readOnly = true)
 	public boolean isActiveUser() {
         // 1. 현재 인증된 사용자의 이메일 가져오기
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) return false;
         
         String email = auth.getName();
-        
+        log.info("1~~~~~~~~~~~~~~~~~~~~~~~~~~~" + email );
         // 2. DB에서 실시간 상태 조회 (또는 Redis)
         return refreshTokenRepository.findByEmail(email)
                 .map(user -> UserStateCode.ACTIVE.getKey().equals(user.getUserStatusCode()))

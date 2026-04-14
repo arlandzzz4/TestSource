@@ -2,6 +2,7 @@ package com.project.iob.user.service;
 
 import java.util.List;
 
+import com.project.iob.auth.dto.TokenDto;
 import com.project.iob.user.dto.PasswordChangeRequestDto;
 import com.project.iob.user.dto.UnsubscribeRequestDto;
 import com.project.iob.user.dto.UserAuthRequestDto;
@@ -15,7 +16,7 @@ public interface UserService {
 	/**
      * [회원가입 로직]
      */
-	public User regist(UserAuthRequestDto UserRequest);
+	public TokenDto regist(UserAuthRequestDto UserRequest);
 	
 	/**
      * [회원 정보 조회 로직]

@@ -8,9 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserRecord;
 import com.project.global.enums.Provider;
 import com.project.global.enums.Role;
 import com.project.global.enums.UserStateCode;
+import com.project.iob.auth.dto.LoginRequestDto;
+import com.project.iob.auth.dto.TokenDto;
+import com.project.iob.auth.service.AuthService;
 import com.project.iob.notification.repository.NotificationDAO;
 import com.project.iob.user.dto.PasswordChangeRequestDto;
 import com.project.iob.user.dto.UnsubscribeRequestDto;
@@ -22,13 +27,9 @@ import com.project.iob.user.repository.mybatis.UserDAO;
 import com.project.iob.user.repository.querydsl.UserRepository;
 import com.project.iob.user.service.UserService;
 
-import jakarta.persistence.EntityManager;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.UserRecord;
 
 @Slf4j
 @Service
@@ -38,14 +39,14 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserDAO userDAO; // MyBatis 매퍼 주입
     private final UserRepository userRepository;
-    private final EntityManager em;
     private final NotificationDAO notificationDAO;
+    private final AuthService authService;
 	
 	/**
      * [회원가입 로직]
      */
 	@Transactional
-	public User regist(UserAuthRequestDto UserRequest) {
+	public TokenDto regist(UserAuthRequestDto UserRequest) {
 		// 중복 체크
 		String encodedPassword = "";
 		if(Provider.LOCAL.getKey().equals(UserRequest.providerCode())) {
@@ -79,8 +80,11 @@ public class UserServiceImpl implements UserService {
 		
 		// 알림 설정 기본값 INSERT
 		notificationDAO.insertDefaultSettings(user.getEmail());
+		
+		LoginRequestDto loginRequest = new LoginRequestDto(UserRequest.email(), UserRequest.password(), UserRequest.providerCode(), UserRequest.providerId(), UserRequest.nickname(), "");
+		TokenDto tokenDto = authService.login(loginRequest);
 
-		return user;
+		return tokenDto;
 	}
 	
 	/**
