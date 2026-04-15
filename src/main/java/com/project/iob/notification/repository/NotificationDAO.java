@@ -1,14 +1,13 @@
 package com.project.iob.notification.repository;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
 import com.project.iob.admin.usermgmt.dto.FcmUserDto;
 import com.project.iob.notification.dto.NotificationDTO;
 import com.project.iob.notification.dto.NotificationResponseDTO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface NotificationDAO {

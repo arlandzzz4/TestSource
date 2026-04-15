@@ -21,7 +21,6 @@ import com.project.iob.auth.dto.LogoutRequestDto;
 import com.project.iob.auth.dto.TokenDto;
 import com.project.iob.auth.service.AuthService;
 import com.project.iob.user.dto.UserAuthRequestDto;
-import com.project.iob.user.dto.UserResponseDto;
 import com.project.iob.user.entity.User;
 import com.project.iob.user.service.UserService;
 

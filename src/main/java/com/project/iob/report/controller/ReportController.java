@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.iob.post.service.CommentService;
-import com.project.iob.post.service.PostService;
 import com.project.iob.report.dto.ReportRequestDto;
 import com.project.iob.report.dto.ReportResponseDto;
 import com.project.iob.report.service.ReportService;
@@ -32,9 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ReportController {
 
     private final ReportService reportService;
-    private final PostService postService;
-    private final CommentService commentService;
-    
     
     @Operation(summary = "총 신고 수 검색", description = "전체 신고 수를 조회합니다. 성공 시 총 신고 수를 반환합니다.")
     @ApiResponses(value = {
