@@ -117,11 +117,9 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<com.project.global.dto.ErrorResponse> handleAuthorizationDenied(AuthorizationDeniedException e) {
-    	log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~권한 거부 발생: {}", e.getMessage());
-    	
     	
         // 500이 아닌 403(Forbidden)을 명시적으로 리턴
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new com.project.global.dto.ErrorResponse("AUTH_001","활동이 정지되었거나 탈퇴한 계정입니다."));
+                .body(new com.project.global.dto.ErrorResponse("AUTH_001","다시 로그인 해주세요."));
     }
 }
