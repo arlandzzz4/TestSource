@@ -20,8 +20,7 @@
              , (SELECT COUNT(*) FROM comments WHERE POST_ID = p.POST_ID AND DEL_YN = 'N') AS comments
              , (SELECT image_url FROM post_images WHERE post_id = p.POST_ID AND del_yn = 'N' ORDER BY sort_order ASC LIMIT 1) AS thumbnail
              , p.DEL_YN           AS delYn
-             , '' AS reportStatusCode
-			 , '' AS reportId
+			 , (SELECT count(*) FROM reports WHERE TARGET_CODE = '01' AND TARGET_ID = p.POST_ID) AS reportCnt
         FROM posts p JOIN users u ON p.USER_EMAIL = u.EMAIL
         WHERE 1=1
         <if test="word != null and word != ''">

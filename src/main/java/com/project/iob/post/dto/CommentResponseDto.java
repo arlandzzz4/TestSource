@@ -15,6 +15,7 @@ public record CommentResponseDto(
         String nickname,
         String title,
         int likeCount,
-        int isLiked
+        int isLiked,
+        int reportCnt
 ) {
 }

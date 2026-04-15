@@ -15,7 +15,6 @@ public record PostResponseDto(
         Integer comments,
         String thumbnail,
         String delYn,
-        String reportStatusCode,
-        Long reporterId
+        int reportCnt
 ) {
 }

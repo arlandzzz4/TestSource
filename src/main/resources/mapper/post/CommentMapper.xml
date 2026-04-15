@@ -46,6 +46,7 @@
 		, (SELECT title FROM posts WHERE post_id = c.post_id) AS title
 		, 0 AS likeCount
 		, 0 AS isLiked
+		, (SELECT count(*) FROM reports WHERE TARGET_CODE = '02' AND TARGET_ID = c.COMMENT_ID) AS reportCnt
 		FROM comments c LEFT OUTER JOIN users u ON c.USER_EMAIL = u.EMAIL
 		WHERE 1=1
 		<if test="word != null and word != ''">
@@ -89,7 +90,7 @@
 			, (SELECT title FROM posts WHERE post_id = c.post_id) AS title
 			, (SELECT COUNT(*) FROM likes l WHERE l.target_code = '02' AND l.target_id = c.comment_id) AS likeCount
 			, (SELECT COUNT(*) FROM likes l WHERE l.target_code = '02' AND l.target_id = c.comment_id AND l.user_email = #{userEmail}) AS isLiked
-		
+			, 0 AS reportCnt
 		FROM comments c JOIN users u ON c.USER_EMAIL = u.EMAIL
 		WHERE c.post_id = #{postId} AND c.del_yn = 'N'
 		ORDER BY c.created_at ASC
