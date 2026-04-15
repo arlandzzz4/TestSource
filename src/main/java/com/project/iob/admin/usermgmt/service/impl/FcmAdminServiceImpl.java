@@ -13,6 +13,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.Notification;
+import com.project.global.config.FirebaseConfig;
 import com.project.iob.admin.usermgmt.dto.FcmUserDto;
 import com.project.iob.admin.usermgmt.service.FcmAdminService;
 import com.project.iob.notification.dto.NotificationDTO;
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FcmAdminServiceImpl implements FcmAdminService {
 
 	private final NotificationService notificationService;
+	private final FirebaseConfig firebaseConfig;
 
 	@Value("${app.client-url}")
 	private String clientUrl;
@@ -36,7 +38,7 @@ public class FcmAdminServiceImpl implements FcmAdminService {
 		Message message = Message.builder().setToken(token).setNotification(notification).putData("link_url", url)
 				.build();
 		try {
-			String response = FirebaseMessaging.getInstance().send(message);
+			String response = getMessagingInstance().send(message);
 			log.info("Successfully sent message: " + response);
 		} catch (FirebaseMessagingException e) {
 			handleFcmException(e, token);
@@ -89,13 +91,23 @@ public class FcmAdminServiceImpl implements FcmAdminService {
 	}
 
 	private void handleFcmException(FirebaseMessagingException e, String token) {
-		if (e.getMessagingErrorCode() == MessagingErrorCode.UNREGISTERED
-				|| e.getMessagingErrorCode() == MessagingErrorCode.INVALID_ARGUMENT) {
-			System.err.println("유효하지 않은 토큰 발견. DB에서 삭제 처리가 필요합니다: " + token);
+		MessagingErrorCode errorCode = e.getMessagingErrorCode();
+		if (errorCode == MessagingErrorCode.UNREGISTERED
+				|| errorCode == MessagingErrorCode.INVALID_ARGUMENT) {
+			log.warn("유효하지 않은 토큰 발견 ({}). DB에서 삭제 혹은 비활성화 권장: {}", errorCode, token);
 		}
 	}
 
 	public String createPostLink(Long postId, String path) {
 		return UriComponentsBuilder.fromUriString(clientUrl).path(path).buildAndExpand(postId).toUriString();
 	}
+	
+	private FirebaseMessaging getMessagingInstance() {
+        // 서버 재부팅 후 초기화가 안 되어 있다면 강제 초기화 시도
+        if (com.google.firebase.FirebaseApp.getApps().isEmpty()) {
+            log.warn("FirebaseApp이 초기화되지 않았습니다. 재초기화를 시도합니다.");
+            firebaseConfig.init(); 
+        }
+        return FirebaseMessaging.getInstance();
+    }
 }
