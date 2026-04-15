@@ -130,7 +130,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // 1. 허용할 프론트엔드 도메인 (Vite 기본값: 5173)
-        // [주의] allowCredentials(true)일 때는 와일드카드(*)를 사용할 수 없습니다.
+        // allowCredentials(true)일 때는 와일드카드(*)를 사용할 수 없습니다.
         config.setAllowedOrigins(List.of(
         	    "https://information-of-balance.xyz",      // 운영 도메인 (필수)
         	    "https://www.information-of-balance.xyz",  // www 포함 도메인 (필수)
@@ -149,7 +149,7 @@ public class SecurityConfig {
         // 4. 클라이언트가 응답에서 읽을 수 있는 헤더 (JWT 토큰 등을 바디가 아닌 헤더로 보낼 때 필요)
         config.setExposedHeaders(List.of("Authorization"));
 
-        // 5. [핵심] 내 자격 증명(쿠키, 인증 헤더 등)을 다른 도메인에 보낼 수 있도록 허용
+        // 5. 내 자격 증명(쿠키, 인증 헤더 등)을 다른 도메인에 보낼 수 있도록 허용
         // Refresh Token을 HttpOnly 쿠키로 주고받으려면 반드시 true여야 합니다.
         config.setAllowCredentials(true);
 
@@ -166,12 +166,9 @@ public class SecurityConfig {
     @Bean
     @Profile({"prod", "dev"})
     public ClientRegistrationRepository prodClientRegistrationRepository() {
-        // [체크] 만약 환경변수 인식이 불안정하다면 System.getenv()를 직접 써보세요.
+        // 만약 환경변수 인식이 불안정하다면 System.getenv()를 직접 써보세요.
         String clientId = System.getenv("GOOGLE_CLIENT_ID");
         String clientSecret = System.getenv("GOOGLE_CLIENT_SECRET");
-
-        // 리더님, 여기서 로그를 찍어보면 바로 알 수 있습니다.
-        System.out.println("DEBUG: clientId is " + clientId); 
 
         if (clientId == null || clientId.isEmpty()) {
             throw new IllegalStateException("환경 변수 GOOGLE_CLIENT_ID가 비어있습니다!");
@@ -180,13 +177,13 @@ public class SecurityConfig {
         ClientRegistration googleRegistration = CommonOAuth2Provider.GOOGLE.getBuilder("google")
                 .clientId(clientId)
                 .clientSecret(clientSecret)
-                .build(); // 여기서 "clientId cannot be empty"가 터졌던 겁니다.
+                .build(); 
 
         return new InMemoryClientRegistrationRepository(googleRegistration);
     }
     
     @Bean
-    @Profile("local") // spring.profiles.active=local 일 때만 작동
+    @Profile("local") 
     public ClientRegistrationRepository localClientRegistrationRepository() {
         System.out.println("DEBUG: 로컬 환경용 더미 OAuth2 설정을 로드합니다.");
         return new InMemoryClientRegistrationRepository(

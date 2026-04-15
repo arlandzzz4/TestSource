@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 유효하지 않은 토큰이라도 일단 통과시켜야 SecurityConfig의 permitAll()이 판단합니다.
             }
         } catch (ExpiredJwtException e) {
-            // [중요] 토큰이 만료되었을 때, 필터 체인을 끊고 직접 에러 응답을 작성합니다.
+            //토큰이 만료되었을 때, 필터 체인을 끊고 직접 에러 응답을 작성합니다.
             log.warn("Access Token이 만료되었습니다.");
             sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "TOKEN_EXPIRED", "액세스 토큰이 만료되었습니다. 재발급을 요청하세요.");
         } catch (Exception e) {
@@ -59,7 +59,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        // [참고] startsWithIgnoreCase를 쓰면 대소문자 구분 없이 더 안전하게 체크 가능합니다.
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }

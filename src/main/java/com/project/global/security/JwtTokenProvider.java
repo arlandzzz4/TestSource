@@ -32,7 +32,6 @@ public class JwtTokenProvider {
 
     @PostConstruct
     public void init() {
-        // [변경 이유] 문자열을 직접 사용하는 대신, Base64로 인코딩된 키를 안전하게 Key 객체로 변환
         byte[] keyBytes = Decoders.BASE64.decode(secretKeyPlain);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }

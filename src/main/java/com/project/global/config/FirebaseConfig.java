@@ -27,8 +27,6 @@ public class FirebaseConfig {
 	public void init() {
 	    try {
 	        if (FirebaseApp.getApps().isEmpty()) {
-	            // [변경]: ClassPathResource 대신 FileSystemResource 사용
-	            // 이렇게 해야 도커 볼륨으로 넣은 '/app/config/fcm-key.json'을 읽을 수 있습니다.
 	            Resource resource = new FileSystemResource(configPath); 
 	            InputStream serviceAccount = resource.getInputStream();
 	            

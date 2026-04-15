@@ -22,7 +22,6 @@ public class JasyptConfig {
          }
         
         if (password == null || password.isEmpty()) {
-            // 에러를 명확히 찍어줘야 팀원들이 삽질 안 합니다.
             throw new RuntimeException("Jasypt 마스터키를 찾을 수 없습니다!");
         }
 
