@@ -56,39 +56,7 @@ public class AuthController {
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest, HttpServletResponse response)  {
         // 1. 서비스에서 토큰 발급 (성공 시 TokenDto 반환)
         TokenDto tokenDto = authService.login(loginRequest);
-        
-        if(tokenDto.isSuccess()) {
-        	User user = userService.searchUserByEmail(loginRequest.email());
-        	
-            // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
-            ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenDto.refreshToken())
-                    .path("/")
-                    .httpOnly(true)
-                    .secure(true)
-                    //.sameSite("Strict")
-                    .sameSite("Lax")
-                    .maxAge(60 * 60 * 24 * 7) // 7일
-                    .build();
-            //fcmToken 업데이트 (로그인 시마다 최신화) 화면에서 따로 보냄
-//        	if(loginRequest.fcmToken() != null && !loginRequest.fcmToken().isBlank()) {
-//        		userService.updateFcmToken(loginRequest.email(), loginRequest.fcmToken());
-//    		}
-
-            // 3. 쿠키를 헤더에 추가하고, 바디에는 Access Token이 포함된 DTO를 담아 반환
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                    .body(LoginResponseDto.builder()
-                            .accessToken(tokenDto.accessToken()) // ★ 수정: refreshToken 넣지 않도록 주의
-                            .user(user)
-                            .isSuccess(true)
-                            .build());
-        }else {
-        	// 로그인 실패 시 적절한 에러 메시지와 상태 코드 반환 (예: 401 Unauthorized)
-			return ResponseEntity.ok().body(LoginResponseDto.builder()
-					.isSuccess(tokenDto.isSuccess())
-					.message(tokenDto.message())
-					.build());
-        }
+        return loginReturn(tokenDto, loginRequest.email());
     }
     
     @Operation(summary = "토큰 재발급", description = "만료된 Access Token을 교체하기 위해 사용합니다. Cookie에 담긴 Refresh Token을 자동으로 검증합니다.")
@@ -165,8 +133,12 @@ public class AuthController {
     public ResponseEntity<LoginResponseDto> regist(@RequestBody UserAuthRequestDto UserRequest) {
     	TokenDto tokenDto = userService.regist(UserRequest);
     	
+    	return loginReturn(tokenDto, UserRequest.email());
+	}
+    
+    private ResponseEntity<LoginResponseDto> loginReturn(TokenDto tokenDto, String email){
     	if(tokenDto.isSuccess()) {
-        	User user = userService.searchUserByEmail(UserRequest.email());
+        	User user = userService.searchUserByEmail(email);
         	
             // 2. Refresh Token을 HttpOnly 쿠키에 저장 (보안 강화)
             ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenDto.refreshToken())
@@ -193,6 +165,6 @@ public class AuthController {
 					.message(tokenDto.message())
 					.build());
         }
-	}
+    }
     
 }
